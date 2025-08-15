@@ -1,6 +1,7 @@
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.EnhancedTouch;
 
 [DisallowMultipleComponent]
 public class AddCubeOnClick : MonoBehaviour
@@ -27,6 +28,11 @@ public class AddCubeOnClick : MonoBehaviour
 
     private bool added = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+        EnhancedTouchSupport.Enable();
+        TouchSimulation.Enable(); // now Mouse.current.leftButton mirrors the first touch
+    }
     void Start()
     {
         P2PNetworkedObject.addPeerChangeListener((addOrRemove, peerID) =>
@@ -70,7 +76,7 @@ public class AddCubeOnClick : MonoBehaviour
                 {
                     draggingSharedCube.translation = pos;  // good for owned instance, since it will replicate (but using TCP)
                     hasDragged = true;
-                    draggingSharedCube.Update();
+                    draggingSharedCube.UpdateAllFields();
                 }
             }
         }

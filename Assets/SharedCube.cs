@@ -75,6 +75,12 @@ public class SharedCube : P2PNetworkedObject
     public SharedCube()
     {
     }
+    void Start()
+    {
+    }
+    new void Update()
+    {
+    }
     // AfterDeleteRemote() is only called on instances created from remote computers
     public void AfterDeleteRemote()
     {
