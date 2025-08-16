@@ -20,6 +20,7 @@ public class AddCubeOnClick : MonoBehaviour
     public GameObject outlineForColor;
 
     private bool isDragging = false;
+    private bool pressedOnObject = false;
     private Plane dragPlane;
     private bool hasDragged = false;
     private GameObject draggingGameObject;
@@ -54,14 +55,24 @@ public class AddCubeOnClick : MonoBehaviour
             {
                 draggingGameObject = hit.transform.gameObject;
                 draggingSharedCube = draggingGameObject.GetComponent<SharedCube>();
-                isDragging = true;
-                hasDragged = false;
-                dragPlane = new Plane(-mainCamera.transform.forward, draggingGameObject.transform.position);
-                if (dragPlane.Raycast(ray, out float enter))
+                pressedOnObject = true;
+                if (!draggingSharedCube.isLocal)
                 {
-                    Vector3 hitPoint = ray.GetPoint(enter);
-                    offset = draggingGameObject.transform.position - hitPoint;
-                    Vector3 pos = hitPoint + offset;
+                    // can't move cubes that aren't owned by this node
+                    draggingGameObject = null;
+                    draggingSharedCube = null;
+                }
+                else
+                {
+                    isDragging = true;
+                    hasDragged = false;
+                    dragPlane = new Plane(-mainCamera.transform.forward, draggingGameObject.transform.position);
+                    if (dragPlane.Raycast(ray, out float enter))
+                    {
+                        Vector3 hitPoint = ray.GetPoint(enter);
+                        offset = draggingGameObject.transform.position - hitPoint;
+                        Vector3 pos = hitPoint + offset;
+                    }
                 }
             }
         }
@@ -82,7 +93,7 @@ public class AddCubeOnClick : MonoBehaviour
         }
         if (Mouse.current.leftButton.wasReleasedThisFrame)
         {
-            if (draggingGameObject == null)
+            if (draggingGameObject == null && !pressedOnObject)
             {
                 // Get mouse position in screen coordinates
                 Vector2 mousePos = Mouse.current.position.ReadValue();
@@ -124,6 +135,7 @@ public class AddCubeOnClick : MonoBehaviour
                 draggingSharedCube = null;
                 draggingGameObject = null;
             }
+            pressedOnObject = false;
         }
     }
 }

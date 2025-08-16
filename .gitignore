@@ -109,4 +109,5 @@ InitTestScene*.unity*
 *~
 VMShared*
 VMPlugin*
+P2PPlugin*
 .vscode
