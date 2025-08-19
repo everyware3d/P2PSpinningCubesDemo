@@ -185,13 +185,11 @@ public class AddCubeOnClick : MonoBehaviour
         int id = GetPointerId(device);
         var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
 
-#if UNITY_IOS
         if (!_press.IsPressed())
         {
             OnRelease(ctx);
             return;
         }
-#endif
 
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
