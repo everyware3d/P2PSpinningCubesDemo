@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,8 +35,10 @@ public class SharedCube : P2PNetworkedObject
     {
         assignedColors.Clear();
         int idx = 0;
+        String logstr = "reloadAssignedColors: allPeerComputerIDs:";
         foreach (int peerID in P2PNetworkedObject.allPeerComputerIDs)
         {
+            logstr += "    " + peerID + " + " + " idx: " + (idx % colorPalette.Length) + "\n";
             assignedColors.Add(peerID, colorPalette[idx % colorPalette.Length]);
             idx++;
         }
@@ -43,6 +46,7 @@ public class SharedCube : P2PNetworkedObject
         {
             setAssignedColor(sharedCube);
         }
+        // Debug.Log(logstr);
         // sets outline color
         setAssignedColor(null, AddCubeOnClick.Instance.outlineForColor, peerComputerID);
     }
