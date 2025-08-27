@@ -15,7 +15,7 @@ public class ScreenOutline : MonoBehaviour
             case 0:
                 return 0.0f;
             case 1:
-                return sz;
+                return 1.0f;
             case 2:
                 return 50.0f / sz;
             case 3:
@@ -29,6 +29,7 @@ public class ScreenOutline : MonoBehaviour
         {
             swidth = mainCamera.pixelWidth;
             sheight = mainCamera.pixelHeight;
+            Debug.Log("ScreenOutline: Update width: " + swidth + " height: " + sheight);
             gameObject.transform.localPosition = Vector3.zero;
             gameObject.transform.localRotation = Quaternion.identity;
             gameObject.transform.localScale = Vector3.one;
@@ -88,8 +89,10 @@ public class ScreenOutline : MonoBehaviour
             {
                 float cx = getCoordValue(coords[i3], swidth);
                 float cy = getCoordValue(coords[i3 + 1], sheight);
-                Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(swidth * cx, sheight * cy, mainCamera.nearClipPlane + 5f));
-                list[i] = worldPos;
+                Vector3 screenPos = new Vector3(swidth * (cx - .5f), sheight * (cy - .5f), 0);
+                //Vector3 worldPos = new Vector3(swidth * cx, sheight * cy, 0);
+                // Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(swidth * cx, sheight * cy, mainCamera.nearClipPlane + 5f));
+                list[i] = screenPos;
             }
             for (int i = 0, ri = 0; i < nidx; i += 6, ri += 4)
             {
