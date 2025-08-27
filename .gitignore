@@ -111,3 +111,4 @@ VMShared*
 VMPlugin*
 P2PPlugin*
 .vscode
+.DS_Store

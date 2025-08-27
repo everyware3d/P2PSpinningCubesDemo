@@ -21,7 +21,6 @@ public class ScreenCanvasScript : MonoBehaviour
     {
         float width = mainCamera.pixelWidth;
         float height = mainCamera.pixelHeight;
-        Debug.Log("width: " + width + " height: " + height);
         transform.localPosition = new Vector3(width / 2, -height / 2, 0.0f);
 
         Vector3 screenPos = new Vector3(screenPixels.x, screenPixels.y, depth);
