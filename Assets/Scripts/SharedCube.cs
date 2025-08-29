@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using P2PPlugin.Network;
 
 public class SharedCube : P2PNetworkedObject
 {
@@ -52,7 +53,6 @@ public class SharedCube : P2PNetworkedObject
     }
 
     [P2PSkip, HideInInspector]
-    private GameObject remoteGameObject = null;
 
     private Vector3 _translation;
     public Vector3 translation
@@ -82,7 +82,7 @@ public class SharedCube : P2PNetworkedObject
     void Start()
     {
     }
-    new void Update()
+    void Update()
     {
     }
     // AfterDeleteRemote() is only called on instances created from remote computers

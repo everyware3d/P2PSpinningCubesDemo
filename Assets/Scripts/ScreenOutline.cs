@@ -29,7 +29,7 @@ public class ScreenOutline : MonoBehaviour
         {
             swidth = mainCamera.pixelWidth;
             sheight = mainCamera.pixelHeight;
-            Debug.Log("ScreenOutline: Update width: " + swidth + " height: " + sheight);
+            // Debug.Log("ScreenOutline: Update width: " + swidth + " height: " + sheight);
             gameObject.transform.localPosition = Vector3.zero;
             gameObject.transform.localRotation = Quaternion.identity;
             gameObject.transform.localScale = Vector3.one;
