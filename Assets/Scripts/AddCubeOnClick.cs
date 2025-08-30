@@ -6,7 +6,7 @@ using UnityEngine.InputSystem.EnhancedTouch;
 using P2PPlugin.Network;
 
 [DisallowMultipleComponent]
-public class AddCubeOnClick : MonoBehaviour
+public class AddCubeOnClick : MouseAndTouchMonoBehaviour
 {
     static public AddCubeOnClick Instance;
     AddCubeOnClick()
@@ -30,12 +30,6 @@ public class AddCubeOnClick : MonoBehaviour
     private SharedCube draggingSharedCube;
     private Vector3 offset;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Awake()
-    {
-        EnhancedTouchSupport.Enable();
-        TouchSimulation.Enable(); // now Mouse.current.leftButton mirrors the first touch
-    }
     void Start()
     {
         P2PNetworkedObject.addPeerChangeListener((addOrRemove, peerID) =>
@@ -45,52 +39,18 @@ public class AddCubeOnClick : MonoBehaviour
         SharedCube.reloadAssignedColors();
     }
 
-    InputAction _point;   // <Pointer>/position (Vector2)
-    InputAction _press;   // <Pointer>/press    (Button)
-    // Track multiple concurrent pointers (mouse id = -1, fingers >= 0)
-    readonly Dictionary<int, Vector2> _activePointers = new();
-
-    void OnEnable()
-    {
-        _point = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/position");
-        _press = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/press");
-
-        _point.performed += OnMove;      // fires for mouse move, touch move, pen move
-        _press.performed += OnPress;      // down
-        _press.canceled  += OnRelease;    // up
-
-        _point.Enable();
-        _press.Enable();
-
-        // Optional: enable Touch → Mouse simulation in Editor
-        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
-        UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Enable();
-    }
-    void OnDisable()
-    {
-        _point.Disable(); _press.Disable();
-        UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Disable();
-        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Disable();
-    }
-
-    void OnRelease(InputAction.CallbackContext ctx)
+    override public void OnRelease(InputAction.CallbackContext ctx)
     {
         var device = ctx.control.device;
         int id = GetPointerId(device);
-        // Debug.Log($"Up id:{id}");
         _activePointers.Remove(id);
 
         var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
 
-        // Debug.Log("OnRelease: id: " + id + " hasMovedSincePressed: " + hasMovedSincePressed);
         if (draggingGameObject == null && !pressedOnObject && !hasMovedSincePressed)  //} && !hasMovedSincePressed)
         {
-            // Get mouse position in screen coordinates
-            // Vector2 mousePos = Mouse.current.position.ReadValue();
-
             // Convert to world position
             Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, mainCamera.nearClipPlane + 5f));
-
             // Spawn object
             GameObject newGameObject = Instantiate(prefabToSpawn, worldPos, Quaternion.identity);
             newGameObject.transform.SetParent(mainCamera.transform);
@@ -129,20 +89,7 @@ public class AddCubeOnClick : MonoBehaviour
 
 
     }
-    static int GetPointerId(InputDevice device)
-    {
-        if (device is Mouse) return -1; // canonical mouse id
-        if (device is Pen)   return -2;
-        if (device is Touchscreen ts)
-        {
-            // Prefer active touch id if available
-            foreach (var t in ts.touches)
-                if (t.isInProgress) return t.touchId.ReadValue();
-            return 0;
-        }
-        return -999; // fallback
-    }
-    void OnMove(InputAction.CallbackContext ctx)
+    override public void OnMove(InputAction.CallbackContext ctx)
     {
         // Determine which pointer moved
         var device = ctx.control.device;
@@ -155,9 +102,6 @@ public class AddCubeOnClick : MonoBehaviour
 
         // Example: convert to world pos (2D)
         var world = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
-
-        // TODO: drag handling per pointer id
-        // Debug.Log($"Move id:{id} pos:{screenPos} world:{world}");
 
         if (isDragging)
         {
@@ -180,18 +124,17 @@ public class AddCubeOnClick : MonoBehaviour
             hasMovedSincePressed = true;
         }
     }
-    void OnPress(InputAction.CallbackContext ctx)
+    override public void OnPress(InputAction.CallbackContext ctx)
     {
         var device = ctx.control.device;
         int id = GetPointerId(device);
-        var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
-
         if (!_press.IsPressed())
         {
             OnRelease(ctx);
             return;
         }
 
+        var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
 
@@ -219,21 +162,8 @@ public class AddCubeOnClick : MonoBehaviour
                 {
                     Vector3 hitPoint = ray.GetPoint(enter);
                     offset = draggingGameObject.transform.position - hitPoint;
-                    // Vector3 pos = hitPoint + offset;
                 }
             }
         }
-        // Your shared handler here (raycast, spawn, select, etc.)
-    }
-
-    static Vector2 ReadDevicePosition(InputDevice device)
-    {
-        var control = device.TryGetChildControl<Vector2Control>("position");
-        return control != null ? control.ReadValue() : Vector2.zero;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
     }
 }
