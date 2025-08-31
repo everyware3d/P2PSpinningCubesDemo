@@ -32,7 +32,7 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
 
     void Start()
     {
-        P2PNetworkedObject.addPeerChangeListener((addOrRemove, peerID) =>
+        P2PNetworkObject.addPeerChangeListener((addOrRemove, peerID) =>
         {
             SharedCube.reloadAssignedColors();
         });
@@ -94,15 +94,12 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
         // Determine which pointer moved
         var device = ctx.control.device;
         int id = GetPointerId(device);
-
         var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
-
         var screenPos = ctx.ReadValue<Vector2>();
         _activePointers[id] = screenPos;
 
         // Example: convert to world pos (2D)
         var world = Camera.main.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, 0f));
-
         if (isDragging)
         {
             Ray ray = mainCamera.ScreenPointToRay(mousePos);
@@ -118,12 +115,16 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
             }
         }
         float dist = (pressedPoint - mousePos).magnitude;
-        // Debug.Log("pressedPoint: " + pressedPoint + " mousePos: " + mousePos + " dist: " + dist);
         if (!hasMovedSincePressed && pressedPoint != null && dist > 3)
         {
             hasMovedSincePressed = true;
         }
     }
+
+    /* OnPress - If a cube is pressed, then start dragging it around
+     *         - If no cube is pressed, keep track of pressedPoint in 
+     *             case its a click (detected OnRelease) to add a cube
+    */
     override public void OnPress(InputAction.CallbackContext ctx)
     {
         var device = ctx.control.device;
@@ -133,16 +134,12 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
             OnRelease(ctx);
             return;
         }
-
         var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
+
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
-
         pressedPoint = mousePos;
         hasMovedSincePressed = false;
-
-        // Debug.Log("pressedPoint: " + pressedPoint);
-
         if (Physics.Raycast(ray, out hit))
         {
             draggingGameObject = hit.transform.gameObject;
