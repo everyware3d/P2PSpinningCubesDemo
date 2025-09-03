@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using P2PPlugin.Network;
 
-public class SharedCube : P2PNetworkObject
+public class SharedCube : P2PNetworkComponent
 {
     static Color[] colorPalette = new Color[] {
         Color.blue,
@@ -36,20 +36,17 @@ public class SharedCube : P2PNetworkObject
     {
         assignedColors.Clear();
         int idx = 0;
-        String logstr = "reloadAssignedColors: allPeerComputerIDs:";
-        foreach (int peerID in P2PNetworkObject.allPeerComputerIDs)
+        foreach (P2PComputer p2pIns in P2PComputer.computersInCreationOrder)
         {
-            logstr += "    " + peerID + " + " + " idx: " + (idx % colorPalette.Length) + "\n";
-            assignedColors.Add(peerID, colorPalette[idx % colorPalette.Length]);
+            assignedColors.Add(p2pIns.sourceComputerID, colorPalette[idx % colorPalette.Length]);
             idx++;
         }
         foreach (SharedCube sharedCube in allSharedCubes.Values)
         {
             setAssignedColor(sharedCube);
         }
-        // Debug.Log(logstr);
         // sets outline color
-        setAssignedColor(null, AddCubeOnClick.Instance.outlineForColor, peerComputerID);
+        setAssignedColor(null, AddCubeOnClick.Instance.outlineForColor, P2PNetworkObjectImpl.peerComputerID);
     }
 
     [P2PSkip, HideInInspector]

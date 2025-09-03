@@ -30,15 +30,28 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
     private SharedCube draggingSharedCube;
     private Vector3 offset;
 
+    private P2PComputer localComputer = null;
+    private bool inserted = false;
     void Start()
     {
-        P2PNetworkObject.addPeerChangeListener((addOrRemove, peerID) =>
+        localComputer = new P2PComputer();
+        P2PComputer.addP2PChangeListener((addOrRemove, p2pIns) =>
         {
             SharedCube.reloadAssignedColors();
         });
-        SharedCube.reloadAssignedColors();
+        // SharedCube.reloadAssignedColors();
     }
 
+    public void Update()
+    {
+        if (P2PNetworkObjectImpl.instantiated && !inserted)
+        {
+            localComputer.Insert();
+            localComputer.AfterInsertRemote();
+            SharedCube.reloadAssignedColors();
+            inserted = true;
+        }
+    }
     override public void OnRelease(InputAction.CallbackContext ctx)
     {
         var device = ctx.control.device;
