@@ -24,7 +24,7 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         _press = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/press");
 
         _point.performed += OnMove;      // fires for mouse move, touch move, pen move
-        _press.performed += OnPress;      // down
+        _press.performed += OnPressImpl;      // down
         _press.canceled += OnRelease;    // up
 
         _point.Enable();
@@ -41,9 +41,20 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Disable();
     }
 
+    public void OnPressImpl(InputAction.CallbackContext ctx)
+    {
+        if (!_press.IsPressed())
+        {
+            OnRelease(ctx);
+        }
+        else
+        {
+            OnPress(ctx);
+        }  
+    }
+    public abstract void OnPress(InputAction.CallbackContext ctx);
     public abstract void OnRelease(InputAction.CallbackContext ctx);
     public abstract void OnMove(InputAction.CallbackContext ctx);
-    public abstract void OnPress(InputAction.CallbackContext ctx);
 
     public static int GetPointerId(InputDevice device)
     {

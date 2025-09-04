@@ -57,11 +57,4 @@ public class P2PComputer : P2PNetworkObject
         computersInCreationOrder.Remove(this);
         fireP2PComputerChanged(false, this);
     }
-    void Start()
-    {
-    }
-    // Update is called once per frame
-    void Update()
-    {
-    }
 }

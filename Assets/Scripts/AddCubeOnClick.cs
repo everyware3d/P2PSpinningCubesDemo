@@ -17,18 +17,19 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
 
     public Camera mainCamera;
     [SerializeField]
-    public GameObject prefabToSpawn;
+    public GameObject prefabToSpawn;     // prefab GameObject created when clicked on an empty space, has SharedCube component
+    public GameObject outlineForColor;   // screen stabilized object that shows the current user's color for cubes
 
-    public GameObject outlineForColor;
+    /* Click and dragging SharedCube states */
+    private bool isDragging = false;   // if an owned cube has been pressed on, the user can drag
+    private bool pressedOnObject = false;  // whether the user pressed on an object
+    private bool hasMovedSincePressed = false;  // used for removing object on release, if the object hasn't moved
 
-    private bool isDragging = false;
-    private bool pressedOnObject = false;
     private Plane dragPlane;
-    private bool hasMovedSincePressed = false;
     private Vector2 pressedPoint;
     private GameObject draggingGameObject;
     private SharedCube draggingSharedCube;
-    private Vector3 offset;
+    private Vector3 offsetObjectToHitPoint;
 
     private P2PComputer localComputer = null;
     private bool inserted = false;
@@ -39,7 +40,6 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
         {
             SharedCube.reloadAssignedColors();
         });
-        // SharedCube.reloadAssignedColors();
     }
 
     public void Update()
@@ -60,7 +60,7 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
 
         var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
 
-        if (draggingGameObject == null && !pressedOnObject && !hasMovedSincePressed)  //} && !hasMovedSincePressed)
+        if (draggingGameObject == null && !pressedOnObject && !hasMovedSincePressed)
         {
             // Convert to world position
             Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, mainCamera.nearClipPlane + 5f));
@@ -80,8 +80,7 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
         }
         else if (isDragging) // if hasn't dragged, delete
         {
-            // SharedCube sharedCube = draggingGameObject.GetComponent<SharedCube>();
-            if (!hasMovedSincePressed && draggingSharedCube != null)
+            if (draggingSharedCube != null && !hasMovedSincePressed)
             {
                 if (draggingSharedCube.isLocal)
                 {
@@ -118,7 +117,7 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
             Ray ray = mainCamera.ScreenPointToRay(mousePos);
             if (dragPlane.Raycast(ray, out float enter))
             {
-                Vector3 pos = ray.GetPoint(enter) + offset;
+                Vector3 pos = ray.GetPoint(enter) + offsetObjectToHitPoint;
                 Vector3 diff = draggingGameObject.transform.position - pos;
                 if (diff.magnitude > 0.0001)
                 {
@@ -142,13 +141,8 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
     {
         var device = ctx.control.device;
         int id = GetPointerId(device);
-        if (!_press.IsPressed())
-        {
-            OnRelease(ctx);
-            return;
-        }
-        var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
 
+        var mousePos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
         RaycastHit hit;
         pressedPoint = mousePos;
@@ -171,7 +165,7 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
                 if (dragPlane.Raycast(ray, out float enter))
                 {
                     Vector3 hitPoint = ray.GetPoint(enter);
-                    offset = draggingGameObject.transform.position - hitPoint;
+                    offsetObjectToHitPoint = draggingGameObject.transform.position - hitPoint;
                 }
             }
         }
