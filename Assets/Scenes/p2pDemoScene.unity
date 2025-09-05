@@ -230,8 +230,8 @@ GameObject:
   - component: {fileID: 330585546}
   - component: {fileID: 330585545}
   - component: {fileID: 330585547}
-  - component: {fileID: 330585549}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585551}
   - component: {fileID: 330585550}
   m_Layer: 0
   m_Name: Main Camera
@@ -369,18 +369,6 @@ MonoBehaviour:
   mainCamera: {fileID: 330585545}
   prefabToSpawn: {fileID: 4008258910738281193, guid: 8a92d32b81b084636a6056560c86cce6, type: 3}
   outlineForColor: {fileID: 156993222}
---- !u!114 &330585549
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ef7b5dacd7284523994ce33eb3e6820, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &330585550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -393,6 +381,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74b803e8ef1a84c979a202f81357a79b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &330585551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ef7b5dacd7284523994ce33eb3e6820, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  multicastAddress: 224.0.0.25
+  multicastPort: 2253
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

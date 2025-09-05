@@ -13,10 +13,9 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
     {
         Instance = this;
     }
-    [SerializeField]
-
+    // [SerializeField]
     public Camera mainCamera;
-    [SerializeField]
+    // [SerializeField]
     public GameObject prefabToSpawn;     // prefab GameObject created when clicked on an empty space, has SharedCube component
     public GameObject outlineForColor;   // screen stabilized object that shows the current user's color for cubes
 
