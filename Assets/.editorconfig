@@ -1,0 +1,5 @@
+root = true
+
+[*.cs]
+# Disable "using directive is unnecessary" warnings
+dotnet_diagnostic.IDE0005.severity = none
