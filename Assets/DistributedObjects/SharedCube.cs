@@ -22,7 +22,7 @@ public class SharedCube : P2PNetworkComponent
     static public void setAssignedColor(SharedCube sc, GameObject go = null, long peerID = 0)
     {
         Color color;
-        Renderer rend = (go != null) ? go.GetComponent<Renderer>() : sc.GetComponent<Renderer>();
+        Renderer rend = (go != null) ? go.GetComponent<Renderer>() : (sc != null) ? sc.GetComponent<Renderer>() : null;
         if (rend == null)
         {
             return;
