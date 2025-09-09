@@ -20,9 +20,10 @@ public class P2PComputer : P2PNetworkObject
 
     public P2PComputer()
     {
+        long pID = P2PObject.peerComputerID;
     }
     public static SortedSet<P2PComputer> computersInCreationOrder = new SortedSet<P2PComputer>(new P2PComputerComparer());
-    public long timeCreated = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+    public long timeCreated = DateTimeOffset.Now.ToUnixTimeMilliseconds(); //only set for source, then distributed
 
 
     static private Dictionary<int, Action<bool, P2PComputer>> p2pComputerChanged = new Dictionary<int, Action<bool, P2PComputer>>();

@@ -41,11 +41,10 @@ public class AddCubeOnClick : MouseAndTouchMonoBehaviour
 
     public void Update()
     {
-        if (P2PNetworkObjectImpl.instantiated && !inserted)
+        if (P2PObject.instantiated && !inserted)
         {
             localComputer.Insert();
             localComputer.AfterInsertRemote();
-            SharedCube.reloadAssignedColors();
             inserted = true;
         }
     }

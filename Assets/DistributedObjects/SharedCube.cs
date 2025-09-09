@@ -46,7 +46,7 @@ public class SharedCube : P2PNetworkComponent
             setAssignedColor(sharedCube);
         }
         // sets outline color
-        setAssignedColor(null, AddCubeOnClick.Instance.outlineForColor, P2PNetworkObjectImpl.peerComputerID);
+        setAssignedColor(null, AddCubeOnClick.Instance.outlineForColor, P2PObject.peerComputerID);
     }
 
     [P2PSkip, HideInInspector]
