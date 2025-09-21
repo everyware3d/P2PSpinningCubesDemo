@@ -105,6 +105,6 @@ public class SharedCube : P2PNetworkComponent
         GameObject newGO = Instantiate(AddCubeOnClick.Instance.prefabToSpawn, Vector3.zero, Quaternion.identity);
         return newGO;
     }
-    static SharedCube() {
-    }
+/*    static SharedCube() {
+    }*/
 }

@@ -112,3 +112,7 @@ VMPlugin*
 P2PPlugin*
 .vscode
 .DS_Store
+bin/
+bin.meta
+obj/
+obj.meta
