@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SpinningCubesDemo.unity
     guid: 38d6da4367c444df5807ffc913b1976f
   m_configObjects:

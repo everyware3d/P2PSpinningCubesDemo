@@ -5,7 +5,7 @@ using P2PPlugin.Network;
 
 public class SharedCube : P2PNetworkComponent
 {
-    static Color[] colorPalette = new Color[] {
+    public static Color[] colorPalette = new Color[] {
         Color.blue,
         Color.green,
         Color.softRed,
@@ -16,9 +16,31 @@ public class SharedCube : P2PNetworkComponent
         Color.softYellow,
         Color.lightCyan
     };
-    static public Dictionary<long, SharedCube> allSharedCubes = new Dictionary<long, SharedCube>();
-    static Dictionary<long, Color> assignedColors = new Dictionary<long, Color>();
+    public static Dictionary<long, SharedCube> allSharedCubes = new Dictionary<long, SharedCube>();
+    public static Dictionary<long, Color> assignedColors = new Dictionary<long, Color>();
 
+    /* setAssignedColor: Sets the color of the SharedCube to the color looked up in assignedColors by the peerID
+
+    */
+    static public void setAssignedColorToRenderer(Renderer rend, long peerID)
+    {
+        Color color;
+        if (!assignedColors.TryGetValue(peerID, out color))
+            color = Color.grey;
+        rend.material.color = color;
+    }
+    static public void setAssignedColorToCube(SharedCube sc)
+    {
+        Renderer rend = sc?.GetComponent<Renderer>();
+        if (rend == null) return;
+        setAssignedColorToRenderer(rend, sc.sourceComputerID);
+    }
+    static public void setAssignedColorToGameObject(GameObject go, long peerID)
+    {
+        Renderer rend = go.GetComponent<Renderer>();
+        if (rend == null) return;
+        setAssignedColorToRenderer(rend, peerID);
+    }
     static public void setAssignedColor(SharedCube sc, GameObject go = null, long peerID = 0)
     {
         Color color;
@@ -31,22 +53,6 @@ public class SharedCube : P2PNetworkComponent
         if (!assignedColors.TryGetValue(pID, out color))
             color = Color.grey;
         rend.material.color = color;
-    }
-    static public void reloadAssignedColors()
-    {
-        assignedColors.Clear();
-        int idx = 0;
-        foreach (P2PComputer p2pIns in P2PComputer.computersInCreationOrder)
-        {
-            assignedColors.Add(p2pIns.sourceComputerID, colorPalette[idx % colorPalette.Length]);
-            idx++;
-        }
-        foreach (SharedCube sharedCube in allSharedCubes.Values)
-        {
-            setAssignedColor(sharedCube);
-        }
-        // sets outline color
-        setAssignedColor(null, AddCubeOnClick.Instance.outlineForColor, P2PObject.peerComputerID);
     }
 
     [P2PSkip, HideInInspector]
@@ -70,16 +76,8 @@ public class SharedCube : P2PNetworkComponent
             _color = value;
         }
     }
-
-
     // NEEDS PUBLIC CONSTRUCTOR
     public SharedCube()
-    {
-    }
-    void Start()
-    {
-    }
-    void Update()
     {
     }
     // AfterDeleteRemote() is only called on instances created from remote computers
@@ -105,6 +103,4 @@ public class SharedCube : P2PNetworkComponent
         GameObject newGO = Instantiate(AddCubeOnClick.Instance.prefabToSpawn, Vector3.zero, Quaternion.identity);
         return newGO;
     }
-/*    static SharedCube() {
-    }*/
 }
