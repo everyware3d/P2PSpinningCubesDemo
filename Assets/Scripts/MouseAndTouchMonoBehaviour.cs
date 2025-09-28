@@ -60,13 +60,13 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
     }
     public void OnMoveImpl(InputAction.CallbackContext ctx)
     {
-        Tuple<Vector2,Vector2> mouseScreenPos = GetMousePositionOnMove(ctx);
-        OnMove(mouseScreenPos.Item1, mouseScreenPos.Item2);
+        ;
+        OnMove(GetMousePositionOnMove(ctx));
     }
 
     public abstract void OnPress(Vector2 mousePos);
     public abstract void OnRelease(Vector2 mousePos);
-    public abstract void OnMove(Vector2 mousePos, Vector2 screenPos);
+    public abstract void OnMove(Vector2 mousePos);
 
     public static int GetPointerId(InputDevice device)
     {
@@ -105,11 +105,11 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         _activePointers.Remove(posPlusId.Item2);
         return posPlusId.Item1;
     }
-    public Tuple<Vector2,Vector2> GetMousePositionOnMove(InputAction.CallbackContext ctx)
+    public Vector2 GetMousePositionOnMove(InputAction.CallbackContext ctx)
     {
         var posPlusId = GetMousePosition(ctx);
         var screenPos = ctx.ReadValue<Vector2>();
         _activePointers[posPlusId.Item2] = screenPos;
-        return new Tuple<Vector2,Vector2>(posPlusId.Item1, screenPos);
+        return posPlusId.Item1;
     }
 }

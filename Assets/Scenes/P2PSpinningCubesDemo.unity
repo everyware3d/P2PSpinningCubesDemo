@@ -230,9 +230,8 @@ GameObject:
   - component: {fileID: 330585546}
   - component: {fileID: 330585545}
   - component: {fileID: 330585547}
-  - component: {fileID: 330585548}
-  - component: {fileID: 330585550}
   - component: {fileID: 330585551}
+  - component: {fileID: 330585548}
   - component: {fileID: 330585552}
   m_Layer: 0
   m_Name: Main Camera
@@ -371,18 +370,6 @@ MonoBehaviour:
   mainCamera: {fileID: 330585545}
   prefabToSpawn: {fileID: 4008258910738281193, guid: 8a92d32b81b084636a6056560c86cce6, type: 3}
   outlineForColor: {fileID: 156993222}
---- !u!114 &330585550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74b803e8ef1a84c979a202f81357a79b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &330585551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -413,7 +400,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df49426bfd2f044d489f2e52cdb02e2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorAssignmentState: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -608,7 +594,7 @@ Transform:
   m_GameObject: {fileID: 1660606431}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.37, y: -1, z: 10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

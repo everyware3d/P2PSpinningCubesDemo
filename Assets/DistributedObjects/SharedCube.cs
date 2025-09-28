@@ -5,17 +5,6 @@ using P2PPlugin.Network;
 
 public class SharedCube : P2PNetworkComponent
 {
-    public static Color[] colorPalette = new Color[] {
-        Color.blue,
-        Color.green,
-        Color.softRed,
-        Color.mediumPurple,
-        Color.orangeRed,
-        Color.beige,
-        Color.turquoise,
-        Color.softYellow,
-        Color.lightCyan
-    };
     public static Dictionary<long, SharedCube> allSharedCubes = new Dictionary<long, SharedCube>();
     public static Dictionary<long, Color> assignedColors = new Dictionary<long, Color>();
 
@@ -91,7 +80,7 @@ public class SharedCube : P2PNetworkComponent
     public void AfterInsertRemote()
     {
         // This is instantiation for instances added from a remote computer, the GameObject should be setup
-        gameObject.transform.SetParent(AddCubeOnClick.Instance.mainCamera.transform);
+        gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.mainCamera.transform);
         gameObject.transform.position = translation;
         gameObject.SetActive(true);
         setAssignedColor(this);
@@ -100,7 +89,7 @@ public class SharedCube : P2PNetworkComponent
     // to get the GameObject that has this SharedCube Component
     static public GameObject spawnNewRemoteObject()
     {
-        GameObject newGO = Instantiate(AddCubeOnClick.Instance.prefabToSpawn, Vector3.zero, Quaternion.identity);
+        GameObject newGO = Instantiate(P2PSharedCubeInteractionHandler.Instance.prefabToSpawn, Vector3.zero, Quaternion.identity);
         return newGO;
     }
 }

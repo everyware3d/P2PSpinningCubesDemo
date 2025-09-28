@@ -107,6 +107,8 @@ InitTestScene*.unity*
 /Artifacts
 /ArtifactDB*
 *~
+!Documentation~
+!Documentation~/**
 VMShared*
 VMPlugin*
 P2PPlugin*

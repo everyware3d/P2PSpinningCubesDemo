@@ -4,10 +4,21 @@ using UnityEngine;
 
 public class AssignSharedCubeColorsTo : MonoBehaviour
 {
+    public static Color[] colorPalette = new Color[] {
+        Color.blue,
+        Color.softGreen,
+        Color.softRed,
+        Color.mediumPurple,
+        Color.orangeRed,
+        Color.beige,
+        Color.turquoise,
+        Color.softYellow,
+        Color.lightCyan
+    };
     public enum ColorAssignmentEnum
     {
         CreationTime = 0,
-//        PeerID
+        //        PeerID
     }
 
     ColorAssignmentEnum colorAssignmentState = ColorAssignmentEnum.CreationTime;
@@ -61,7 +72,7 @@ public class AssignSharedCubeColorsTo : MonoBehaviour
         int idx = 0;
         foreach (P2PComputer p2pIns in computersInCreationOrder)
         {
-            SharedCube.assignedColors.Add(p2pIns.sourceComputerID, SharedCube.colorPalette[idx % SharedCube.colorPalette.Length]);
+            SharedCube.assignedColors.Add(p2pIns.sourceComputerID, colorPalette[idx % colorPalette.Length]);
             idx++;
         }
         foreach (SharedCube sharedCube in SharedCube.allSharedCubes.Values)
@@ -69,11 +80,10 @@ public class AssignSharedCubeColorsTo : MonoBehaviour
             SharedCube.setAssignedColorToCube(sharedCube);
         }
         // sets outline color
-        SharedCube.setAssignedColorToGameObject(AddCubeOnClick.Instance.outlineForColor, P2PObject.peerComputerID);
+        SharedCube.setAssignedColorToGameObject(P2PSharedCubeInteractionHandler.Instance.outlineForColor, P2PObject.peerComputerID);
     }
     private P2PComputer localComputer = null;
     private bool localComputerInserted = false;
-
     void Start()
     {
         localComputer = new P2PComputer();
