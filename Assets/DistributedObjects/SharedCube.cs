@@ -5,12 +5,54 @@ using P2PPlugin.Network;
 
 public class SharedCube : P2PNetworkComponent
 {
+    // by default, fields and properties are distributed
+    // translation is a property with a backing field _translation to demonstrate property distribution
+    // backing field is defined private, not distributed (P2PSkip), and is shown in the 
+    // inspector (SerializeField) as read-only (P2PReadOnly)
+    [P2PSkip, SerializeField, P2PReadOnly]
+    private Vector3 _translation;
+    public Vector3 translation
+    {
+        get => _translation;
+        private set
+        {
+            gameObject.transform.position = value;  // when translation is set (from local or remote), update the GameObject position
+            _translation = value;
+        }
+    }
+    public void SetTranslation(Vector3 t)
+    {
+        translation = t; // translation.set is private to show translation in inspector as read-only
+    }
+
+    /*  Triggers AfterInsertRemote() and AfterDeleteRemote()) called when a SharedCube instance is
+        inserted or deleted from a remote computer. If the related data structures want to be used for all
+        instances, then these methods should be called when the local instances are created or deleted. */
+    public void AfterInsertRemote()
+    {
+        gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.mainCamera.transform);
+        gameObject.transform.position = translation;
+        gameObject.SetActive(true);
+        setAssignedColorToCube(this);
+        allSharedCubes.Add(uniqueID, this);
+    }
+    public void AfterDeleteRemote()
+    {
+        allSharedCubes.Remove(uniqueID);
+        Destroy(gameObject);  // remove the GameObject when the SharedCube instance is deleted remotely
+    }
+
+    // GameObject that has this SharedCube Component, which is instantiated when remote SharedCube instances are created
+    static public GameObject spawnNewRemoteObject()
+    {
+        GameObject newGO = Instantiate(P2PSharedCubeInteractionHandler.Instance.prefabToSpawn, Vector3.zero, Quaternion.identity);
+        return newGO;
+    }
+    /* Data structures to store all SharedCubes and color assignments */
     public static Dictionary<long, SharedCube> allSharedCubes = new Dictionary<long, SharedCube>();
     public static Dictionary<long, Color> assignedColors = new Dictionary<long, Color>();
 
-    /* setAssignedColor: Sets the color of the SharedCube to the color looked up in assignedColors by the peerID
-
-    */
+    /* setAssignedColor: Helper functions to set color to look up in assignedColors by the peerID */
     static public void setAssignedColorToRenderer(Renderer rend, long peerID)
     {
         Color color;
@@ -30,66 +72,9 @@ public class SharedCube : P2PNetworkComponent
         if (rend == null) return;
         setAssignedColorToRenderer(rend, peerID);
     }
-    static public void setAssignedColor(SharedCube sc, GameObject go = null, long peerID = 0)
-    {
-        Color color;
-        Renderer rend = (go != null) ? go.GetComponent<Renderer>() : (sc != null) ? sc.GetComponent<Renderer>() : null;
-        if (rend == null)
-        {
-            return;
-        }
-        long pID = (peerID == 0 && sc != null) ? sc.sourceComputerID : peerID;
-        if (!assignedColors.TryGetValue(pID, out color))
-            color = Color.grey;
-        rend.material.color = color;
-    }
 
-    [P2PSkip, HideInInspector]
-
-    private Vector3 _translation;
-    public Vector3 translation
-    {
-        get => _translation;
-        set
-        {
-            gameObject.transform.position = value;
-            _translation = value;
-        }
-    }
-    private Vector3 _color;
-    public Vector3 color
-    {
-        get => _color;
-        set
-        {
-            _color = value;
-        }
-    }
-    // NEEDS PUBLIC CONSTRUCTOR
+    /* Needs a public constructor with no arguments for remote instantiation */
     public SharedCube()
     {
-    }
-    // AfterDeleteRemote() is only called on instances created from remote computers
-    public void AfterDeleteRemote()
-    {
-        // do not need to check !isLocal, but might be good to double check?
-        allSharedCubes.Remove(uniqueID);
-        Destroy(gameObject);
-    }
-
-    public void AfterInsertRemote()
-    {
-        // This is instantiation for instances added from a remote computer, the GameObject should be setup
-        gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.mainCamera.transform);
-        gameObject.transform.position = translation;
-        gameObject.SetActive(true);
-        setAssignedColor(this);
-        allSharedCubes.Add(uniqueID, this);
-    }
-    // to get the GameObject that has this SharedCube Component
-    static public GameObject spawnNewRemoteObject()
-    {
-        GameObject newGO = Instantiate(P2PSharedCubeInteractionHandler.Instance.prefabToSpawn, Vector3.zero, Quaternion.identity);
-        return newGO;
     }
 }

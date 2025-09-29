@@ -9,8 +9,7 @@ public class ScreenCanvasScript : MonoBehaviour
     public Vector3 screenPixels = new Vector3(0, 0, 0);
 
     public float depth = 5f;
-    
-    /*private GameObject parentObject;*/
+
     void Start()
     {
     }

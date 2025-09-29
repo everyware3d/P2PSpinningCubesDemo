@@ -62,7 +62,7 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
             newGameObject.SetActive(true);
             SharedCube sharedCube = newGameObject.GetComponent<SharedCube>();
             if (sharedCube != null) { // prefabToSpawn should have SharedCube component defined
-                sharedCube.translation = worldPos;
+                sharedCube.SetTranslation(worldPos);
                 sharedCube.Insert();  // inserts into p2p for distribution
                 SharedCube.allSharedCubes.Add(sharedCube.uniqueID, sharedCube);
                 SharedCube.setAssignedColorToCube(sharedCube);
@@ -91,7 +91,7 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
                 Vector3 pos = ray.GetPoint(enter) + offsetObjectToHitPoint;
                 Vector3 diff = draggingGameObject.transform.position - pos;
                 if (diff.magnitude > 0.0001) {
-                    draggingSharedCube.translation = pos;  // good for owned instance, since it will replicate (but using TCP)
+                    draggingSharedCube.SetTranslation(pos);  // good for owned instance, since it will replicate (but using TCP)
                     draggingSharedCube.UpdateAllFields();
                 }
             }
