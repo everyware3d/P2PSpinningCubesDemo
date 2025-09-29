@@ -29,13 +29,11 @@ public class ScreenOutline : MonoBehaviour
         {
             swidth = mainCamera.pixelWidth;
             sheight = mainCamera.pixelHeight;
-            // Debug.Log("ScreenOutline: Update width: " + swidth + " height: " + sheight);
             gameObject.transform.localPosition = Vector3.zero;
             gameObject.transform.localRotation = Quaternion.identity;
             gameObject.transform.localScale = Vector3.one;
             Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
             mesh.Clear();
-
             int[] coords = {
                     0, 0,
                     0, 1,
@@ -57,28 +55,6 @@ public class ScreenOutline : MonoBehaviour
                     1, 3,
                     1, 2
             };
-/*            float[] coords = {
-                    0.0f, 0.0f,
-                    0.0f, 1.0f,
-                    0.1f, 1.0f,
-                    0.1f, 0.0f,
-
-                    0.1f, 0.0f,
-                    0.1f, 0.1f,
-                    1.0f, 0.1f,
-                    1.0f, 0.0f,
-
-                    0.1f, 0.9f,
-                    0.1f, 1.0f,
-                    1.0f, 1.0f,
-                    1.0f, 0.9f,
-
-                    0.9f, 0.1f,
-                    0.9f, 0.9f,
-                    1.0f, 0.9f,
-                    1.0f, 0.1f
-            };*/
-
             int coords_len = coords.Length;
             int nverts = coords_len / 2;
             int nidx = 6 * (nverts / 4);
@@ -90,8 +66,6 @@ public class ScreenOutline : MonoBehaviour
                 float cx = getCoordValue(coords[i3], swidth);
                 float cy = getCoordValue(coords[i3 + 1], sheight);
                 Vector3 screenPos = new Vector3(swidth * (cx - .5f), sheight * (cy - .5f), 0);
-                //Vector3 worldPos = new Vector3(swidth * cx, sheight * cy, 0);
-                // Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(swidth * cx, sheight * cy, mainCamera.nearClipPlane + 5f));
                 list[i] = screenPos;
             }
             for (int i = 0, ri = 0; i < nidx; i += 6, ri += 4)
