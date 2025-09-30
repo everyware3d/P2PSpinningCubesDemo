@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ScreenOutline : MonoBehaviour
@@ -8,7 +10,7 @@ public class ScreenOutline : MonoBehaviour
     void Start()
     {
     }
-    static float getCoordValue(int c, float sz)
+    static float getCoordValue(int c, float sz, float bufferSize)
     {
         switch (c)
         {
@@ -17,9 +19,9 @@ public class ScreenOutline : MonoBehaviour
             case 1:
                 return 1.0f;
             case 2:
-                return 50.0f / sz;
+                return bufferSize / sz;
             case 3:
-                return (sz - 50.0f) / sz;
+                return (sz - bufferSize) / sz;
         }
         return 0;
     }
@@ -60,11 +62,13 @@ public class ScreenOutline : MonoBehaviour
             int nidx = 6 * (nverts / 4);
             Vector3[] list = new Vector3[nverts];
 
+            int maxDim = (int)Math.Max(swidth, sheight);
+            float bufferSize = maxDim / 30;
             int[] tris = new int[nidx];
             for (int i = 0, i3 = 0; i3 < coords_len; i++, i3 += 2)
             {
-                float cx = getCoordValue(coords[i3], swidth);
-                float cy = getCoordValue(coords[i3 + 1], sheight);
+                float cx = getCoordValue(coords[i3], swidth, bufferSize);
+                float cy = getCoordValue(coords[i3 + 1], sheight, bufferSize);
                 Vector3 screenPos = new Vector3(swidth * (cx - .5f), sheight * (cy - .5f), 0);
                 list[i] = screenPos;
             }

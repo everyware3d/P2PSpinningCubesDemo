@@ -56,16 +56,13 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
     override public void OnRelease(Vector2 mouseTouchPos) {
         if (draggingGameObject == null && !pressedOnObject && !hasMovedSincePressed) {
             /* Spawn GameObject, set values on SharedCube component and Insert into P2P Plugin for distribution */
-            Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mouseTouchPos.x, mouseTouchPos.y, mainCamera.nearClipPlane + 5f));
-            GameObject newGameObject = Instantiate(prefabToSpawn, worldPos, Quaternion.identity);
-            newGameObject.transform.SetParent(mainCamera.transform);
-            newGameObject.SetActive(true);
+            GameObject newGameObject = SharedCube.spawnNewRemoteObject();
             SharedCube sharedCube = newGameObject.GetComponent<SharedCube>();
-            if (sharedCube != null) { // prefabToSpawn should have SharedCube component defined
+            if (sharedCube != null) {
+                Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mouseTouchPos.x, mouseTouchPos.y, mainCamera.nearClipPlane + 5f));
                 sharedCube.SetTranslation(worldPos);
                 sharedCube.Insert();  // inserts into p2p for distribution
-                SharedCube.allSharedCubes.Add(sharedCube.uniqueID, sharedCube);
-                SharedCube.setAssignedColorToCube(sharedCube);
+                sharedCube.AfterInsertRemote(); // called explicitly since its only called for remotely created instances
             }
         } else if (isDragging) {
             if (draggingSharedCube != null && !hasMovedSincePressed) {  // if not moved, treat like a click and delete
