@@ -9,7 +9,9 @@ public class SharedCube : P2PNetworkComponent
     // translation is a property with a backing field _translation to demonstrate property distribution
     // backing field is defined private, not distributed (P2PSkip), and is shown in the 
     // inspector (SerializeField) as read-only (P2PReadOnly)
-    [P2PSkip, SerializeField, P2PReadOnly]
+    [P2PSkip]
+    [SerializeField]
+    [P2PReadOnly]
     private Vector3 _translation;
     public Vector3 translation
     {

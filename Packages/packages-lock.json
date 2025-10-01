@@ -1,5 +1,15 @@
 {
   "dependencies": {
+    "com.everyware3d.p2pplugin": {
+      "version": "file:/Users/bell/Desktop/com.everyware3d.p2pplugin-0.0.1-Release-lic.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.unity.visualscripting": "1.9.7",
+        "com.unity.modules.uielements": "2.0.0",
+        "com.unity.inputsystem": "1.14.0"
+      }
+    },
     "com.unity.ai.navigation": {
       "version": "2.0.8",
       "depth": 0,
