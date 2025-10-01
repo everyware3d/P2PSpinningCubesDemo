@@ -73,7 +73,7 @@ The demo consists of three main scripts:
 
 Scripts should be setup and added as components to the scene:
 
-1. **P2P Plugin** - The main P2P plugin script needs to be added somewhere in the scene, such as on the **Main Camera**.  This node should be configured appropriately, as the <a href="README.html?scrollToHighlight=pluginconfig" target="_blank" rel="noreferrer noopener">documentation</a> suggests, with the license and multicast parameters.
+1. **P2P Plugin** - The main P2P plugin script needs to be added somewhere in the scene, such as on the **Main Camera**.  This node should be configured appropriately, as the <a href="https://blainebell.org/P2PPlugin/README.html?scrollToHighlight=pluginconfig" target="_blank" rel="noreferrer noopener">documentation</a> suggests, with the license and multicast parameters.
 2. **P2P Shared Cube Interaction Handler** - Should be added somewhere globally, such as the **Main Camera**.
 3. **Assign Shared Cube Colors To** - Add globally, such as on the **Main Camera**.
 4. **Screen Canvas Script** - Added to **screenCanvas**, sets both transforms for **screenCanvasParent** and **screenCanvas** for screen stabilized coordinate systems, including the **screenCanvas** which is in pixel scale. This script should be configured with the Main Camera.
