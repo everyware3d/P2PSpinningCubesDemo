@@ -162,12 +162,12 @@ The distributed component of this demo is defined in the <a href="Assets/Distrib
 
 <div id="presection2" style="width: fit-content;">
 <mark style="margin: 0;" data-id="begClassDef">
-<pre class="hl"><code class="language-csharp">public class SharedCube : P2PNetworkComponent {
+<pre class=""><code class="language-csharp">public class SharedCube : P2PNetworkComponent {
 </code></pre>
 <mark style="margin: 0;" data-id="fieldsandprops">
-<pre class="hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-12-28"><code class="language-csharp"><div class="hljs-comment"><b>  /* 1. Define fields/properties */</b></div>
+<pre class="hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-8-28"><code class="language-csharp"><div class="hljs-comment"><b>  /* 1. Define fields/properties */</b></div>
   public Vector3 translation;
-</code></pre></mark><mark style="margin: 0;" data-id="triggerfuncs"><pre class="onRelease hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-33-52"><code class="language-csharp"><div class="hljs-comment"><b>  /* 2. Add Trigger Functions for Remote */
+</code></pre></mark><mark style="margin: 0;" data-id="triggerfuncs"><pre class="onRelease hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-30-52"><code class="language-csharp"><div class="hljs-comment"><b>  /* 2. Add Trigger Functions for Remote */
   /*     Insert/Delete of SharedCube     */</b></div>
   public void AfterInsertRemote() {
     Initialize GameObject and populate data structures
@@ -178,7 +178,7 @@ The distributed component of this demo is defined in the <a href="Assets/Distrib
   static public GameObject spawnNewRemoteObject() {
     Create new GameObject from prefab
     with SharedCube component and return
-  }</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-54-76"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 3. Static data structures &ast;&sol;</b></div>
+  }</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-53-76"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 3. Static data structures &ast;&sol;</b></div>
   <div class="hljs-comment"><b>/&ast;   and helper functions to setAssignedColor &ast;/</b></div>
   allSharedCubes = new Dictionary&lt;long, SharedCube&gt;();
   assignedColors = new Dictionary&lt;long, Color&gt;();
@@ -194,7 +194,7 @@ The distributed component of this demo is defined in the <a href="Assets/Distrib
     Lookup and set assigned color of
       source computer to GameObject
   }
-</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-79-81"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 4. Need public constructor for remote instantiation &ast;&sol;</b></div>
+</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-78-81"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 4. Need public constructor for remote instantiation &ast;&sol;</b></div>
   public SharedCube()
   {
   }
