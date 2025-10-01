@@ -118,3 +118,4 @@ bin/
 bin.meta
 obj/
 obj.meta
+ProjectSettings/VirtualProjectsConfig.json
