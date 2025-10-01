@@ -65,9 +65,9 @@ SpinningCubesDemo (Empty GameObject)
 
 The demo consists of three main scripts:
 
-1. <a href="web/SharedCube.cs" id="linktop2pdemo" class="viewer-link language-csharp">**`DistributedObjects/SharedCube.cs`**</a> - Defines the distributed cube object
-2. <a href="web/P2PSharedCubeInteractionHandler.cs" id="linktop2pdemo" class="viewer-link language-csharp">**`Scripts/P2PSharedCubeInteractionHandler.cs`**</a> - Implements the user interactions that add, delete, and move cubes
-3. <a href="web/AssignSharedCubeColorsTo.cs" id="linktop2pdemo" class="viewer-link language-csharp">**`Scripts/AssignSharedCubeColorsTo.cs`**</a> - Responsible for assigning the color of the player and setting the cube colors
+1. <a href="Assets/DistributedObjects/SharedCube.cs" id="linktop2pdemo" class="viewer-link language-csharp">**`DistributedObjects/SharedCube.cs`**</a> - Defines the distributed cube object
+2. <a href="Assets/Scripts/P2PSharedCubeInteractionHandler.cs" id="linktop2pdemo" class="viewer-link language-csharp">**`Scripts/P2PSharedCubeInteractionHandler.cs`**</a> - Implements the user interactions that add, delete, and move cubes
+3. <a href="Assets/Scripts/AssignSharedCubeColorsTo.cs" id="linktop2pdemo" class="viewer-link language-csharp">**`Scripts/AssignSharedCubeColorsTo.cs`**</a> - Responsible for assigning the color of the player and setting the cube colors
 
 #### Script Setup
 
@@ -97,7 +97,7 @@ The **P2P Shared Cube Interaction Handler** should also be configured appropriat
 
 ### 3. Implementation
 
-This demo is mainly driven by one script <b><a href="web/P2PSharedCubeInteractionHandler.cs" id="linktop2pdemo" class="viewer-link language-csharp">P2PSharedCubeInteractionHandler.cs</a></b> that implements the user interaction and distribution.  Pseudo-code for this script implements the three main mouse/touch events:
+This demo is mainly driven by one script <b><a href="Assets/Scripts/P2PSharedCubeInteractionHandler.cs" id="linktop2pdemo" class="viewer-link language-csharp">P2PSharedCubeInteractionHandler.cs</a></b> that implements the user interaction and distribution.  Pseudo-code for this script implements the three main mouse/touch events:
 
 <style>
 
@@ -113,24 +113,24 @@ mark {
 
 <div id="presection" style="width: fit-content;">
 <mark style="margin: 0;" data-id="onPress">
-<pre class="onPress hl" href="web/P2PSharedCubeInteractionHandler.cs" highlight="OnPress"><code class="language-csharp">public void OnPress(Vector2 mouseTouchPos) {
+<pre class="onPress hl" href="Assets/Scripts/P2PSharedCubeInteractionHandler.cs" highlight="OnPress"><code class="language-csharp">public void OnPress(Vector2 mouseTouchPos) {
     if User Presses a cube:
         Set dragging cube to pressed cube
 }
-</code></pre></mark><mark style="margin: 0;" data-id="onRelease"><pre class="onRelease hl" href="web/P2PSharedCubeInteractionHandler.cs" highlight="OnRelease"><code class="language-csharp">public void OnRelease(Vector2 mouseTouchPos){
+</code></pre></mark><mark style="margin: 0;" data-id="onRelease"><pre class="onRelease hl" href="Assets/Scripts/P2PSharedCubeInteractionHandler.cs" highlight="OnRelease"><code class="language-csharp">public void OnRelease(Vector2 mouseTouchPos){
     if no dragging cube:
         Create new cube at mouse/touch position
     else if dragging cube is set and User did not move it:
         Delete dragging cube
 }
-</code></pre></mark><mark style="margin: 0;" data-id="onMove"><pre class="onMove hl" href="web/P2PSharedCubeInteractionHandler.cs" highlight="OnMove"><code class="language-csharp">public void OnMove(Vector2 mouseTouchPos){
+</code></pre></mark><mark style="margin: 0;" data-id="onMove"><pre class="onMove hl" href="Assets/Scripts/P2PSharedCubeInteractionHandler.cs" highlight="OnMove"><code class="language-csharp">public void OnMove(Vector2 mouseTouchPos){
     if dragging cube is set:
         move dragging cube to mouseTouchPos
 }
 </code></pre>
 </div>
 
-This class is a subclass of <a href="web/MouseAndTouchMonoBehaviour.cs" id="linktop2pdemo" class="viewer-link language-csharp">MouseAndTouchMonoBehaviour.cs</a> to support both desktop and mobile platforms.
+This class is a subclass of <a href="Assets/Scripts/MouseAndTouchMonoBehaviour.cs" id="linktop2pdemo" class="viewer-link language-csharp">MouseAndTouchMonoBehaviour.cs</a> to support both desktop and mobile platforms.
 
 Each cube is distributed to all other remote devices:
 
@@ -157,7 +157,7 @@ Inserts, deletes and updates are replicated using a **one-way distribution mecha
 
 #### Defining the Distributed SharedCube
 
-The distributed component of this demo is defined in the <a href="web/SharedCube.cs" id="linktop2pdemo" class="viewer-link language-csharp">**SharedCube**</a> class with 4 main sections:
+The distributed component of this demo is defined in the <a href="Assets/DistributedObjects/SharedCube.cs" id="linktop2pdemo" class="viewer-link language-csharp">**SharedCube**</a> class with 4 main sections:
 
 
 <div id="presection2" style="width: fit-content;">
@@ -165,9 +165,9 @@ The distributed component of this demo is defined in the <a href="web/SharedCube
 <pre class="hl"><code class="language-csharp">public class SharedCube : P2PNetworkComponent {
 </code></pre>
 <mark style="margin: 0;" data-id="fieldsandprops">
-<pre class="hl" href="web/SharedCube.cs" highlight="range-12-26"><code class="language-csharp"><div class="hljs-comment"><b>  /* 1. Define fields/properties */</b></div>
+<pre class="hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-12-26"><code class="language-csharp"><div class="hljs-comment"><b>  /* 1. Define fields/properties */</b></div>
   public Vector3 translation;
-</code></pre></mark><mark style="margin: 0;" data-id="triggerfuncs"><pre class="onRelease hl" href="web/SharedCube.cs" highlight="range-28-50"><code class="language-csharp"><div class="hljs-comment"><b>  /* 2. Add Trigger Functions for Remote */
+</code></pre></mark><mark style="margin: 0;" data-id="triggerfuncs"><pre class="onRelease hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-28-50"><code class="language-csharp"><div class="hljs-comment"><b>  /* 2. Add Trigger Functions for Remote */
   /*     Insert/Delete of SharedCube     */</b></div>
   public void AfterInsertRemote() {
     Initialize GameObject and populate data structures
@@ -178,7 +178,7 @@ The distributed component of this demo is defined in the <a href="web/SharedCube
   static public GameObject spawnNewRemoteObject() {
     Create new GameObject from prefab
     with SharedCube component and return
-  }</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="web/SharedCube.cs" highlight="range-51-74"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 3. Static data structures &ast;&sol;</b></div>
+  }</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-51-74"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 3. Static data structures &ast;&sol;</b></div>
   <div class="hljs-comment"><b>/&ast;   and helper functions to setAssignedColor &ast;/</b></div>
   allSharedCubes = new Dictionary&lt;long, SharedCube&gt;();
   assignedColors = new Dictionary&lt;long, Color&gt;();
@@ -194,7 +194,7 @@ The distributed component of this demo is defined in the <a href="web/SharedCube
     Lookup and set assigned color of
       source computer to GameObject
   }
-</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="web/SharedCube.cs" highlight="range-76-79"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 4. Need public constructor for remote instantiation &ast;&sol;</b></div>
+</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-76-79"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 4. Need public constructor for remote instantiation &ast;&sol;</b></div>
   public SharedCube()
   {
   }
@@ -211,10 +211,10 @@ This SharedCube class enables the Peer-to-Peer distribution and hooks the data i
 
 There are some scripts that support the demo but do not have demo-specific logic:
 
-1. <a href="web/MouseAndTouchMonoBehaviour.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/MouseAndTouchMonoBehaviour.cs`**</a> - A super class of P2PSharedCubeInteractionHandler.cs and allows support of mobile and desktop interaction using the same callbacks.
-2. <a href="web/RotateCube.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/RotateCube.cs`**</a> - A very simple (1-liner) script that rotates cubes on an axis.
-3. <a href="web/ScreenCanvasScript.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/ScreenCanvasScript.cs`**</a> - A script that sets the transforms of both screenCanvas and screenCanvasParent to support screen stabilized coordinate system, which is used for the OutlineShowsColor GameObject.
-4. <a href="web/ScreenOutline.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/ScreenOutline.cs`**</a> - A script that generates the geometry and sets it to the Mesh of the GameObject.
+1. <a href="Assets/Scripts/MouseAndTouchMonoBehaviour.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/MouseAndTouchMonoBehaviour.cs`**</a> - A super class of P2PSharedCubeInteractionHandler.cs and allows support of mobile and desktop interaction using the same callbacks.
+2. <a href="Assets/Scripts/RotateCube.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/RotateCube.cs`**</a> - A very simple (1-liner) script that rotates cubes on an axis.
+3. <a href="Assets/Scripts/ScreenCanvasScript.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/ScreenCanvasScript.cs`**</a> - A script that sets the transforms of both screenCanvas and screenCanvasParent to support screen stabilized coordinate system, which is used for the OutlineShowsColor GameObject.
+4. <a href="Assets/Scripts/ScreenOutline.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/ScreenOutline.cs`**</a> - A script that generates the geometry and sets it to the Mesh of the GameObject.
 
 
 </div>
