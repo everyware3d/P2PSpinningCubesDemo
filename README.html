@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>P2PPlugin Documentation</title>
+
+  <link
+    rel="stylesheet"
+    href="web/github-markdown.min.css"
+  />
+  <link
+    rel="stylesheet"
+    href="web/github.min.css"
+  />
+<!--
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/github-markdown-css@5.5.1/github-markdown.min.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css"
+  />
+-->
+
+  <style>
+    /* Center and size like GitHub */
+    .markdown-body {
+      box-sizing: border-box;
+    }
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+  margin-top: 0;
+  margin-bottom: 0;
+  background-color: white;
+}
+
+.funcbody {
+  display: inline-block;
+  flex-wrap: nowrap;
+  vertical-align: top;
+  margin: 0;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: white;
+}
+
+.funcbodyhighlight {
+  background-color: rgba(195,177,225,0.5) !important;
+}
+
+.funcbody .code-line {
+  display: block;
+  background-color: rgba(255,255,255,0);
+}
+
+.clicked {
+  background-color: rgba(160,120,225,1) !important;
+}
+
+.hljs-comment {
+  color: rgba(0,119,67,1) !important;
+}
+
+  :root { --bg:white; --pane-bg:white; --border:white; --text:#e6edf3; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: var(--left, 48%) 8px 1fr; /* left pane, gutter, right pane */
+    grid-template-rows: 100%;
+    height: 100vh;
+  }
+  .pane { overflow:auto; background:var(--pane-bg); }
+  .pane.left  { border-right: 1px solid var(--border); }
+  .pane.right { border-left: 1px solid var(--border); }
+
+  .content { padding-left:5%; padding-right:5%; padding-top:20px; padding-bottom:20px; }
+  .md { width: 100%; }
+  .md a { color: softblue; text-decoration:none; }
+  .md a:hover { text-decoration:underline; }
+
+  pre { display: inline-block; flex-wrap: nowrap; margin:0;  margin-bottom: 0px; }
+  pre code { display: inline-block; flex-wrap: nowrap; padding:0px; font-size:13px; margin:0; margin-bottom: 0px; }
+  .hint { color:#243; font-size:12px; margin-top:8px; opacity:.8; }
+  pre div { display: inline-block; flex-wrap: nowrap; padding:0px; font-size:13px; margin:0; margin-bottom: 0px; }
+
+.gutter {
+  cursor: col-resize;
+  background: rgba(0,0,0,0.05);        /* default look */
+  transition: background 0.2s;
+}
+
+.gutter:hover {
+  background: rgba(0,0,0,0.1);   /* subtle highlight */
+}
+
+.hl { padding: 5px !important; width: 500px; border: 0 !important; border-radius: 3px; cursor: pointer; }
+.hl:hover { background-color: rgba(195,177,225,1); }
+.h1:clicked { background-color: rgba(160,120,225,1); }
+
+.hln { padding: 5px !important; width: 500px; border: 0 !important; border-radius: 3px;}
+
+  </style>
+</head>
+<body>
+
+  <div id="topdiv">
+    <!-- LEFT: Markdown -->
+    <section id="mdpane" class="pane left">
+      <div id="md" class="markdown-body content md"></div>
+    </section>
+
+    <!-- DRAG HANDLE -->
+    <div id="gutter"
+         class="gutter"
+         role="separator"
+         aria-label="Resize panes"
+         aria-orientation="vertical"
+         aria-valuemin="20"
+         aria-valuemax="80"
+         aria-valuenow="48"
+         tabindex="0"></div>
+
+    <!-- RIGHT: File viewer -->
+    <section id="fileviewer" style="display: none;" class="pane right">
+      <!--header>File Viewer</header-->
+      <div class="content">
+        <pre><code id="viewer" style="position: relative; width: 100%; background-color: rgba(255,255,255,0) !important;">// class="language-csharp" Click a code link in the markdown to load a file here…</code></pre>
+        <!--div class="hint">Tip: add <code>class="viewer-link language-csharp"</code> (or another language) to markdown links.</div-->
+      </div>
+    </section>
+  </div>
+
+
+
+  <!--article id="content" class="markdown-body"-->
+  <!-- Marked for MD -> HTML -->
+  <!-- Optional: highlight.js -->
+  <!--script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script-->
+
+  <script src="web/highlight.min.js"></script>
+  <script src="web/marked.min.js"></script>
+
+  <!--script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script-->
+
+  <script>
+
+function preserveScroll(el, mutate) {
+  const top  = el.scrollTop;
+  const left = el.scrollLeft;
+  mutate();                              // do whatever changes the layout
+  // restore on the next paint to beat reflow
+  requestAnimationFrame(() => {
+    el.scrollTop  = top;
+    el.scrollLeft = left;
+  });
+}
+
+function getTopInContainer(el, container) {
+  const elRect = el.getBoundingClientRect();
+  const cRect  = container.getBoundingClientRect();
+  return (elRect.top - cRect.top) + container.scrollTop;
+}
+
+function fixComments(vc) {
+  var elems = vc.querySelectorAll(`.hljs-comment`);
+  elems.forEach(elem => {
+    const nodeType = elem.tagName.toLowerCase();
+    const index = Array.prototype.indexOf.call(elem.parentElement.children, elem);
+    if (index == 0){
+      const txt = elem.textContent;
+      if (txt.startsWith("/*")){
+        elem.parentElement.classList += " hljs-comment";
+      }
+    }
+  });
+}
+
+function applyHighlightAndLineWrap(codeEl) {
+  // keep a raw copy for parsing (textContent is un-highlighted source)
+  const raw = codeEl.textContent;
+  codeEl.textContent = raw;                 // reset to raw before highlighting
+  delete codeEl.dataset.highlighted;
+  hljs.highlightElement(codeEl);            // syntax highlight
+
+  // wrap each visual line after highlighting
+  const highlighted = codeEl.innerHTML.split(/\r?\n/);
+  const wrapped = highlighted.map((html, i) => {
+    const ln = i + 1;
+    /*var addedClass = '';
+    if (html.indexOf("hljs-comment") >= 0){
+      addedClass += " hljs-comment";
+    }*/
+    return `<span class="code-line" data-ln="${ln}">${html || ' '}</span>`;
+  }).join('\n');
+  codeEl.innerHTML = wrapped;
+  return raw; // return the raw source for parsing functions
+}
+
+function findFunctionsCStyle(src) {
+  const results = [];
+  // Regex: look for a typical function signature ending with '{'
+  const sigRe = new RegExp(
+    String.raw`(^|\n)[ \t]*(?:public|private|protected|internal|static|virtual|override|async|sealed|extern|unsafe|partial|export|function|class|\w+[\s\*\&]+)?` +
+    String.raw`[A-Za-z_\$][\w\$\<\>\[\]\s\*:&]*\s+` +       // return/type-ish
+    String.raw`([A-Za-z_\$][\w\$]*)\s*\([^)]*\)\s*\{`,      // (name)(...) {
+    'g'
+  );
+
+  let m;
+  while ((m = sigRe.exec(src)) !== null) {
+    const name = m[2];
+    // position of '{'
+    const braceIdx = src.indexOf('{', m.index);
+    if (braceIdx < 0) continue;
+
+    // brace-balance to find the matching closing brace
+    let depth = 0, i = braceIdx, endIdx = -1;
+    let lch = ' ';
+    for (; i < src.length; i++) {
+      var ch = src[i];
+      if (ch === '{') depth++;
+      else if (ch === '}') {
+        depth--;
+        if (depth === 0) { endIdx = i; break; }
+      } else if (lch === '/' && ch === '/'){
+        while (ch != '\n'){
+          i++;
+          ch = src[i];
+        }
+        i--;
+      }
+      // skip over simple string literals to avoid braces inside them (lightweight)
+      if (ch === '"' || ch === '\'' || ch === '`') {
+        const q = ch; i++;
+        while (i < src.length && src[i] !== q) {
+          if (src[i] === '\\') i++; // skip escaped
+          i++;
+        }
+      }
+      lch = ch;
+    }
+    if (endIdx < 0) continue;
+
+    // convert indices to 1-based line numbers
+    const declLine = src.slice(0, src.slice(0, braceIdx).lastIndexOf(name)).split('\n').length;
+    const startLine = src.slice(0, braceIdx + 1).split('\n').length;
+    const endLine   = src.slice(0, endIdx + 1).split('\n').length;
+
+    results.push({ name, startLine, endLine, declLine });
+  }
+  return results;
+}
+
+function filterOnAttribute(lst, attrname, attrvalue) {
+  return lst.filter( (nd) => {
+    return nd.getAttribute(attrname) === attrvalue;
+  });
+}
+
+function decorateFunctions(codeEl, funcs) {
+  // mark all lines in each function block
+  const lineEls = codeEl.querySelectorAll('.code-line');
+  for (const fn of funcs) {
+    const declEl = codeEl.querySelector(`.code-line[data-ln="${fn.declLine}"]`);
+    const funcdiv = document.createElement('div');
+    declEl.parentElement.insertBefore(funcdiv, declEl);
+    funcdiv.setAttribute('id', fn.name);
+    funcdiv.setAttribute('func-name', fn.name);
+    funcdiv.classList = 'funcbody';
+    const parEl = declEl.parentNode;
+    parEl.removeChild(declEl);
+    funcdiv.appendChild(declEl);
+    for (let ln = fn.startLine; ln <= fn.endLine; ln++) {
+      const el = codeEl.querySelector(`.code-line[data-ln="${ln}"]`);
+      if (el){
+        el.classList.add('fn-line');
+      }
+      const before = el.previousSibling;
+      const after  = el.nextSibling;
+      [before].forEach(n => {
+        if (n && n.nodeType === Node.TEXT_NODE) {
+          // kill trailing/leading whitespace lines
+          n.nodeValue = n.nodeValue.replace(/^\s+|\s+$/g, '');
+          // if (!n.nodeValue.length) parEl.removeChild(n);
+        }
+      });
+      try {
+        parEl.removeChild(el);
+      } catch (err){
+      }
+      funcdiv.appendChild(el);
+    }
+  }
+
+  // highlight function name tokens in the highlighted HTML
+  // Many highlight.js grammars render names inside .hljs-title or .hljs-function .hljs-title
+  const titleSpans = codeEl.querySelectorAll('.hljs-title, .hljs-function .hljs-title');
+  for (const span of titleSpans) {
+    const nm = span.textContent;
+    if (funcs.some(f => f.name === nm)) {
+      span.classList.add('fn-name');
+      span.setAttribute('func-name', nm);
+    }
+  }
+
+  const titleSpans2 = codeEl.querySelectorAll('.hljs-function .hljs-title');
+  for (const span of titleSpans2) {
+    const nm = span.textContent;
+    const par = span.parentElement;
+    par.setAttribute('func-name', nm);
+  }
+}
+
+    // Configure marked (optional: enable code highlighting)
+    marked.setOptions({
+      highlight(code, lang) {
+        try { return hljs.highlight(code, { language: lang }).value; }
+        catch { return hljs.highlightAuto(code).value; }
+      },
+      breaks: true,
+    });
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const scrollToHighlightID = urlParams.get('scrollToHighlight');
+    console.log("scrollToHighlightID: " + scrollToHighlightID);
+    const filename = urlParams.get('filename') ?? "README.md";
+    var href_loaded = '';
+    // Fetch and render your Markdown file
+    fetch(filename)
+      .then(r => r.text())
+      .then(md => {
+        // If loading untrusted MD, consider sanitizing before inserting!
+        document.getElementById("md").innerHTML = marked.parse(md);
+
+
+        /* ADD Delegate clicks */
+        const mdEl = document.getElementById('md');
+        const viewerCode = document.getElementById('viewer'); 
+        const mdpane = document.getElementById('mdpane'); 
+        mdEl.addEventListener('mouseover', async (e) => {
+          const el = e.target.closest('.hl');
+          if (el){
+            // do something (scroll, open viewer, etc.)
+          }
+        })
+
+        mdEl.addEventListener('click', async (e) => {
+          const a = e.target.closest('a.viewer-link');
+          var href; 
+          if (a){
+            href = a.href;
+          }
+          var highlightID;
+          var linkPos = getTopInContainer(e.target, mdpane);
+          const el = e.target.closest('.hl');
+          var unclicking;
+          if (el){
+            console.log('Clicked highlight with id:', el.dataset.id);
+            const navButtons = document.querySelectorAll('.hl');
+            unclicking = el.classList.contains('clicked');
+            navButtons.forEach(btn => btn.classList.remove('clicked'));
+            if (!unclicking){
+              el.classList.toggle('clicked');
+            }
+            if (!href && el.getAttribute('href')){
+              href = el.getAttribute('href');
+            }
+            highlightID = el.getAttribute('highlight');
+          }
+          if (!href) return; 
+          if (!highlightID){
+            const navButtons = document.querySelectorAll('.hl');
+            const clickedButton = document.querySelector('.clicked');
+            if (clickedButton){
+              navButtons.forEach(btn => btn.classList.remove('clicked'));
+              var curHighEl = viewerCode.querySelector(`.funcbodyhighlight`);
+              if (curHighEl){
+                curHighEl.classList.remove('funcbodyhighlight');
+              }
+              if (href == href_loaded){
+                return;
+              }
+            }
+          }
+
+          e.preventDefault(); 
+          const fileViewer = document.getElementById('fileviewer');
+          const fileViewerShownBefore = (fileViewer.style.display != 'none');
+          const topDiv = document.getElementById('topdiv');
+          if (unclicking || (!highlightID && fileViewer.style.display == 'inline-block') && href == href_loaded){
+             // if user doesn't request something to be highlighted,
+             // and file is already shown, then remove it
+             fileViewer.style.display = 'none';
+             topDiv.className = "";
+             mdEl.style.width = '80%';
+             // viewerCode.setAttribute('data-highlighted','');
+             var curHighEl2 = viewerCode.querySelector(`.funcbodyhighlight`);
+             if (curHighEl2){
+               curHighEl2.classList.remove('funcbodyhighlight');
+               if (curHighEl2.id && curHighEl2.id.startsWith("range-")){
+                 curHighEl2.remove();
+               }
+             }
+             href_loaded = "";
+             requestAnimationFrame(() => {
+               e.target.scrollIntoView({ block: 'center', inline: 'start' });
+             });
+             return;
+          }
+          // viewerCode.className = '';
+          try {
+            if (viewerCode.children.length == 0 || href != href_loaded){
+               viewerCode.textContent = 'Loading…'; 
+               const res = await fetch(href, { cache: 'no-store' });
+               if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+               const text = await res.text();
+               viewerCode.textContent = text;
+               const raw = applyHighlightAndLineWrap(viewerCode);
+               fixComments(viewerCode);
+               const funcs = findFunctionsCStyle(raw);
+               decorateFunctions(viewerCode, funcs);
+               href_loaded = href;
+            }
+            var curHighEl3 = viewerCode.querySelector(`.funcbodyhighlight`);
+            if (curHighEl3){
+               var curHFunc = curHighEl3.getAttribute("func-name");
+               if (!curHFunc){
+                 curHFunc = curHighEl3.getAttribute("id");
+               }
+               if (curHFunc != highlightID){
+                  curHighEl3.classList.remove('funcbodyhighlight');
+                  if (curHighEl3.id && curHighEl3.id.startsWith("range-")){
+                    curHighEl3.remove();
+                  }
+               }
+            }
+            if (highlightID){
+              var highlightHasRange = highlightID.startsWith("range-");
+              const highel = viewerCode.querySelector(`.funcbody[func-name="${highlightID}"]`);
+              if (highel){
+                highel.classList.toggle('funcbodyhighlight');
+                // if highel.classList doesn't have funcbodyhighlight, close it
+                if (!highel.classList.contains('funcbodyhighlight')){
+                   fileViewer.style.display = 'none';
+                   topDiv.className = "";
+                   // viewerCode.className = '';
+                   // viewerCode.textContent = '';
+                   mdEl.style.width = '80%';
+                   var curHighEl4 = viewerCode.querySelector(`.funcbodyhighlight`);
+                   if (curHighEl4){
+                      curHighEl4.classList.remove('funcbodyhighlight');
+                   }
+                   // viewerCode.setAttribute('data-highlighted','');
+                   // should only scroll left panel if just opening
+                   if (!fileViewerShownBefore) {
+                     requestAnimationFrame(() => {
+                       e.target.scrollIntoView({ block: 'center', inline: 'start' });
+                     });
+                   }
+                   return;
+                }
+                requestAnimationFrame(() => {
+                  highel.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'start' });
+                });
+              } else if (highlightHasRange) {
+                requestAnimationFrame(() => {
+                  var hrange = highlightID.split("-");
+                  var hstart = hrange[1];
+                  var hend = hrange[2];
+                  var bnds = [ Infinity, Infinity, -Infinity, -Infinity ];
+                  var viewerBounds = viewerCode.getBoundingClientRect();
+                  for (let ln = hstart; ln <= hend; ln++) {
+                    const el = viewerCode.querySelector(`.code-line[data-ln="${ln}"]`);
+                    var rb = el.getBoundingClientRect();
+                    var x = rb.x - viewerBounds.x;
+                    var y = rb.y - viewerBounds.y;
+                    // console.log("ln: " + ln + " rb: x: " + rb.x  + " y: " + rb.y + " w: " + rb.width + " h: " + rb.height);
+                    bnds = [ Math.min(bnds[0], x), Math.min(bnds[1], y), Math.max(bnds[2], x + rb.width), Math.max(bnds[3], y + rb.height) ]; 
+                  }
+                  const highlightDiv = document.createElement('div');
+                  highlightDiv.id = highlightID;
+                  var styleStr = "display: inline; position: absolute; padding: 0px; background-color: softblue; margin: 0px; left: " + bnds[0] + "px; top: " + bnds[1] + "px; width: " + (bnds[2]-bnds[0]) + "px; height: " + (bnds[3]-bnds[1]) + "px;";
+                  highlightDiv.style = styleStr;
+                  highlightDiv.className = "funcbodyhighlight";
+                  viewerCode.appendChild(highlightDiv);
+                  highlightDiv.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'start' });
+                });
+              } else {
+                requestAnimationFrame(() => {
+                  highel.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'start' });
+                });
+              }
+            }
+          } catch (err) {
+            viewerCode.textContent = `Failed to load file:\n${err.message}`;
+          }
+          fileViewer.style.display = 'inline-block';
+          mdEl.style.width = '100%';
+          topDiv.className = "layout";
+          // viewerCode.className = "language-csharp";
+          initResizable();
+          if (!fileViewerShownBefore) {
+            requestAnimationFrame(() => {
+               var newLinkPos = getTopInContainer(e.target, mdpane);
+               e.target.scrollIntoView({ block: 'center', inline: 'start' });
+            });
+          }
+        });
+
+        if (scrollToHighlightID){
+          requestAnimationFrame(() => {
+            const elToScroll = document.getElementById(scrollToHighlightID);
+            if (elToScroll){
+              elToScroll.scrollIntoView({ block: 'center', inline: 'start' });
+            }
+          });
+        }
+
+      })
+      .catch(err => {
+        document.getElementById("md").textContent = "Failed to load Markdown: " + err;
+      });
+
+  
+/* ---------- Resizable gutter (mouse, touch, keyboard) ---------- */
+function initResizable() {
+  const topdiv = document.getElementById('topdiv');
+  const gutter = document.getElementById('gutter');
+
+  // Restore saved width percentage if present
+  const saved = localStorage.getItem('split:leftPercent');
+  let leftPercent = saved ? parseFloat(saved) : 48; // default
+  apply(leftPercent);
+
+  function apply(pct) {
+    pct = Math.max(20, Math.min(80, pct)); // clamp 20–80%
+    leftPercent = pct;
+    topdiv.style.setProperty('--left', pct + '%');
+    gutter.setAttribute('aria-valuenow', String(Math.round(pct)));
+    localStorage.setItem('split:leftPercent', String(pct));
+  }
+
+  function onPointerDown(clientX) {
+    const rect = topdiv.getBoundingClientRect();
+    const startX = clientX;
+    const startLeftPx = rect.width * (leftPercent / 100);
+
+    function move(ev) {
+      const x = ('touches' in ev) ? ev.touches[0].clientX : ev.clientX;
+      const dx = x - startX;
+      const newLeftPx = startLeftPx + dx;
+      const pct = (newLeftPx / rect.width) * 100;
+      apply(pct);
+      ev.preventDefault();
+    }
+    function up() {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+      window.removeEventListener('touchmove', move);
+      window.removeEventListener('touchend', up);
+    }
+
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+    window.addEventListener('touchmove', move, { passive:false });
+    window.addEventListener('touchend', up);
+  }
+
+  // Mouse
+  gutter.addEventListener('mousedown', (e) => onPointerDown(e.clientX));
+  // Touch
+  gutter.addEventListener('touchstart', (e) => onPointerDown(e.touches[0].clientX), { passive:true });
+
+  // Keyboard accessibility (left/right arrows adjust by 2%, Shift = 8%)
+  gutter.addEventListener('keydown', (e) => {
+    const step = e.shiftKey ? 8 : 2;
+    if (e.key === 'ArrowLeft')  { apply(leftPercent - step); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { apply(leftPercent + step); e.preventDefault(); }
+    if (e.key === 'Home') { apply(20); e.preventDefault(); }
+    if (e.key === 'End')  { apply(80); e.preventDefault(); }
+  });
+};
+
+
+  </script>
+</body>
+</html>
