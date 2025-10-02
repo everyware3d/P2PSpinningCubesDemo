@@ -2,6 +2,13 @@
 
 # Distributed Spinning Cubes Demo - Unity P2P Plugin Tutorial
 
+<div id="hide_on_load">
+
+## Interactive README
+
+<b><a href="https://blainebell.org/P2PSpinningCubesDemo/README.html" target="_blank">An interactive version of this page</a></b> is available online.  Code blocks in the implementation section are interactive and show the related code from the psuedo-code in a split screen on the left.
+</div>
+
 ## Overview
 
 The Spinning Cubes Demo is a simple yet comprehensive example that demonstrates the core functionality of the Unity Peer-to-Peer Networking Plugin. This interactive demo showcases distributed object creation, deletion, synchronization, and real-time manipulation across multiple connected devices.
