@@ -10,7 +10,6 @@ public class AssignSharedCubeColorsTo : MonoBehaviour
         Color.softRed,
         Color.mediumPurple,
         Color.softYellow,
-        Color.beige,
         Color.turquoise,
         Color.lightCyan
     };
