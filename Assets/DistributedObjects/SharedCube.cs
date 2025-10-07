@@ -1,7 +1,7 @@
+using P2PPlugin.Network;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using P2PPlugin.Network;
 
 public class SharedCube : P2PNetworkComponent
 {
@@ -18,7 +18,9 @@ public class SharedCube : P2PNetworkComponent
         get => _translation;
         private set
         {
-            gameObject.transform.position = value;  // when translation is set (from local or remote), update the GameObject position
+            bool isWorld = ScreenOutline.Instance.projectionMode == ScreenOutline.ProjectionMode.World;
+            Vector3 newvalue = new Vector3(value.x, value.y, isWorld ? 0 : value.z);
+            gameObject.transform.position = newvalue; // when translation is set (from local or remote), update the GameObject position
             _translation = value;
         }
     }
@@ -32,8 +34,10 @@ public class SharedCube : P2PNetworkComponent
         instances, then these methods should be called when the local instances are created or deleted. */
     public void AfterInsertRemote()
     {
-        gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.mainCamera.transform);
-        gameObject.transform.position = translation;
+        gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.parentOfSpawnedGOs.transform);
+        bool isWorld = ScreenOutline.Instance.projectionMode == ScreenOutline.ProjectionMode.World;
+        Vector3 newvalue = new Vector3(translation.x, translation.y, isWorld ? 0 : translation.z);
+        gameObject.transform.position = newvalue;
         gameObject.SetActive(true);
         setAssignedColorToCube(this);
         allSharedCubes.Add(uniqueID, this);

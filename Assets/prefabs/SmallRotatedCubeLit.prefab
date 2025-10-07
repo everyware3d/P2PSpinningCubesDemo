@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4757902742619709743}
   - component: {fileID: 4988762967982316655}
   m_Layer: 0
-  m_Name: SmallRotatedCube
+  m_Name: SmallRotatedCubeLit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 7552d1b9330934516936bd384ac869ac, type: 2}
+  - {fileID: 2100000, guid: 28317871bf25252488a4dc4ce0aea10c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

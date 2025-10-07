@@ -14,6 +14,7 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
         Instance = this;
     }
     public Camera mainCamera;
+    public GameObject parentOfSpawnedGOs;
     public GameObject prefabToSpawn;     // prefab GameObject created when clicked on an empty space, has SharedCube component
     public GameObject outlineForColor;   // screen stabilized object that shows the current user's color for cubes
 

@@ -210,6 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d82c5142fdc43ac8719f61b123603d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projectionMode: 0
   mainCamera: {fileID: 330585545}
 --- !u!33 &156993227
 MeshFilter:
@@ -368,6 +369,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 330585545}
+  parentOfSpawnedGO: {fileID: 330585543}
   prefabToSpawn: {fileID: 4008258910738281193, guid: 8a92d32b81b084636a6056560c86cce6, type: 3}
   outlineForColor: {fileID: 156993222}
 --- !u!114 &330585551
