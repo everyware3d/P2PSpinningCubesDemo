@@ -69,7 +69,7 @@ public class ScreenOutline : MonoBehaviour
             {
                 float cx = getCoordValue(coords[i3], swidth, bufferSize);
                 float cy = getCoordValue(coords[i3 + 1], sheight, bufferSize);
-                Vector3 screenPos = new Vector3(swidth * (cx - .5f), sheight * (cy - .5f), 0);
+                Vector3 screenPos = new Vector3((cx - .5f), (cy - .5f), 0);
                 list[i] = screenPos;
             }
             for (int i = 0, ri = 0; i < nidx; i += 6, ri += 4)
@@ -85,6 +85,7 @@ public class ScreenOutline : MonoBehaviour
             mesh.vertices = list;
             mesh.triangles = tris;
             mesh.RecalculateNormals();
+            gameObject.transform.localScale = new Vector3(swidth, sheight, 1.0f);
         }
     }
 }

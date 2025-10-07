@@ -12,17 +12,17 @@ public class SharedCube : P2PNetworkComponent
     [P2PSkip]
     [SerializeField]
     [P2PReadOnly]
-    private Vector3 _translation;
-    public Vector3 translation
+    private Vector2 _translation;  // stored as normalized screen coordinates (0.0 to 1.0)
+    public Vector2 translation
     {
         get => _translation;
         private set
         {
-            gameObject.transform.position = value;  // when translation is set (from local or remote), update the GameObject position
+            gameObject.transform.localPosition = Utils.NormalizedToScreen(value); //  when translation is set (from local or remote), update the GameObject position
             _translation = value;
         }
     }
-    public void SetTranslation(Vector3 t)
+    public void SetTranslation(Vector2 t)
     {
         translation = t; // translation.set is private to show translation in inspector as read-only
     }
@@ -32,8 +32,9 @@ public class SharedCube : P2PNetworkComponent
         instances, then these methods should be called when the local instances are created or deleted. */
     public void AfterInsertRemote()
     {
-        gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.mainCamera.transform);
-        gameObject.transform.position = translation;
+        gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.parentOfSpawnedGOs.transform);
+        gameObject.transform.localPosition = Utils.NormalizedToScreen(translation); // set position based on translation property
+        gameObject.transform.localScale = Vector3.one * 50f;  // scale so that cube is 50x50 pixels on screen
         gameObject.SetActive(true);
         setAssignedColorToCube(this);
         allSharedCubes.Add(uniqueID, this);

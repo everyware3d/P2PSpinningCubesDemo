@@ -6,7 +6,7 @@ public class ScreenCanvasScript : MonoBehaviour
 {
     
     public Camera mainCamera;
-    public Vector3 screenPixels = new Vector3(0, 0, 0);
+    private float swidth = 0, sheight = 0;
 
     public float depth = 5f;
 
@@ -14,20 +14,22 @@ public class ScreenCanvasScript : MonoBehaviour
     {
     }
 
-
-    // Update is called once per frame
     void Update()
     {
-        float width = mainCamera.pixelWidth;
-        float height = mainCamera.pixelHeight;
-        transform.localPosition = new Vector3(width / 2, -height / 2, 0.0f);
+        if (swidth != mainCamera.pixelWidth || sheight != mainCamera.pixelHeight)
+        {
+            swidth = mainCamera.pixelWidth;
+            sheight = mainCamera.pixelHeight;
 
-        Vector3 screenPos = new Vector3(screenPixels.x, screenPixels.y, depth);
-        gameObject.transform.parent.transform.position = mainCamera.ScreenToWorldPoint(screenPos);
+            Vector3 screenPos = new Vector3(swidth / 2f, sheight / 2f, depth);
+            Vector3 worldPos = mainCamera.ScreenToWorldPoint(screenPos);
+            Vector3 pos = mainCamera.transform.InverseTransformPoint(worldPos);
+            gameObject.transform.localPosition = pos;
 
-        // Optional: scale so that 1 unit = 1 pixel at that depth
-        float pixelHeightAtDepth = 2f * depth * Mathf.Tan(mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
-        float worldUnitsPerPixel = pixelHeightAtDepth / Screen.height;
-        gameObject.transform.parent.transform.localScale = new Vector3(1,-1,1) * worldUnitsPerPixel;
+            // scale so that 1 unit = 1 pixel at that depth
+            float pixelHeightAtDepth = 2f * depth * Mathf.Tan(mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+            float worldUnitsPerPixel = pixelHeightAtDepth / sheight;
+            gameObject.transform.localScale = new Vector3(1, 1, 1) * worldUnitsPerPixel;
+        }
     }
 }

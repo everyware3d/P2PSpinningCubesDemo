@@ -14,6 +14,7 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
         Instance = this;
     }
     public Camera mainCamera;
+    public GameObject parentOfSpawnedGOs; // parent GameObject to hold all spawned SharedCube instances
     public GameObject prefabToSpawn;     // prefab GameObject created when clicked on an empty space, has SharedCube component
     public GameObject outlineForColor;   // screen stabilized object that shows the current user's color for cubes
 
@@ -48,29 +49,35 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
                     Vector3 hitPoint = ray.GetPoint(enter);
                     offsetObjectToHitPoint = draggingGameObject.transform.position - hitPoint;
                 }
-            } else {
+            }
+            else {
                 draggingSharedCube = null;
             }
         }
     }
     override public void OnRelease(Vector2 mouseTouchPos) {
         if (draggingGameObject == null && !pressedOnObject && !hasMovedSincePressed) {
-            /* Spawn GameObject, set values on SharedCube component and Insert into P2P Plugin for distribution */
-            GameObject newGameObject = SharedCube.spawnNewRemoteObject();
-            SharedCube sharedCube = newGameObject.GetComponent<SharedCube>();
-            if (sharedCube != null) {
-                Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mouseTouchPos.x, mouseTouchPos.y, mainCamera.nearClipPlane + 5f));
-                sharedCube.SetTranslation(worldPos);
-                sharedCube.Insert();  // inserts into p2p for distribution
-                sharedCube.AfterInsertRemote(); // called explicitly since its only called for remotely created instances
+            if (Utils.IsOnCanvas(mouseTouchPos)) {
+                /* Spawn GameObject, set values on SharedCube component and Insert into P2P Plugin for distribution */
+                GameObject newGameObject = SharedCube.spawnNewRemoteObject();
+                SharedCube sharedCube = newGameObject.GetComponent<SharedCube>();
+                if (sharedCube != null) {
+                    Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mouseTouchPos.x, mouseTouchPos.y, mainCamera.nearClipPlane + 5f));
+                    Vector3 sp = mainCamera.WorldToScreenPoint(worldPos);
+                    sharedCube.SetTranslation(Utils.ScreenToNormalized(sp));
+                    sharedCube.Insert();  // inserts into p2p for distribution
+                    sharedCube.AfterInsertRemote(); // called explicitly since its only called for remotely created instances
+                }
             }
-        } else if (isDragging) {
+        }
+        else if (isDragging) {
             if (draggingSharedCube != null && !hasMovedSincePressed) {  // if not moved, treat like a click and delete
                 if (draggingSharedCube.isLocal) {
                     SharedCube.allSharedCubes.Remove(draggingSharedCube.uniqueID);
                     draggingSharedCube.Delete(); // deletes from p2p to remove from distribution
                     Destroy(draggingGameObject);
-                } else {
+                }
+                else {
                     Debug.Log("Cannot delete Shared Cube that was not created by this user");
                 }
             }
@@ -88,7 +95,8 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
                 Vector3 pos = ray.GetPoint(enter) + offsetObjectToHitPoint;
                 Vector3 diff = draggingGameObject.transform.position - pos;
                 if (diff.magnitude > 0.0001) {
-                    draggingSharedCube.SetTranslation(pos);  // good for owned instance, since it will replicate (but using TCP)
+                    Vector3 sp = mainCamera.WorldToScreenPoint(pos);
+                    draggingSharedCube.SetTranslation(Utils.ScreenToNormalized(sp));
                     draggingSharedCube.UpdateAllFields();
                 }
             }
