@@ -10,7 +10,13 @@ public class Utils
     }
     public static Vector3 NormalizedToScreen(Vector2 norm)
     {   // converts normalized coordinates (0.0 to 1.0) to screen coordinates with (0,0) at center of screen
-        return new Vector3((norm.x - 0.5f) * Camera.main.pixelWidth, (norm.y - 0.5f) * Camera.main.pixelHeight, 0.0f);
+        if (ScreenOutline.Instance.projectionMode == ScreenOutline.ProjectionMode.Screen)
+        {
+            return new Vector3((norm.x - 0.5f) * Camera.main.pixelWidth, (norm.y - 0.5f) * Camera.main.pixelHeight, 0.0f);
+        } else
+        {
+            return new Vector3(norm.x - 0.5f, norm.y - 0.5f, 0.0f);
+        }
     }
     public static Vector2 ScreenToNormalized(Vector3 screen)
     {   // WorldToScreenPoint result already is normalized between 0.0 and pixel dimensions

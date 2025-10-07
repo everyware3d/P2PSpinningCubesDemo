@@ -1,14 +1,32 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.LightTransport;
+using UnityEngine.Rendering;
 
+[DisallowMultipleComponent]
 public class ScreenOutline : MonoBehaviour
 {
+    static public ScreenOutline Instance;
+    public ScreenOutline()
+    {
+        Instance = this;
+    }
+    public enum ProjectionMode { Screen = 0, World };
+    public ProjectionMode projectionMode = ProjectionMode.Screen;
+
+    bool meshCreated = false;
     public Camera mainCamera;
     private float swidth = 0, sheight = 0;
 
     void Start()
     {
+        if (projectionMode == ProjectionMode.Screen)
+        {
+            gameObject.transform.localPosition = Vector3.zero;
+            gameObject.transform.localRotation = Quaternion.identity;
+            gameObject.transform.localScale = Vector3.one;
+        }
     }
     static float getCoordValue(int c, float sz, float bufferSize)
     {
@@ -27,16 +45,35 @@ public class ScreenOutline : MonoBehaviour
     }
     void Update()
     {
-        if (swidth != mainCamera.pixelWidth || sheight != mainCamera.pixelHeight)
+        if (projectionMode == ProjectionMode.World)
         {
-            swidth = mainCamera.pixelWidth;
-            sheight = mainCamera.pixelHeight;
-            gameObject.transform.localPosition = Vector3.zero;
-            gameObject.transform.localRotation = Quaternion.identity;
-            gameObject.transform.localScale = Vector3.one;
-            Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
-            mesh.Clear();
-            int[] coords = {
+            if (!meshCreated)
+            {
+                generateBufferMesh(24, 12, 0.3f);
+                meshCreated = true;
+            }
+        }
+        else
+        {
+            if (swidth != mainCamera.pixelWidth || sheight != mainCamera.pixelHeight)
+            {
+                swidth = mainCamera.pixelWidth;
+                sheight = mainCamera.pixelHeight;
+                int maxDim = (int)Math.Max(swidth, sheight);
+                float bufferSize = maxDim / 30;
+                gameObject.transform.localPosition = Vector3.zero;
+                gameObject.transform.localRotation = Quaternion.identity;
+                gameObject.transform.localScale = Vector3.one;
+                generateBufferMesh(swidth, sheight, bufferSize);
+                gameObject.transform.localScale = new Vector3(swidth, sheight, 1.0f);
+            }
+        }
+    }
+    void generateBufferMesh(float width, float height, float bufferSize)
+    {
+        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        mesh.Clear();
+        int[] coords = {
                     0, 0,
                     0, 1,
                     2, 1,
@@ -57,35 +94,31 @@ public class ScreenOutline : MonoBehaviour
                     1, 3,
                     1, 2
             };
-            int coords_len = coords.Length;
-            int nverts = coords_len / 2;
-            int nidx = 6 * (nverts / 4);
-            Vector3[] list = new Vector3[nverts];
+        int coords_len = coords.Length;
+        int nverts = coords_len / 2;
+        int nidx = 6 * (nverts / 4);
+        Vector3[] list = new Vector3[nverts];
 
-            int maxDim = (int)Math.Max(swidth, sheight);
-            float bufferSize = maxDim / 30;
-            int[] tris = new int[nidx];
-            for (int i = 0, i3 = 0; i3 < coords_len; i++, i3 += 2)
-            {
-                float cx = getCoordValue(coords[i3], swidth, bufferSize);
-                float cy = getCoordValue(coords[i3 + 1], sheight, bufferSize);
-                Vector3 screenPos = new Vector3((cx - .5f), (cy - .5f), 0);
-                list[i] = screenPos;
-            }
-            for (int i = 0, ri = 0; i < nidx; i += 6, ri += 4)
-            {
-                tris[i] = ri;
-                tris[i + 1] = ri + 1;
-                tris[i + 2] = ri + 2;
-                tris[i + 3] = ri;
-                tris[i + 4] = ri + 2;
-                tris[i + 5] = ri + 3;
-            }
-
-            mesh.vertices = list;
-            mesh.triangles = tris;
-            mesh.RecalculateNormals();
-            gameObject.transform.localScale = new Vector3(swidth, sheight, 1.0f);
+        int[] tris = new int[nidx];
+        for (int i = 0, i3 = 0; i3 < coords_len; i++, i3 += 2)
+        {
+            float cx = getCoordValue(coords[i3], width, bufferSize);
+            float cy = getCoordValue(coords[i3 + 1], height, bufferSize);
+            Vector3 screenPos = new Vector3((cx - .5f), (cy - .5f), 0);
+            list[i] = screenPos;
         }
+        for (int i = 0, ri = 0; i < nidx; i += 6, ri += 4)
+        {
+            tris[i] = ri;
+            tris[i + 1] = ri + 1;
+            tris[i + 2] = ri + 2;
+            tris[i + 3] = ri;
+            tris[i + 4] = ri + 2;
+            tris[i + 5] = ri + 3;
+        }
+
+        mesh.vertices = list;
+        mesh.triangles = tris;
+        mesh.RecalculateNormals();
     }
 }

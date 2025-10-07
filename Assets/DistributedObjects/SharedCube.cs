@@ -1,7 +1,7 @@
+using P2PPlugin.Network;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using P2PPlugin.Network;
 
 public class SharedCube : P2PNetworkComponent
 {
@@ -32,9 +32,10 @@ public class SharedCube : P2PNetworkComponent
         instances, then these methods should be called when the local instances are created or deleted. */
     public void AfterInsertRemote()
     {
+        bool isWorld = ScreenOutline.Instance.projectionMode == ScreenOutline.ProjectionMode.World;
         gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.parentOfSpawnedGOs.transform);
         gameObject.transform.localPosition = Utils.NormalizedToScreen(translation); // set position based on translation property
-        gameObject.transform.localScale = Vector3.one * 50f;  // scale so that cube is 50x50 pixels on screen
+        gameObject.transform.localScale = Vector3.one * GetCubeSize();  // scale so that cube is 50x50 pixels on screen
         gameObject.SetActive(true);
         setAssignedColorToCube(this);
         allSharedCubes.Add(uniqueID, this);
@@ -79,5 +80,17 @@ public class SharedCube : P2PNetworkComponent
     /* Needs a public constructor with no arguments for remote instantiation */
     public SharedCube()
     {
+    }
+    public float GetCubeSize()
+    {
+        if (ScreenOutline.Instance.projectionMode == ScreenOutline.ProjectionMode.World)
+        {
+            return 0.025f;
+        }
+        else
+        {
+            int maxDim = (int)Math.Max(Camera.main.pixelWidth, Camera.main.pixelHeight);
+            return maxDim / 30.0f;
+        }
     }
 }

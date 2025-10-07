@@ -210,6 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d82c5142fdc43ac8719f61b123603d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projectionMode: 0
   mainCamera: {fileID: 330585545}
 --- !u!33 &156993227
 MeshFilter:
