@@ -1,7 +1,9 @@
+
+#if OCULUS_SDK
 using Oculus.Interaction;
 using UnityEngine;
 
-public class PickableEvents : MonoBehaviour
+public class XRSharedCubePickable : MonoBehaviour
 {
     Color origColor;
     bool isHovering = false;
@@ -125,3 +127,4 @@ public class PickableEvents : MonoBehaviour
         }            
     }
 }
+#endif

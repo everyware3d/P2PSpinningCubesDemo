@@ -1,9 +1,12 @@
+
+#if OCULUS_SDK
+
 using UnityEngine;
 
 using Oculus.Interaction;
 using UnityEngine;
 
-public class RayClickListener : MonoBehaviour
+public class RayInteractorListenerForXRSharedCubes : MonoBehaviour
 {
    [SerializeField] private RayInteractor rayInteractor;
 
@@ -55,3 +58,5 @@ public class RayClickListener : MonoBehaviour
         }
     }
 }
+
+#endif
