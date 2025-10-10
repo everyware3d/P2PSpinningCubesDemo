@@ -1,5 +1,5 @@
 
-#if OCULUS_SDK
+#if USING_META_SDK
 using Oculus.Interaction;
 using UnityEngine;
 

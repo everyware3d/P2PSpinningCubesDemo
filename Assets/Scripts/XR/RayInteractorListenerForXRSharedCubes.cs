@@ -1,5 +1,5 @@
 
-#if OCULUS_SDK
+#if USING_META_SDK
 
 using UnityEngine;
 
@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class RayInteractorListenerForXRSharedCubes : MonoBehaviour
 {
-   [SerializeField] private RayInteractor rayInteractor;
+    public RayInteractor rayInteractor;
 
     private void Awake()
     {
