@@ -5,11 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/SpinningCubesDemo.unity
-    guid: 38d6da4367c444df5807ffc913b1976f
+  - enabled: 1
+    path: Assets/Scenes/MetaP2PSpinningCubesDemo.unity
+    guid: 3da29910bea4a4c47bb0736c54c35601
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 045b7e18f90bdae4ab1e4ff6809452ce, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+    com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: 8f6f983c88adbd94185529ec3c3abafa, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 3f309f424a1430749bcd949638874aad, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: b5d80c5758db03148846ad681091c481, type: 2}
   m_UseUCBPForAssetBundles: 0

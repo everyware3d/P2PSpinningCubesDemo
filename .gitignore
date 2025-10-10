@@ -120,3 +120,6 @@ bin.meta
 obj/
 obj.meta
 ProjectSettings/VirtualProjectsConfig.json
+/[Aa]ssets/CompositionLayers*
+/[Aa]ssets/Resources*
+/[Aa]ssets/TextMesh\ Pro*
