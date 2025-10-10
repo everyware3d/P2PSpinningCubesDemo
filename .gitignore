@@ -123,3 +123,4 @@ ProjectSettings/VirtualProjectsConfig.json
 /[Aa]ssets/CompositionLayers*
 /[Aa]ssets/Resources*
 /[Aa]ssets/TextMesh\ Pro*
+/Packages/packages-lock.json
