@@ -1,5 +1,5 @@
 
-#if USING_META_SDK
+#if UNITY_ANDROID && UNITY_META_QUEST
 using Oculus.Interaction;
 using UnityEngine;
 
