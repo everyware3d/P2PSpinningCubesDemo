@@ -1,5 +1,5 @@
 
-#if UNITY_ANDROID && UNITY_META_QUEST
+#if USING_META_SDK
 
 using UnityEngine;
 
