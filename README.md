@@ -11,7 +11,8 @@
 
 ## Overview
 
-The Spinning Cubes Demo is a simple yet comprehensive example that demonstrates the core functionality of the Unity Peer-to-Peer Networking Plugin. This interactive demo showcases distributed object creation, deletion, synchronization, and real-time manipulation across multiple connected devices.
+The Spinning Cubes Demo is a simple yet comprehensive example that
+demonstrates the core functionality of the <a href="https://blainebell.org/P2PPlugin/README.html" target="_blank">Unity Peer-to-Peer Networking Plugin</a>. This interactive demo showcases distributed object creation, deletion, synchronization, and real-time manipulation across multiple connected devices.
 
 In this demo, each connected player can:
 
@@ -174,7 +175,7 @@ The distributed component of this demo is defined in the <a href="Assets/Distrib
 <mark style="margin: 0;" data-id="fieldsandprops">
 <pre class="hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-8-28"><code class="language-csharp"><div class="hljs-comment"><b>  /* 1. Define fields/properties */</b></div>
   public Vector3 translation;
-</code></pre></mark><mark style="margin: 0;" data-id="triggerfuncs"><pre class="onRelease hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-30-52"><code class="language-csharp"><div class="hljs-comment"><b>  /* 2. Add Trigger Functions for Remote */
+</code></pre></mark><mark style="margin: 0;" data-id="triggerfuncs"><pre class="onRelease hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-30-54"><code class="language-csharp"><div class="hljs-comment"><b>  /* 2. Add Trigger Functions for Remote */
   /*     Insert/Delete of SharedCube     */</b></div>
   public void AfterInsertRemote() {
     Initialize GameObject and populate data structures
@@ -185,7 +186,7 @@ The distributed component of this demo is defined in the <a href="Assets/Distrib
   static public GameObject spawnNewRemoteObject() {
     Create new GameObject from prefab
     with SharedCube component and return
-  }</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-53-76"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 3. Static data structures &ast;&sol;</b></div>
+  }</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-55-78"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 3. Static data structures &ast;&sol;</b></div>
   <div class="hljs-comment"><b>/&ast;   and helper functions to setAssignedColor &ast;/</b></div>
   allSharedCubes = new Dictionary&lt;long, SharedCube&gt;();
   assignedColors = new Dictionary&lt;long, Color&gt;();
@@ -201,7 +202,7 @@ The distributed component of this demo is defined in the <a href="Assets/Distrib
     Lookup and set assigned color of
       source computer to GameObject
   }
-</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-78-81"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 4. Need public constructor for remote instantiation &ast;&sol;</b></div>
+</code></pre></mark><mark style="margin: 0;" data-id="dsandhelpers"><pre class="onMove hl" href="Assets/DistributedObjects/SharedCube.cs" highlight="range-80-83"><code class="language-csharp">  <div class="hljs-comment"><b>&sol;&ast; 4. Need public constructor for remote instantiation &ast;&sol;</b></div>
   public SharedCube()
   {
   }
