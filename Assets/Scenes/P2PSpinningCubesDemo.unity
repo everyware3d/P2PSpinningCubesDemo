@@ -386,6 +386,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   multicastAddress: 224.0.0.25
   multicastPort: 2253
+  doNotDestroyOnLoad: 0
   m_checkLicenseOnStart: 1
   emailString: blaine@blainebell.org
   password:
