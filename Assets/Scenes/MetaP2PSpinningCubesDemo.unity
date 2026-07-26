@@ -742,10 +742,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5c4ab79d903d489d93aad2babc79a0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCamera: {fileID: 263687395}
+  leftControllerTransform: {fileID: 6610120564966063699}
+  rightControllerTransform: {fileID: 7071716412442649663}
+  outlineForColor: {fileID: 1249272063}
   parentOfSpawnedGOs: {fileID: 1249272063}
   prefabToSpawn: {fileID: 4008258910738281193, guid: 604cf865f8e66f74baf37eb3a38a3d32, type: 3}
-  outlineForColor: {fileID: 1249272063}
 --- !u!114 &838835160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -760,6 +761,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   multicastAddress: 224.0.0.25
   multicastPort: 2253
+  doNotDestroyOnLoad: 0
   m_checkLicenseOnStart: 1
   emailString: blaine.bell@gmail.com
   password:
@@ -2586,7 +2588,7 @@ MonoBehaviour:
   _gameObjects:
   - {fileID: 3928705923781663023}
   _monoBehaviours:
-  - {fileID: 8891161276746160731}
+  - {fileID: 0}
 --- !u!114 &556529927341785703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4302,7 +4304,6 @@ MonoBehaviour:
   _gripCollider: {fileID: 6057420185153594930}
   _pinchPoint: {fileID: 7461159011081207497}
   _pinchCollider: {fileID: 772441393152063210}
-  _velocityCalculator: {fileID: 0}
 --- !u!114 &1021936096331983085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5060,9 +5061,7 @@ MonoBehaviour:
   _data: {fileID: 0}
   _selector: {fileID: 4812058096481568710}
   _rigidbody: {fileID: 5805659806675341767}
-  _grabCenter: {fileID: 73911182509933046}
   _grabTarget: {fileID: 0}
-  _velocityCalculator: {fileID: 0}
 --- !u!1 &1234589113575312592
 GameObject:
   m_ObjectHideFlags: 0
@@ -7439,7 +7438,6 @@ MonoBehaviour:
   _grabOrigin: {fileID: 8658843909099226672}
   _gripPoint: {fileID: 8086765661811285110}
   _pinchPoint: {fileID: 1832475295870573865}
-  _velocityCalculator: {fileID: 0}
   _distantCandidateComputer:
     _detectionFrustums:
       _selectionFrustum: {fileID: 93071074517649261}
@@ -7460,7 +7458,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 2829396699247280231}
-  _hmd: {fileID: 1631828763862085836}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &1832475297484846155
 Transform:
   m_ObjectHideFlags: 0
@@ -8222,6 +8221,8 @@ MonoBehaviour:
   _hoverColor: {r: 1, g: 1, b: 1, a: 0.6313726}
   _selectColor: {r: 1, g: 1, b: 1, a: 0.9098039}
   _outlineColor: {r: 0.18823531, g: 0.2392157, b: 0.3254902, a: 0.8745098}
+  _hoverSize: 0.48
+  _selectSize: 0.4
   _offsetAlongNormal: 0.005
   _playerHead: {fileID: 5174769607686643069}
 --- !u!4 &2033332425641551566
@@ -9038,7 +9039,6 @@ MonoBehaviour:
   _gripCollider: {fileID: 5086336973186883927}
   _pinchPoint: {fileID: 8434493889465956780}
   _pinchCollider: {fileID: 1746913201439895951}
-  _velocityCalculator: {fileID: 0}
 --- !u!114 &2254349714156837458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9739,7 +9739,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 2223683598105696779}
-  _hmd: {fileID: 3404016121756281504}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &2375182263437291047
 Transform:
   m_ObjectHideFlags: 0
@@ -9778,7 +9779,6 @@ MonoBehaviour:
   _grabOrigin: {fileID: 4733971044859501660}
   _gripPoint: {fileID: 5305772231818298906}
   _pinchPoint: {fileID: 2375182263969417029}
-  _velocityCalculator: {fileID: 0}
   _distantCandidateComputer:
     _detectionFrustums:
       _selectionFrustum: {fileID: 4094531393810521345}
@@ -10728,6 +10728,8 @@ MonoBehaviour:
   _hoverColor: {r: 1, g: 1, b: 1, a: 0.6313726}
   _selectColor: {r: 1, g: 1, b: 1, a: 0.9098039}
   _outlineColor: {r: 0.18823531, g: 0.2392157, b: 0.3254902, a: 0.8745098}
+  _hoverSize: 0.48
+  _selectSize: 0.4
   _offsetAlongNormal: 0.005
   _playerHead: {fileID: 9099642581580089105}
 --- !u!4 &2715613592397954210
@@ -11510,7 +11512,6 @@ MonoBehaviour:
   _gripCollider: {fileID: 9155353750037248827}
   _pinchPoint: {fileID: 5518390297449325504}
   _pinchCollider: {fileID: 2424728188626938851}
-  _velocityCalculator: {fileID: 0}
 --- !u!4 &2819205359440074371
 Transform:
   m_ObjectHideFlags: 0
@@ -11992,9 +11993,7 @@ MonoBehaviour:
   _data: {fileID: 0}
   _selector: {fileID: 8890044547748093354}
   _rigidbody: {fileID: 7568807046449613739}
-  _grabCenter: {fileID: 4079840054901529498}
   _grabTarget: {fileID: 0}
-  _velocityCalculator: {fileID: 0}
 --- !u!114 &2921036989028834190
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14915,7 +14914,6 @@ MonoBehaviour:
   _gripCollider: {fileID: 7892649251457711198}
   _pinchPoint: {fileID: 6778842863893275813}
   _pinchCollider: {fileID: 3684039495807478918}
-  _velocityCalculator: {fileID: 0}
 --- !u!1 &3788921914663336708
 GameObject:
   m_ObjectHideFlags: 0
@@ -20354,9 +20352,7 @@ MonoBehaviour:
   _maxIterationsPerFrame: 3
   _data: {fileID: 0}
   _selector: {fileID: 6228455688497215306}
-  _grabCenter: {fileID: 853715642867264716}
   _grabTarget: {fileID: 0}
-  _velocityCalculator: {fileID: 0}
   _distantCandidateComputer:
     _detectionFrustums:
       _selectionFrustum: {fileID: 3555981208871461302}
@@ -21393,6 +21389,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 7857645055471597515}
+  _grabAPI: {fileID: 0}
 --- !u!4 &4972771469279574298
 Transform:
   m_ObjectHideFlags: 0
@@ -22337,7 +22334,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08f7cfb1f9629da4494ac0840f3a3cfd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hand: {fileID: 1697441909472422475}
   _fingerFeatureStateProvider: {fileID: 5844005342743216249}
   _shapes:
   - {fileID: 11400000, guid: a4f76ee9a4bceba4385d001e7ee27427, type: 2}
@@ -24216,7 +24212,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 2852863420764897966}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!1 &5649874816243277620
 GameObject:
   m_ObjectHideFlags: 0
@@ -24390,8 +24387,7 @@ MonoBehaviour:
   _data: {fileID: 0}
   _selector: {fileID: 5649874816864363209}
   _teleportArc: {fileID: 5649874817244536403}
-  _equalDistanceThreshold: 0.1
-  _hmd: {fileID: 8091271934540816452}
+  _context: {fileID: 0}
 --- !u!114 &5649874817244536403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24707,7 +24703,6 @@ MonoBehaviour:
   _grabOrigin: {fileID: 3440027527310459606}
   _gripPoint: {fileID: 2859500860610402448}
   _pinchPoint: {fileID: 5690659823000394191}
-  _velocityCalculator: {fileID: 0}
   _distantCandidateComputer:
     _detectionFrustums:
       _selectionFrustum: {fileID: 6259350105161253771}
@@ -24746,7 +24741,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 8129845228485067905}
-  _hmd: {fileID: 4697925090183902250}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &5690659821394522285
 Transform:
   m_ObjectHideFlags: 0
@@ -30847,7 +30843,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 3823946673777067467}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!1 &6700314483852776537
 GameObject:
   m_ObjectHideFlags: 0
@@ -33385,7 +33382,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 903382945123475367}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!114 &7320331537209812250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39290,8 +39288,7 @@ MonoBehaviour:
   _data: {fileID: 0}
   _selector: {fileID: 1810466406697687133}
   _teleportArc: {fileID: 8185593983370226745}
-  _equalDistanceThreshold: 0.1
-  _hmd: {fileID: 4144216588184854602}
+  _context: {fileID: 0}
 --- !u!4 &8185593983370226744
 Transform:
   m_ObjectHideFlags: 0
@@ -41143,7 +41140,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: accc199999fae1d42bcb90d0161b8bab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayInteractor: {fileID: 4080277043105920240}
 --- !u!4 &8518018246846235709
 Transform:
   m_ObjectHideFlags: 0
@@ -41378,7 +41374,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 5281339265668488941}
-  _hmd: {fileID: 8694890430173654598}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &8602259880208837313
 Transform:
   m_ObjectHideFlags: 0
@@ -41435,7 +41432,6 @@ MonoBehaviour:
   _grabOrigin: {fileID: 1595817924706703546}
   _gripPoint: {fileID: 2177184601672549116}
   _pinchPoint: {fileID: 8602259879668302755}
-  _velocityCalculator: {fileID: 0}
   _distantCandidateComputer:
     _detectionFrustums:
       _selectionFrustum: {fileID: 8018018104482142695}
@@ -41791,8 +41787,7 @@ MonoBehaviour:
   _data: {fileID: 0}
   _selector: {fileID: 8642537478334445733}
   _teleportArc: {fileID: 8642537476922459199}
-  _equalDistanceThreshold: 0.1
-  _hmd: {fileID: 5319294085429426728}
+  _context: {fileID: 0}
 --- !u!114 &8642537476922459199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -42056,7 +42051,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 2166087484832356546}
-  _hmd: {fileID: 0}
+  _pinchGrabAPI: {fileID: 0}
+  _palmGrabAPI: {fileID: 0}
 --- !u!4 &8648051199186782177
 Transform:
   m_ObjectHideFlags: 0
@@ -42103,9 +42099,7 @@ MonoBehaviour:
   _maxIterationsPerFrame: 3
   _data: {fileID: 0}
   _selector: {fileID: 8068196873294114086}
-  _grabCenter: {fileID: 3621198559614072480}
   _grabTarget: {fileID: 0}
-  _velocityCalculator: {fileID: 0}
   _distantCandidateComputer:
     _detectionFrustums:
       _selectionFrustum: {fileID: 630916455281507290}
@@ -45655,17 +45649,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4ad4f1ddee798f45a20be4efda35c8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8891161276746160731 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8596244716211811157, guid: 46fdef3df9a5a354caf7692f85e5eff2, type: 3}
-  m_PrefabInstance: {fileID: 8891161276746160728}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d2705674196dfc4da9c25fbacda72d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &8892931472912011145
 GameObject:
   m_ObjectHideFlags: 0
@@ -45818,7 +45801,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: accc199999fae1d42bcb90d0161b8bab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayInteractor: {fileID: 87850326043766428}
 --- !u!1001 &8925347375434713426
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -46156,6 +46138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hand: {fileID: 6094465091867176359}
+  _grabAPI: {fileID: 0}
 --- !u!4 &8978700394941440886
 Transform:
   m_ObjectHideFlags: 0

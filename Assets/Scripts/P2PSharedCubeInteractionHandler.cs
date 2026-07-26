@@ -13,10 +13,8 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
     {
         Instance = this;
     }
-    public Camera mainCamera;
     public GameObject parentOfSpawnedGOs; // parent GameObject to hold all spawned SharedCube instances
     public GameObject prefabToSpawn;     // prefab GameObject created when clicked on an empty space, has SharedCube component
-    public GameObject outlineForColor;   // screen stabilized object that shows the current user's color for cubes
 
     /* Click and dragging SharedCube states */
     private bool isDragging = false;   // if an owned cube has been pressed on, the user can drag
@@ -29,13 +27,19 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
     private SharedCube draggingSharedCube;
     private Vector3 offsetObjectToHitPoint;
 
+    private float _movementThresholdInPixels = 3f;
+
+    void Start()
+    {
+        _movementThresholdInPixels = Mathf.Max(Camera.main.pixelWidth, Camera.main.pixelHeight) * 0.03f;  // 1% of the larger dimension
+    }
     /* OnPress - If a cube is pressed, then start dragging it around
      *         - If no cube is pressed, keep track of pressedPoint in 
      *             case its a click (detected OnRelease) to add a cube
     */
-    override public void OnPress(Vector2 mouseTouchPos) {
-        Ray ray = mainCamera.ScreenPointToRay(mouseTouchPos);
+    override public void OnPress(Vector2 mouseTouchPos, Ray ray) {
         RaycastHit hit;
+
         pressedPoint = mouseTouchPos;
         hasMovedSincePressed = false;
         if (Physics.Raycast(ray, out hit)) {  // if click hits an object/cube
@@ -44,7 +48,10 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
             if (draggingSharedCube.isLocal) { // restrict cubes that aren't owned by this node (for now)
                 isDragging = true;
                 draggingGameObject = hit.transform.gameObject;
-                dragPlane = new Plane(-mainCamera.transform.forward, draggingGameObject.transform.position);
+                dragPlane = new Plane(
+                    outlineForColor.transform.forward,
+                    outlineForColor.transform.position
+                );
                 if (dragPlane.Raycast(ray, out float enter)) {
                     Vector3 hitPoint = ray.GetPoint(enter);
                     offsetObjectToHitPoint = draggingGameObject.transform.position - hitPoint;
@@ -55,16 +62,14 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
             }
         }
     }
-    override public void OnRelease(Vector2 mouseTouchPos) {
+    override public void OnRelease(Vector2 mouseTouchPos, Ray ray) {
         if (draggingGameObject == null && !pressedOnObject && !hasMovedSincePressed) {
             if (Utils.IsOnCanvas(mouseTouchPos)) {
                 /* Spawn GameObject, set values on SharedCube component and Insert into P2P Plugin for distribution */
                 GameObject newGameObject = SharedCube.spawnNewRemoteObject();
                 SharedCube sharedCube = newGameObject.GetComponent<SharedCube>();
                 if (sharedCube != null) {
-                    Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mouseTouchPos.x, mouseTouchPos.y, mainCamera.nearClipPlane + 5f));
-                    Vector3 sp = mainCamera.WorldToScreenPoint(worldPos);
-                    sharedCube.SetTranslation(Utils.ScreenToNormalized(sp));
+                    sharedCube.SetTranslation(Utils.ScreenToNormalized(mouseTouchPos));
                     sharedCube.Insert();  // inserts into p2p for distribution
                     sharedCube.AfterInsertRemote(); // called explicitly since its only called for remotely created instances
                 }
@@ -87,22 +92,21 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
         }
         pressedOnObject = false;
     }
-    override public void OnMove(Vector2 mouseTouchPos) {
-        var world = Camera.main.ScreenToWorldPoint(new Vector3(mouseTouchPos.x, mouseTouchPos.y, 0f));
+    override public void OnMove(Vector2 mouseTouchPos, Ray ray) {
+        // var world = Camera.main.ScreenToWorldPoint(new Vector3(mouseTouchPos.x, mouseTouchPos.y, 0f));
         if (isDragging) {
-            Ray ray = mainCamera.ScreenPointToRay(mouseTouchPos);
             if (dragPlane.Raycast(ray, out float enter)) {
                 Vector3 pos = ray.GetPoint(enter) + offsetObjectToHitPoint;
                 Vector3 diff = draggingGameObject.transform.position - pos;
                 if (diff.magnitude > 0.0001) {
-                    Vector3 sp = mainCamera.WorldToScreenPoint(pos);
-                    draggingSharedCube.SetTranslation(Utils.ScreenToNormalized(sp));
+                    draggingSharedCube.SetTranslation(Utils.ScreenToNormalized(WorldToScreenPoint(pos)));
                     draggingSharedCube.UpdateAllFields();
                 }
             }
         }
+
         float dist = (pressedPoint - mouseTouchPos).magnitude;
-        if (!hasMovedSincePressed && pressedPoint != null && dist > 3) {
+        if (!hasMovedSincePressed && pressedPoint != null && dist > _movementThresholdInPixels) {
             hasMovedSincePressed = true;  // if moved, then it shouldn't be deleted on release
         }
     }
