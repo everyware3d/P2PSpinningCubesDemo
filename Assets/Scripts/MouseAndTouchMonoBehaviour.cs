@@ -9,9 +9,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
 {
 
-    public abstract void OnPress(Vector2 mousePos, Ray ray);
-    public abstract void OnRelease(Vector2 mousePos, Ray ray);
-    public abstract void OnMove(Vector2 mousePos, Ray ray);
+    public abstract void OnPress(short idx, Vector2 mousePos, Ray ray);
+    public abstract void OnRelease(short idx, Vector2 mousePos, Ray ray);
+    public abstract void OnMove(short idx, Vector2 mousePos, Ray ray);
 
     public Transform leftControllerTransform;
     public Transform rightControllerTransform;
@@ -56,7 +56,7 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         {
             bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
-                OnPress(mousePos, ray);
+                OnPress(0, mousePos, ray);
             _leftIsPressed = true;
         }
 
@@ -66,7 +66,7 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         {
             bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
-                OnRelease(mousePos, ray);
+                OnRelease(0, mousePos, ray);
             _leftIsPressed = false;
         }
 
@@ -76,7 +76,7 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         {
             bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
-                OnPress(mousePos, ray);
+                OnPress(1, mousePos, ray);
             _rightIsPressed = true;
         }
 
@@ -86,20 +86,20 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         {
             bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
-                OnRelease(mousePos, ray);
+                OnRelease(1, mousePos, ray);
             _rightIsPressed = false;
         }
         if (_leftIsPressed)
         {
             bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
-                OnMove(mousePos, ray);
+                OnMove(0, mousePos, ray);
         }
         if (_rightIsPressed)
         {
             bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
-                OnMove(mousePos, ray);
+                OnMove(1, mousePos, ray);
         }
     }
 
