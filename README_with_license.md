@@ -48,8 +48,9 @@ This tutorial will guide you through understanding and implementing the demo, se
 Before starting this demo, ensure you have:
 
 1. **Unity P2P Plugin Installed**: Follow the Getting Started guide in the main documentation
-2. **Development Environment**: Either Multiplayer Play Mode or multiple Unity instances/builds
-3. **Basic Unity Knowledge**: Familiarity with GameObjects, components, and basic scripting
+2. **License Configured**: Your P2P Plugin license must be verified
+3. **Development Environment**: Either Multiplayer Play Mode or multiple Unity instances/builds
+4. **Basic Unity Knowledge**: Familiarity with GameObjects, components, and basic scripting
 
 To use this demo project, you can download or clone it, load it into Unity (make sure you ignore the errors) before you install the plugin from the Package Manager.
 
@@ -80,7 +81,7 @@ The demo consists of three main scripts:
 
 Scripts should be setup and added as components to the scene:
 
-1. **P2P Plugin** - The main P2P plugin script needs to be added somewhere in the scene, such as on the **Main Camera**.  This node should be configured appropriately, as the <a href="https://blainebell.org/P2PPlugin/README.html?scrollToHighlight=pluginconfig" target="_blank" rel="noreferrer noopener">documentation</a> suggests, with the multicast parameters.
+1. **P2P Plugin** - The main P2P plugin script needs to be added somewhere in the scene, such as on the **Main Camera**.  This node should be configured appropriately, as the <a href="https://blainebell.org/P2PPlugin/README.html?scrollToHighlight=pluginconfig" target="_blank" rel="noreferrer noopener">documentation</a> suggests, with the license and multicast parameters.
 2. **P2P Shared Cube Interaction Handler** - Should be added somewhere globally, such as the **Main Camera**.
 3. **Assign Shared Cube Colors To** - Add globally, such as on the **Main Camera**.
 4. **Screen Canvas Script** - Added to **screenCanvas**, sets both transforms for **screenCanvasParent** and **screenCanvas** for screen stabilized coordinate systems, including the **screenCanvas** which is in pixel scale. This script should be configured with the Main Camera.
