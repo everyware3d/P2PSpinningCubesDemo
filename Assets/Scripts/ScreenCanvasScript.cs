@@ -6,7 +6,7 @@ public class ScreenCanvasScript : MonoBehaviour
 {
     
     public Camera mainCamera;
-    private float swidth = 0, sheight = 0;
+    private float swidth = 0, sheight = 0, sdepth = 0;
 
     public float depth = 5f;
 
@@ -16,10 +16,11 @@ public class ScreenCanvasScript : MonoBehaviour
 
     void Update()
     {
-        if (swidth != mainCamera.pixelWidth || sheight != mainCamera.pixelHeight)
+        if (swidth != mainCamera.pixelWidth || sheight != mainCamera.pixelHeight || sdepth != depth)
         {
             swidth = mainCamera.pixelWidth;
             sheight = mainCamera.pixelHeight;
+            sdepth = depth;
             Debug.Log("ScreenCanvasScript: screen size changed to " + swidth + " x " + sheight);
             Vector3 screenPos = new Vector3(swidth / 2f, sheight / 2f, depth);
             Vector3 worldPos = mainCamera.ScreenToWorldPoint(screenPos);
