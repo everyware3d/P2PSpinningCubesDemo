@@ -1,20 +1,39 @@
 //using System.Numerics;
+using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
 public class ScreenCanvasScript : MonoBehaviour
 {
-    
     public Camera mainCamera;
     private float swidth = 0, sheight = 0, sdepth = 0;
+    private bool initialized = false;
 
     public float depth = 5f;
 
     void Start()
     {
+        StartCoroutine(DelayedInitialize());
+    }
+
+    IEnumerator DelayedInitialize()
+    {
+        yield return new WaitForSeconds(0.1f);
+        initialized = true;
+        UpdateScreenCanvas();
     }
 
     void Update()
+    {
+        if (!initialized)
+        {
+            return;
+        }
+
+        UpdateScreenCanvas();
+    }
+
+    void UpdateScreenCanvas()
     {
         if (swidth != mainCamera.pixelWidth || sheight != mainCamera.pixelHeight || sdepth != depth)
         {
