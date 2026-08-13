@@ -393,7 +393,7 @@ MonoBehaviour:
   multicastPort: 2253
   doNotDestroyOnLoad: 0
   m_checkLicenseOnStart: 1
-  emailString: blaine.bell@gmail.com
+  emailString: 
   password:
     _ciphertextB64: 
 --- !u!114 &330585552
