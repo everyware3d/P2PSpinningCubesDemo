@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.InputSystem.EnhancedTouch;
 using P2PPlugin.Network;
+using P2PPlugin.Utils;
 
 [DisallowMultipleComponent]
 public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour
