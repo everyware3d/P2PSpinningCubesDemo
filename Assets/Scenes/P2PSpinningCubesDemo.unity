@@ -427,6 +427,8 @@ MonoBehaviour:
   - 10.0.0.131
   - 10.254.1.115
   - 10.125.1.122
+  - aegi
+  - 10.50.0.30
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,7 +603,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2a7b7e5c60ce47dd8cb25fd2c57d67c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  scaleFactor: 1
 --- !u!65 &463535977
 BoxCollider:
   m_ObjectHideFlags: 0
