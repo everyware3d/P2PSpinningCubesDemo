@@ -1,26 +1,46 @@
 //using System.Numerics;
+using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
 public class ScreenCanvasScript : MonoBehaviour
 {
-    
     public Camera mainCamera;
-    private float swidth = 0, sheight = 0;
+    private float swidth = 0, sheight = 0, sdepth = 0;
+    private bool initialized = false;
 
     public float depth = 5f;
 
     void Start()
     {
+        StartCoroutine(DelayedInitialize());
+    }
+
+    IEnumerator DelayedInitialize()
+    {
+        yield return new WaitForSeconds(0.1f);
+        initialized = true;
+        UpdateScreenCanvas();
     }
 
     void Update()
     {
-        if (swidth != mainCamera.pixelWidth || sheight != mainCamera.pixelHeight)
+        if (!initialized)
+        {
+            return;
+        }
+
+        UpdateScreenCanvas();
+    }
+
+    void UpdateScreenCanvas()
+    {
+        if (swidth != mainCamera.pixelWidth || sheight != mainCamera.pixelHeight || sdepth != depth)
         {
             swidth = mainCamera.pixelWidth;
             sheight = mainCamera.pixelHeight;
-            Debug.Log("ScreenCanvasScript: screen size changed to " + swidth + " x " + sheight);
+            sdepth = depth;
+            // Debug.Log("ScreenCanvasScript: screen size changed to " + swidth + " x " + sheight);
             Vector3 screenPos = new Vector3(swidth / 2f, sheight / 2f, depth);
             Vector3 worldPos = mainCamera.ScreenToWorldPoint(screenPos);
             Vector3 pos = mainCamera.transform.InverseTransformPoint(worldPos);
