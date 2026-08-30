@@ -35,7 +35,7 @@ public class RayInteractorListenerForXRSharedCubes : MonoBehaviour
             } else if (args.PreviousState == InteractorState.Select && Time.time - pressedTime < .5f)
             {
                 // released quickly, add SharedCube at that point
-                GameObject outlineForColor = P2PSharedCubeInteractionHandler.Instance.outlineForColor;
+                GameObject outlineForColor = P2PInteractionHandler.Instance.outlineForColor;
                 if (outlineForColor != null)
                 {
                     Ray ray = getRay();

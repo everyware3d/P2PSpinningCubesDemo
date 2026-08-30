@@ -34,7 +34,7 @@ public class SharedCube : P2PNetworkComponent
     public void AfterInsertRemote()
     {
         bool isWorld = ScreenOutline.Instance.projectionMode == ScreenOutline.ProjectionMode.World;
-        gameObject.transform.SetParent(P2PSharedCubeInteractionHandler.Instance.parentOfSpawnedGOs.transform);
+        gameObject.transform.SetParent(P2PInteractionHandler.Instance.getParentOfSpawnedGOs().transform);
         gameObject.transform.localPosition = Utils.NormalizedToScreen(translation); // set position based on translation property
         gameObject.transform.localScale = Vector3.one * GetCubeSize();  // scale so that cube is 50x50 pixels on screen
         gameObject.SetActive(true);
@@ -50,7 +50,7 @@ public class SharedCube : P2PNetworkComponent
     // GameObject that has this SharedCube Component, which is instantiated when remote SharedCube instances are created
     static public GameObject spawnNewRemoteObject()
     {
-        GameObject newGO = Instantiate(P2PSharedCubeInteractionHandler.Instance.prefabToSpawn, Vector3.zero, Quaternion.identity);
+        GameObject newGO = Instantiate(P2PInteractionHandler.Instance.getPrefabToSpawn(), Vector3.zero, Quaternion.identity);
         return newGO;
     }
     /* Data structures to store all SharedCubes and color assignments */

@@ -78,7 +78,7 @@ public class AssignSharedCubeColorsTo : MonoBehaviour
             SharedCube.setAssignedColorToCube(sharedCube);
         }
         // sets outline color
-        SharedCube.setAssignedColorToGameObject(P2PSharedCubeInteractionHandler.Instance.outlineForColor, P2PObject.peerComputerID);
+        SharedCube.setAssignedColorToGameObject(P2PInteractionHandler.Instance.getOutlineForColor(), P2PObject.peerComputerID);
     }
     private P2PComputer localComputer = null;
     private bool localComputerInserted = false;

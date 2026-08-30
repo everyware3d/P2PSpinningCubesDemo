@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/P2PSpinningCubesDemo.unity
+- path: Assets/Scenes/MetaP2PSpinningCubesDemo.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

@@ -236,9 +236,9 @@ GameObject:
   - component: {fileID: 330585545}
   - component: {fileID: 330585547}
   - component: {fileID: 330585551}
-  - component: {fileID: 330585548}
   - component: {fileID: 330585552}
   - component: {fileID: 330585553}
+  - component: {fileID: 330585554}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -361,23 +361,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &330585548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5c4ab79d903d489d93aad2babc79a0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftControllerTransform: {fileID: 0}
-  rightControllerTransform: {fileID: 0}
-  outlineForColor: {fileID: 156993222}
-  parentOfSpawnedGOs: {fileID: 852965641}
-  prefabToSpawn: {fileID: 4008258910738281193, guid: 8a92d32b81b084636a6056560c86cce6, type: 3}
 --- !u!114 &330585551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,6 +407,22 @@ MonoBehaviour:
   serverIP: 10.125.1.122
   serverIPs:
   - 10.125.1.122
+--- !u!114 &330585554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fe742bff295b42108c005978f95fa1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::P2PSharedCubeInteractionHandler
+  mainCamera: {fileID: 330585545}
+  parentOfSpawnedGOs: {fileID: 852965641}
+  prefabToSpawn: {fileID: 4008258910738281193, guid: 8a92d32b81b084636a6056560c86cce6, type: 3}
+  outlineForColor: {fileID: 156993222}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

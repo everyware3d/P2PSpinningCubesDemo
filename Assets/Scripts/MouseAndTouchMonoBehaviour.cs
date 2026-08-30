@@ -9,99 +9,107 @@ using System.Runtime.InteropServices.WindowsRuntime;
 public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
 {
 
-    public abstract void OnPress(short idx, Vector2 mousePos, Ray ray);
-    public abstract void OnRelease(short idx, Vector2 mousePos, Ray ray);
-    public abstract void OnMove(short idx, Vector2 mousePos, Ray ray);
-
-    public Transform leftControllerTransform;
-    public Transform rightControllerTransform;
-    public GameObject outlineForColor;   // screen stabilized object that shows the current user's color for cubes
-
-    private bool _rightIsPressed = false;
-    private bool _leftIsPressed = false;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
-        Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+        EnhancedTouchSupport.Enable();
+        TouchSimulation.Enable(); // now Mouse.current.leftButton mirrors the first touch
     }
-    public Vector2 WorldToScreenPoint(Vector3 worldPos)
+    InputAction _point;   // <Pointer>/position (Vector2)
+    protected InputAction _press;   // <Pointer>/press    (Button)
+    // Track multiple concurrent pointers (mouse id = -1, fingers >= 0)
+    protected readonly Dictionary<int, Vector2> _activePointers = new();
+
+    void OnEnable()
     {
-        Vector3 localPoint = outlineForColor.transform.InverseTransformPoint(worldPos);
-        return new Vector2(Camera.main.pixelWidth * (localPoint.x + 0.5f), Camera.main.pixelHeight * (localPoint.y + 0.5f));
+        _point = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/position");
+        _press = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/press");
+
+        _point.performed += OnMoveImpl;      // fires for mouse move, touch move, pen move
+        _press.performed += OnPressImpl;      // down
+        _press.canceled += OnReleaseImpl;    // up
+
+        _point.Enable();
+        _press.Enable();
+
+        // Optional: enable Touch → Mouse simulation in Editor
+        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
+        UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Enable();
     }
-    public bool GetMousePosition(OVRInput.Controller controller, out Vector2 mousePos, out Ray controllerRay)
+    void OnDisable()
     {
-        mousePos = Vector2.zero;
-        Transform controllerTransform = controller == OVRInput.Controller.LTouch ? leftControllerTransform : rightControllerTransform;
-        Vector3 controllerPosition = controllerTransform.position;
-        Vector3 controllerForward = controllerTransform.forward;
-        controllerRay = new Ray(controllerPosition, controllerForward);
-        Plane outlinePlane = new Plane(
-            outlineForColor.transform.forward,
-            outlineForColor.transform.position
-        );
-        bool intersects = outlinePlane.Raycast(controllerRay, out float enter);
-        if (!intersects)
-            return false;
-        if (enter < 0f)
-            return false;
-        Vector3 worldPoint = controllerRay.GetPoint(enter);
-        mousePos = WorldToScreenPoint(worldPoint);
-        return true;
+        _point.Disable(); _press.Disable();
+        UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Disable();
+        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Disable();
     }
-    private void Update()
+
+    public void OnPressImpl(InputAction.CallbackContext ctx)
     {
-        if (OVRInput.GetDown(
-                OVRInput.Button.PrimaryIndexTrigger,
-                OVRInput.Controller.LTouch))
+        if (!_press.IsPressed())
         {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
-            if (gotMousePos)
-                OnPress(0, mousePos, ray);
-            _leftIsPressed = true;
+            OnReleaseImpl(ctx);
         }
-
-        if (OVRInput.GetUp(
-                OVRInput.Button.PrimaryIndexTrigger,
-                OVRInput.Controller.LTouch))
+        else
         {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
-            if (gotMousePos)
-                OnRelease(0, mousePos, ray);
-            _leftIsPressed = false;
-        }
-
-        if (OVRInput.GetDown(
-                OVRInput.Button.PrimaryIndexTrigger,
-                OVRInput.Controller.RTouch))
-        {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
-            if (gotMousePos)
-                OnPress(1, mousePos, ray);
-            _rightIsPressed = true;
-        }
-
-        if (OVRInput.GetUp(
-                OVRInput.Button.PrimaryIndexTrigger,
-                OVRInput.Controller.RTouch))
-        {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
-            if (gotMousePos)
-                OnRelease(1, mousePos, ray);
-            _rightIsPressed = false;
-        }
-        if (_leftIsPressed)
-        {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
-            if (gotMousePos)
-                OnMove(0, mousePos, ray);
-        }
-        if (_rightIsPressed)
-        {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
-            if (gotMousePos)
-                OnMove(1, mousePos, ray);
+            OnPress(GetMousePositionOnPress(ctx));
         }
     }
+    public void OnReleaseImpl(InputAction.CallbackContext ctx)
+    {
+        OnRelease(GetMousePositionOnRelease(ctx));
+    }
+    public void OnMoveImpl(InputAction.CallbackContext ctx)
+    {
+        ;
+        OnMove(GetMousePositionOnMove(ctx));
+    }
 
+    public abstract void OnPress(Vector2 mousePos);
+    public abstract void OnRelease(Vector2 mousePos);
+    public abstract void OnMove(Vector2 mousePos);
 
+    public static int GetPointerId(InputDevice device)
+    {
+        if (device is Mouse) return -1; // canonical mouse id
+        if (device is Pen) return -2;
+        if (device is Touchscreen ts)
+        {
+            // Prefer active touch id if available
+            foreach (var t in ts.touches)
+                if (t.isInProgress) return t.touchId.ReadValue();
+            return 0;
+        }
+        return -999; // fallback
+    }
+    public static Vector2 ReadDevicePosition(InputDevice device)
+    {
+        var control = device.TryGetChildControl<Vector2Control>("position");
+        return control != null ? control.ReadValue() : Vector2.zero;
+    }
+
+    public Tuple<Vector2, int> GetMousePosition(InputAction.CallbackContext ctx)
+    {
+        var device = ctx.control.device;
+        int id = GetPointerId(device);
+        var screenPos = _activePointers.TryGetValue(id, out var p) ? p : ReadDevicePosition(device);
+        return new Tuple<Vector2, int>(screenPos, id);
+    }
+    public Vector2 GetMousePositionOnPress(InputAction.CallbackContext ctx)
+    {
+        var posPlusId = GetMousePosition(ctx);
+        return posPlusId.Item1;
+    }
+    public Vector2 GetMousePositionOnRelease(InputAction.CallbackContext ctx)
+    {
+        var posPlusId = GetMousePosition(ctx);
+        _activePointers.Remove(posPlusId.Item2);
+        return posPlusId.Item1;
+    }
+    public Vector2 GetMousePositionOnMove(InputAction.CallbackContext ctx)
+    {
+        var posPlusId = GetMousePosition(ctx);
+        var screenPos = ctx.ReadValue<Vector2>();
+        _activePointers[posPlusId.Item2] = screenPos;
+        return posPlusId.Item1;
+    }
 }

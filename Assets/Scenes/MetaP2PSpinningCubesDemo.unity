@@ -248,7 +248,7 @@ PrefabInstance:
       addedObject: {fileID: 838835160}
     - targetCorrespondingSourceObject: {fileID: 100004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 838835159}
+      addedObject: {fileID: 1697359198}
     - targetCorrespondingSourceObject: {fileID: 100004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 838835161}
@@ -743,23 +743,6 @@ MonoBehaviour:
   edgeRenderingEnabled_: 0
   edgeColor_: {r: 1, g: 1, b: 1, a: 1}
   colorMapType: 0
---- !u!114 &838835159
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 838835153}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5c4ab79d903d489d93aad2babc79a0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  leftControllerTransform: {fileID: 6610120564966063699}
-  rightControllerTransform: {fileID: 7071716412442649663}
-  outlineForColor: {fileID: 1249272063}
-  parentOfSpawnedGOs: {fileID: 1249272063}
-  prefabToSpawn: {fileID: 4008258910738281193, guid: 604cf865f8e66f74baf37eb3a38a3d32, type: 3}
 --- !u!114 &838835160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1025,6 +1008,23 @@ MonoBehaviour:
   serverIP: 10.125.1.122
   serverIPs:
   - 10.125.1.122
+--- !u!114 &1697359198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838835153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5c4ab79d903d489d93aad2babc79a0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::P2PSharedCubeMetaInteractionHandler
+  leftControllerTransform: {fileID: 6610120564966063699}
+  rightControllerTransform: {fileID: 7071716412442649663}
+  outlineForColor: {fileID: 1249272063}
+  parentOfSpawnedGOs: {fileID: 1249272063}
+  prefabToSpawn: {fileID: 4008258910738281193, guid: 604cf865f8e66f74baf37eb3a38a3d32, type: 3}
 --- !u!114 &1717828751
 MonoBehaviour:
   m_ObjectHideFlags: 0

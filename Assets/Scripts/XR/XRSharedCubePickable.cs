@@ -108,7 +108,7 @@ public class XRSharedCubePickable : MonoBehaviour
                 Renderer rend = cube?.GetComponent<Renderer>();
                 if (rend == null) return;
 
-                GameObject outlineForColor = P2PSharedCubeInteractionHandler.Instance.outlineForColor;
+                GameObject outlineForColor = P2PInteractionHandler.Instance.outlineForColor;
                 if (outlineForColor != null)
                 {
                     Ray ray = getRay();
