@@ -78,7 +78,7 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
     override public void OnRelease(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
         int idx = (int)idxarg;
         if (draggingGameObject[idx] == null && !pressedOnObject[idx] && !hasMovedSincePressed[idx]) {
-            if (Utils.IsOnCanvas(mouseTouchPos)) {
+            if (Utils.IsOnNormalCanvas(mouseTouchPos)) {
                 /* Spawn GameObject, set values on SharedCube component and Insert into P2P Plugin for distribution */
                 GameObject newGameObject = SharedCube.spawnNewRemoteObject();
                 SharedCube sharedCube = newGameObject.GetComponent<SharedCube>();

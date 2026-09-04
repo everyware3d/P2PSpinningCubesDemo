@@ -207,31 +207,26 @@ public static class VisionOSPostBuild
             return;
         }
 
-        // Sets the DEVELOPMENT_TEAM information on the project.
-        project.SetTeamId(mainTargetGuid, DeveloperTeamId);
+        Debug.Log(
+            $"VisionOSPostBuild: mainTargetGuid={mainTargetGuid}, " +
+            $"unityFrameworkTargetGuid={unityFrameworkTargetGuid}");
 
-        // I also set it explicitly as a build property.
-        project.SetBuildProperty(
-            mainTargetGuid,
-            "DEVELOPMENT_TEAM",
-            DeveloperTeamId);
-
-        project.SetBuildProperty(
-            mainTargetGuid,
-            "CODE_SIGN_STYLE",
-            "Automatic");
-
-        // UnityFramework normally does not need independent signing,
-        // but setting the team here avoids Xcode changing it unexpectedly.
-        if (!string.IsNullOrEmpty(unityFrameworkTargetGuid))
+        // Do not call PBXProject.SetTeamId() here. In some Unity/visionOS
+        // generated projects it can throw an ArgumentException while
+        // constructing its internal target/configuration dictionary.
+        // DEVELOPMENT_TEAM is just an Xcode build setting, so setting it
+        // directly is sufficient and avoids that Unity Xcode API issue.
+        foreach (string targetGuid in GetUniqueTargetGuids(
+                     mainTargetGuid,
+                     unityFrameworkTargetGuid))
         {
             project.SetBuildProperty(
-                unityFrameworkTargetGuid,
+                targetGuid,
                 "DEVELOPMENT_TEAM",
                 DeveloperTeamId);
 
             project.SetBuildProperty(
-                unityFrameworkTargetGuid,
+                targetGuid,
                 "CODE_SIGN_STYLE",
                 "Automatic");
         }
@@ -350,15 +345,13 @@ public static class VisionOSPostBuild
             if (string.IsNullOrEmpty(fileGuid))
                 continue;
 
-            // Remove from every target it might have been linked into.
-            project.RemoveFileFromBuild(
-                mainTargetGuid,
-                fileGuid);
-
-            if (!string.IsNullOrEmpty(unityFrameworkTargetGuid))
+            // Remove from every unique target it might have been linked into.
+            foreach (string targetGuid in GetUniqueTargetGuids(
+                         mainTargetGuid,
+                         unityFrameworkTargetGuid))
             {
                 project.RemoveFileFromBuild(
-                    unityFrameworkTargetGuid,
+                    targetGuid,
                     fileGuid);
             }
 
@@ -369,6 +362,15 @@ public static class VisionOSPostBuild
                 $"VisionOSPostBuild: Removed {frameworkName} " +
                 $"from Xcode project ({projectPath}).");
         }
+    }
+
+
+    private static string[] GetUniqueTargetGuids(params string[] targetGuids)
+    {
+        return targetGuids
+            .Where(guid => !string.IsNullOrEmpty(guid))
+            .Distinct()
+            .ToArray();
     }
 
     private static string FindFramework(

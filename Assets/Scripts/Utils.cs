@@ -5,10 +5,13 @@ public class Utils
 {
     public static bool IsOnCanvas(Vector2 mouseTouchPos)
     {
+        return mouseTouchPos.x > 0 && mouseTouchPos.x < Camera.main.pixelWidth &&
+               mouseTouchPos.y > 0 && mouseTouchPos.y < Camera.main.pixelHeight;
+    }
+    public static bool IsOnNormalCanvas(Vector2 mouseTouchPos)
+    {
         return mouseTouchPos.x > 0 && mouseTouchPos.x < 1.0f &&
                mouseTouchPos.y > 0 && mouseTouchPos.y < 1.0f;
-        // return mouseTouchPos.x > 0 && mouseTouchPos.x < Camera.main.pixelWidth &&
-        //        mouseTouchPos.y > 0 && mouseTouchPos.y < Camera.main.pixelHeight;
     }
     public static Vector3 NormalizedToScreen(Vector2 norm)
     {   // converts normalized coordinates (0.0 to 1.0) to screen coordinates with (0,0) at center of screen

@@ -56,9 +56,7 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
         pressedPoint[idx] = mouseTouchPos;
         hasMovedSincePressed[idx] = false;
         timeWhenLastPressed[idx] = Time.time;
-        Debug.Log("ray: " + ray);
         if (Physics.Raycast(ray, out hit)) {  // if click hits an object/cube
-            Debug.Log("Raycast hit object: " + hit.transform.gameObject.name);
             draggingSharedCube[idx] = hit.transform.gameObject.GetComponent<SharedCube>();
             pressedOnObject[idx] = true;
             if (draggingSharedCube[idx].isLocal) { // restrict cubes that aren't owned by this node (for now)
@@ -81,11 +79,8 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
     override public void OnRelease(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
         int idx = (int)idxarg;
         float timeSincePressed = Time.time - timeWhenLastPressed[idx];
-        Debug.Log("OnRelease called for hand index: " + idx + ", mouseTouchPos: " + mouseTouchPos);
-        Debug.Log("       draggingGameObject[idx]: " + draggingGameObject[idx] + ", pressedOnObject[idx]: " + pressedOnObject[idx] + ", hasMovedSincePressed[idx]: " + hasMovedSincePressed[idx]);
-        Debug.Log("       isDragging[idx]: " + isDragging[idx] + ", draggingSharedCube[idx]: " + draggingSharedCube[idx]);
         if (draggingGameObject[idx] == null && !pressedOnObject[idx] && timeSincePressed < 0.3f){ // !hasMovedSincePressed[idx]) {
-            if (Utils.IsOnCanvas(mouseTouchPos)) {
+            if (Utils.IsOnNormalCanvas(mouseTouchPos)) {
                 /* Spawn GameObject, set values on SharedCube component and Insert into P2P Plugin for distribution */
                 GameObject newGameObject = SharedCube.spawnNewRemoteObject();
                 SharedCube sharedCube = newGameObject.GetComponent<SharedCube>();
@@ -127,10 +122,8 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
                 }
             }
         }
-
         float dist = (pressedPoint[idx] - mouseTouchPos).magnitude;
         if (!hasMovedSincePressed[idx] && pressedPoint != null && dist > _movementThresholdInPixels) {
-            Debug.Log("OnMove called for hand index: " + idx + ", pressedPoint[idx]: " + pressedPoint[idx] + ", mouseTouchPos: " + mouseTouchPos + ", dist: " + dist);
             hasMovedSincePressed[idx] = true;  // if moved, then it shouldn't be deleted on release
         }
     }

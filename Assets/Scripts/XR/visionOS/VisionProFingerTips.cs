@@ -14,12 +14,12 @@ public class VisionProFingerTips : MonoBehaviour
     [SerializeField]
     private Transform rightIndexTip;
 
-    [Header("Index Proximal Targets")]
+    [Header("Index Metacarpal Targets")]
     [SerializeField]
-    private Transform leftIndexProximal;
+    private Transform leftIndexMetacarpal;
 
     [SerializeField]
-    private Transform rightIndexProximal;
+    private Transform rightIndexMetacarpal;
 
     [Header("Position Smoothing")]
     [SerializeField]
@@ -28,17 +28,26 @@ public class VisionProFingerTips : MonoBehaviour
     [Header("Finger Rotation")]
     [SerializeField]
     private XRHandJointID directionBaseJoint =
-        XRHandJointID.IndexProximal;
+        XRHandJointID.IndexMetacarpal;
 
     [SerializeField]
     private float rotationSmoothing = 20.0f;
 
     [Header("Pinch")]
     [SerializeField]
-    private float pinchStartDistance = 0.010f;   // 1.0 cm
+    private float pinchStartDistance = 0.020f;   // 2.0 cm
 
     [SerializeField]
-    private float pinchReleaseDistance = 0.020f; // 2.0 cm
+    private float pinchReleaseDistance = 0.030f; // 3.0 cm
+
+    [SerializeField]
+    private float pinchDistanceSmoothing = 25.0f;
+
+    [SerializeField]
+    private float pinchStartDelay = 0.040f;      // 40 ms
+
+    [SerializeField]
+    private float pinchReleaseDelay = 0.060f;    // 60 ms
 
     private XRHandSubsystem handSubsystem;
 
@@ -63,6 +72,21 @@ public class VisionProFingerTips : MonoBehaviour
 
     public float LeftPinchDistance { get; private set; }
     public float RightPinchDistance { get; private set; }
+
+    public float LeftPinchStrength { get; private set; }
+    public float RightPinchStrength { get; private set; }
+
+    private float leftSmoothedPinchDistance;
+    private float rightSmoothedPinchDistance;
+
+    private bool leftPinchDistanceInitialized;
+    private bool rightPinchDistanceInitialized;
+
+    private float leftPinchStartTimer;
+    private float rightPinchStartTimer;
+
+    private float leftPinchReleaseTimer;
+    private float rightPinchReleaseTimer;
 
     //
     // Fingertip smoothing state
@@ -115,30 +139,42 @@ public class VisionProFingerTips : MonoBehaviour
         UpdateHand(
             handSubsystem.leftHand,
             leftIndexTip,
-            leftIndexProximal,
+            leftIndexMetacarpal,
             true,
             ref leftPressing,
             ref leftSmoothedRotation,
-            ref leftRotationInitialized);
+            ref leftRotationInitialized,
+            ref leftSmoothedPinchDistance,
+            ref leftPinchDistanceInitialized,
+            ref leftPinchStartTimer,
+            ref leftPinchReleaseTimer);
 
         UpdateHand(
             handSubsystem.rightHand,
             rightIndexTip,
-            rightIndexProximal,
+            rightIndexMetacarpal,
             false,
             ref rightPressing,
             ref rightSmoothedRotation,
-            ref rightRotationInitialized);
+            ref rightRotationInitialized,
+            ref rightSmoothedPinchDistance,
+            ref rightPinchDistanceInitialized,
+            ref rightPinchStartTimer,
+            ref rightPinchReleaseTimer);
     }
 
     private void UpdateHand(
         XRHand hand,
         Transform fingerTarget,
-        Transform proximalTarget,
+        Transform metacarpalTarget,
         bool left,
         ref bool pressing,
         ref Quaternion smoothedRotation,
-        ref bool rotationInitialized)
+        ref bool rotationInitialized,
+        ref float smoothedPinchDistance,
+        ref bool pinchDistanceInitialized,
+        ref float pinchStartTimer,
+        ref float pinchReleaseTimer)
     {
         if (!hand.isTracked)
         {
@@ -147,6 +183,9 @@ public class VisionProFingerTips : MonoBehaviour
                 ref pressing);
 
             rotationInitialized = false;
+            pinchDistanceInitialized = false;
+            pinchStartTimer = 0.0f;
+            pinchReleaseTimer = 0.0f;
             return;
         }
 
@@ -158,9 +197,9 @@ public class VisionProFingerTips : MonoBehaviour
             hand.GetJoint(
                 XRHandJointID.ThumbTip);
 
-        XRHandJoint indexProximalJoint =
+        XRHandJoint indexMetacarpalJoint =
             hand.GetJoint(
-                XRHandJointID.IndexProximal);
+                XRHandJointID.IndexMetacarpal);
 
         XRHandJoint baseJoint =
             hand.GetJoint(
@@ -192,23 +231,23 @@ public class VisionProFingerTips : MonoBehaviour
         }
 
         //
-        // Index proximal joint pose
+        // Index metacarpal joint pose
         //
 
-        if (proximalTarget != null &&
-            indexProximalJoint.TryGetPose(
-                out Pose proximalPose))
+        if (metacarpalTarget != null &&
+            indexMetacarpalJoint.TryGetPose(
+                out Pose metacarpalPose))
         {
-            proximalTarget.localPosition =
+            metacarpalTarget.localPosition =
                 Vector3.Lerp(
-                    proximalTarget.localPosition,
-                    proximalPose.position,
+                    metacarpalTarget.localPosition,
+                    metacarpalPose.position,
                     positionT);
 
-            proximalTarget.localRotation =
+            metacarpalTarget.localRotation =
                 Quaternion.Slerp(
-                    proximalTarget.localRotation,
-                    proximalPose.rotation,
+                    metacarpalTarget.localRotation,
+                    metacarpalPose.rotation,
                     positionT);
         }
 
@@ -283,43 +322,100 @@ public class VisionProFingerTips : MonoBehaviour
             return;
         }
 
-        float pinchDistance =
+        float rawPinchDistance =
             Vector3.Distance(
                 indexPose.position,
                 thumbPose.position);
 
-        if (left)
+        //
+        // Smooth the measured thumb/index distance before deciding
+        // whether the pinch is pressed or released.
+        //
+
+        if (!pinchDistanceInitialized)
         {
-            LeftPinchDistance =
-                pinchDistance;
+            smoothedPinchDistance = rawPinchDistance;
+            pinchDistanceInitialized = true;
         }
         else
         {
-            RightPinchDistance =
-                pinchDistance;
+            float pinchT =
+                1.0f -
+                Mathf.Exp(
+                    -pinchDistanceSmoothing *
+                    Time.deltaTime);
+
+            smoothedPinchDistance =
+                Mathf.Lerp(
+                    smoothedPinchDistance,
+                    rawPinchDistance,
+                    pinchT);
         }
 
-        bool wasPressing =
-            pressing;
+        if (left)
+            LeftPinchDistance = smoothedPinchDistance;
+        else
+            RightPinchDistance = smoothedPinchDistance;
 
         //
-        // Pinch hysteresis
+        // Continuous pinch strength: 0 = open, 1 = pinched.
+        //
+
+        float pinchStrength =
+            Mathf.Clamp01(
+                Mathf.InverseLerp(
+                    pinchReleaseDistance,
+                    pinchStartDistance,
+                    smoothedPinchDistance));
+
+        if (left)
+            LeftPinchStrength = pinchStrength;
+        else
+            RightPinchStrength = pinchStrength;
+
+        bool wasPressing = pressing;
+
+        //
+        // Debounced hysteresis. The threshold must remain satisfied
+        // briefly before the press/release state changes.
         //
 
         if (!pressing)
         {
-            if (pinchDistance <=
-                pinchStartDistance)
+            pinchReleaseTimer = 0.0f;
+
+            if (smoothedPinchDistance <= pinchStartDistance)
             {
-                pressing = true;
+                pinchStartTimer += Time.deltaTime;
+
+                if (pinchStartTimer >= pinchStartDelay)
+                {
+                    pressing = true;
+                    pinchStartTimer = 0.0f;
+                }
+            }
+            else
+            {
+                pinchStartTimer = 0.0f;
             }
         }
         else
         {
-            if (pinchDistance >=
-                pinchReleaseDistance)
+            pinchStartTimer = 0.0f;
+
+            if (smoothedPinchDistance >= pinchReleaseDistance)
             {
-                pressing = false;
+                pinchReleaseTimer += Time.deltaTime;
+
+                if (pinchReleaseTimer >= pinchReleaseDelay)
+                {
+                    pressing = false;
+                    pinchReleaseTimer = 0.0f;
+                }
+            }
+            else
+            {
+                pinchReleaseTimer = 0.0f;
             }
         }
 

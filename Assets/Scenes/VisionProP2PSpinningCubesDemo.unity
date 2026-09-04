@@ -573,7 +573,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1434769147}
   m_Layer: 0
-  m_Name: RightIndexProximal
+  m_Name: RightIndexMetacarpal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -650,7 +650,7 @@ MonoBehaviour:
   multicastPort: 2253
   doNotDestroyOnLoad: 0
   m_checkLicenseOnStart: 1
-  emailString: 
+  emailString: blaine@blainebell.org
   password:
     _ciphertextB64: 
 --- !u!114 &1526753306
@@ -809,13 +809,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VisionProFingerTips
   leftIndexTip: {fileID: 1934500329}
   rightIndexTip: {fileID: 1621213496}
-  leftIndexProximal: {fileID: 1825480220}
-  rightIndexProximal: {fileID: 1434769147}
+  leftIndexMetacarpal: {fileID: 1825480220}
+  rightIndexMetacarpal: {fileID: 1434769147}
   positionSmoothing: 30
   directionBaseJoint: 8
   rotationSmoothing: 20
   pinchStartDistance: 0.02
   pinchReleaseDistance: 0.03
+  pinchDistanceSmoothing: 25
+  pinchStartDelay: 0.04
+  pinchReleaseDelay: 0.06
 --- !u!1 &1825480219
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,7 +829,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1825480220}
   m_Layer: 0
-  m_Name: LeftIndexProximal
+  m_Name: LeftIndexMetacarpal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
