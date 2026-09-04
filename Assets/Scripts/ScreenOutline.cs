@@ -48,8 +48,8 @@ public class ScreenOutline : MonoBehaviour
         {
             if (!meshCreated)
             {
-                generateBufferMesh(24, 12, 0.3f);
                 meshCreated = true;
+                generateBufferMesh(24, 12, 0.3f);
             }
         }
         else
@@ -70,8 +70,6 @@ public class ScreenOutline : MonoBehaviour
     }
     void generateBufferMesh(float width, float height, float bufferSize)
     {
-        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
-        mesh.Clear();
         int[] coords = {
                     0, 0,
                     0, 1,
@@ -116,8 +114,23 @@ public class ScreenOutline : MonoBehaviour
             tris[i + 5] = ri + 3;
         }
 
+#if UNITY_VISIONOS
+        MeshFilter meshFilter = GetComponent<MeshFilter>();
+        Mesh mesh = new Mesh();
+        mesh.name = "ScreenOutlineRuntimeMesh";
+#else
+        Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
+        mesh.Clear();
+#endif
+
         mesh.vertices = list;
         mesh.triangles = tris;
         mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+
+#if UNITY_VISIONOS
+        mesh.UploadMeshData(false);
+        meshFilter.sharedMesh = mesh;
+#endif
     }
 }

@@ -152,6 +152,9 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   - {fileID: 11400000, guid: d61a72cade6a0e344bb2a3869dd2e809, type: 2}
+  - {fileID: 11400000, guid: 54ad7bcecd48342558e1ce62df6d3067, type: 2}
+  - {fileID: 6463125100335893474, guid: b5d80c5758db03148846ad681091c481, type: 2}
+  - {fileID: -8309810132144278661, guid: 3f309f424a1430749bcd949638874aad, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   xboxOneDisableKinectGpuReservation: 1
@@ -173,6 +176,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: org.blainebell.unity
     Standalone: org.blainebell.android
+    VisionOS: com.everyware3d.P2PSpinningCubesDemo
     iPhone: com.Unity-Technologies.com.unity.template.urp-blank
   buildNumber:
     Standalone: 0
@@ -194,7 +198,7 @@ PlayerSettings:
   CreateWallpaper: 0
   androidSplitApplicationBinary: 0
   keepLoadedShadersAlive: 0
-  StripUnusedMeshComponents: 0
+  StripUnusedMeshComponents: 1
   strictShaderVariantMatching: 0
   VertexChannelCompressionMask: 4054
   iPhoneSdkVersion: 988
@@ -247,7 +251,7 @@ PlayerSettings:
   iOSMetalForceHardShadows: 0
   metalEditorSupport: 1
   metalAPIValidation: 1
-  metalCompileShaderBinary: 0
+  metalCompileShaderBinary: 1
   iOSRenderExtraFrameOnPause: 0
   iosCopyPluginsCodeInsteadOfSymlink: 0
   appleDeveloperTeamID: 
@@ -529,6 +533,13 @@ PlayerSettings:
       m_Height: 720
       m_Kind: 1
       m_SubKind: 
+  - m_BuildTarget: VisionOS
+    m_Icons:
+    - m_Textures: []
+      m_Width: 1024
+      m_Height: 1024
+      m_Kind: 0
+      m_SubKind: 
   m_BuildTargetBatching:
   - m_BuildTarget: Android
     m_StaticBatching: 1
@@ -539,12 +550,23 @@ PlayerSettings:
   - m_BuildTarget: iPhone
     m_StaticBatching: 1
     m_DynamicBatching: 0
+  - m_BuildTarget: VisionOS
+    m_StaticBatching: 1
+    m_DynamicBatching: 0
   m_BuildTargetShaderSettings: []
   m_BuildTargetGraphicsJobs:
   - m_BuildTarget: AndroidPlayer
     m_GraphicsJobs: 1
+  - m_BuildTarget: VisionOSPlayer
+    m_GraphicsJobs: 1
+  - m_BuildTarget: MacStandaloneSupport
+    m_GraphicsJobs: 1
   m_BuildTargetGraphicsJobMode:
   - m_BuildTarget: AndroidPlayer
+    m_GraphicsJobMode: 1
+  - m_BuildTarget: VisionOSPlayer
+    m_GraphicsJobMode: 1
+  - m_BuildTarget: MacStandaloneSupport
     m_GraphicsJobMode: 1
   m_BuildTargetGraphicsAPIs:
   - m_BuildTarget: iOSSupport
@@ -967,7 +989,7 @@ PlayerSettings:
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
-  platformRequiresReadableAssets: 0
+  platformRequiresReadableAssets: 1
   virtualTexturingSupportEnabled: 0
   insecureHttpOption: 0
   androidVulkanDenyFilterList: []
