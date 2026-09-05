@@ -1,4 +1,4 @@
-#if UNITY_EDITOR && UNITY_VISIONOS
+#if UNITY_EDITOR && UNITY_IOS
 
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -11,7 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 
-public static class VisionOSPostBuild
+public static class IOSPostBuild
 {
     // IMPORTANT:
     // Set the environment variable APPLE_DEVELOPER_TEAM_ID to your 
@@ -26,32 +26,11 @@ public static class VisionOSPostBuild
     [PostProcessBuild(999)]
     public static void OnPostProcessBuild(BuildTarget target, string path)
     {
-        if (target != BuildTarget.VisionOS)
+        if (target != BuildTarget.iOS)
             return;
 
-        UpdateInfoPlist(path);
         UpdateXcodeProject(path);
         UpdateXcodeScheme(path);
-    }
-
-    private static void UpdateInfoPlist(string buildPath)
-    {
-        string plistPath = Path.Combine(buildPath, "Info.plist");
-
-        PlistDocument plist = new PlistDocument();
-        plist.ReadFromFile(plistPath);
-
-        plist.root.SetString(
-            "NSHandsTrackingUsageDescription",
-            "Hand tracking is used to interact with virtual objects.");
-
-        plist.root.SetString(
-            "NSWorldSensingUsageDescription",
-            "World sensing is used to place and interact with virtual objects in your environment.");
-
-        File.WriteAllText(plistPath, plist.WriteToString());
-
-        Debug.Log("VisionOSPostBuild: Updated Info.plist.");
     }
 
     private static void UpdateXcodeProject(string buildPath)
@@ -73,19 +52,19 @@ public static class VisionOSPostBuild
             unityFrameworkTargetGuid);
 
         //
-        // 2. Remove DPCoreBundleIOS.framework
+        // 2. Remove DPCoreBundleVision.framework
         //
         RemoveFramework(
             project,
             buildPath,
             mainTargetGuid,
             unityFrameworkTargetGuid,
-            IOSFrameworkName);
+            VisionFrameworkName);
 
         //
-        // 3. Add + embed DPCoreBundleVision.framework
+        // 3. Add + embed DPCoreBundleIOS.framework
         //
-        AddVisionFramework(
+        AddIOSFramework(
             project,
             buildPath,
             mainTargetGuid,
@@ -93,7 +72,7 @@ public static class VisionOSPostBuild
 
         project.WriteToFile(projectPath);
 
-        Debug.Log("VisionOSPostBuild: Updated Xcode project.");
+        Debug.Log("IOSPostBuild: Updated Xcode project.");
     }
 
 
@@ -105,7 +84,7 @@ public static class VisionOSPostBuild
         if (string.IsNullOrEmpty(projectDirectory))
         {
             Debug.LogWarning(
-                $"VisionOSPostBuild: Could not determine Xcode project directory from:\n{projectPath}");
+                $"IOSPostBuild: Could not determine Xcode project directory from:\n{projectPath}");
             return;
         }
 
@@ -117,7 +96,7 @@ public static class VisionOSPostBuild
         if (!Directory.Exists(schemeDirectory))
         {
             Debug.LogWarning(
-                $"VisionOSPostBuild: Xcode scheme directory not found:\n{schemeDirectory}");
+                $"IOSPostBuild: Xcode scheme directory not found:\n{schemeDirectory}");
             return;
         }
 
@@ -129,7 +108,7 @@ public static class VisionOSPostBuild
         if (schemeFiles.Length == 0)
         {
             Debug.LogWarning(
-                $"VisionOSPostBuild: No shared Xcode schemes found in:\n{schemeDirectory}");
+                $"IOSPostBuild: No shared Xcode schemes found in:\n{schemeDirectory}");
             return;
         }
 
@@ -192,7 +171,7 @@ public static class VisionOSPostBuild
             document.Save(schemePath);
 
             Debug.Log(
-                $"VisionOSPostBuild: Set IDELogRedirectionPolicy=stdioToOSLog in {Path.GetFileName(schemePath)}.");
+                $"IOSPostBuild: Set IDELogRedirectionPolicy=stdioToOSLog in {Path.GetFileName(schemePath)}.");
         }
     }
 
@@ -205,16 +184,16 @@ public static class VisionOSPostBuild
             DeveloperTeamId == "YOUR_TEAM_ID")
         {
             Debug.LogWarning(
-                "VisionOSPostBuild: DeveloperTeamId has not been configured.");
+                "IOSPostBuild: DeveloperTeamId has not been configured.");
             return;
         }
 
         Debug.Log(
-            $"VisionOSPostBuild: mainTargetGuid={mainTargetGuid}, " +
+            $"IOSPostBuild: mainTargetGuid={mainTargetGuid}, " +
             $"unityFrameworkTargetGuid={unityFrameworkTargetGuid}");
 
-        // Do not call PBXProject.SetTeamId() here. In some Unity/visionOS
-        // generated projects it can throw an ArgumentException while
+        // Do not call PBXProject.SetTeamId() here. In some Unity-generated
+        // projects it can throw an ArgumentException while
         // constructing its internal target/configuration dictionary.
         // DEVELOPMENT_TEAM is just an Xcode build setting, so setting it
         // directly is sufficient and avoids that Unity Xcode API issue.
@@ -234,22 +213,22 @@ public static class VisionOSPostBuild
         }
 
         Debug.Log(
-            $"VisionOSPostBuild: Set development team to {DeveloperTeamId}.");
+            $"IOSPostBuild: Set development team to {DeveloperTeamId}.");
     }
 
-    private static void AddVisionFramework(
+    private static void AddIOSFramework(
         PBXProject project,
         string buildPath,
         string mainTargetGuid,
         string unityFrameworkTargetGuid)
     {
         string frameworkPath =
-            FindFramework(buildPath, VisionFrameworkName);
+            FindFramework(buildPath, IOSFrameworkName);
 
         if (frameworkPath == null)
         {
             Debug.LogError(
-                $"VisionOSPostBuild: Could not find {VisionFrameworkName} " +
+                $"IOSPostBuild: Could not find {IOSFrameworkName} " +
                 $"anywhere underneath:\n{buildPath}");
 
             return;
@@ -273,7 +252,7 @@ public static class VisionOSPostBuild
                 PBXSourceTree.Source);
 
             Debug.Log(
-                $"VisionOSPostBuild: Added {VisionFrameworkName} " +
+                $"IOSPostBuild: Added {IOSFrameworkName} " +
                 $"at {projectRelativePath}.");
         }
 
@@ -299,7 +278,7 @@ public static class VisionOSPostBuild
             fileGuid);
 
         Debug.Log(
-            $"VisionOSPostBuild: Linked and embedded {VisionFrameworkName}.");
+            $"IOSPostBuild: Linked and embedded {IOSFrameworkName}.");
     }
 
     private static void RemoveFramework(
@@ -361,7 +340,7 @@ public static class VisionOSPostBuild
             project.RemoveFile(fileGuid);
 
             Debug.Log(
-                $"VisionOSPostBuild: Removed {frameworkName} " +
+                $"IOSPostBuild: Removed {frameworkName} " +
                 $"from Xcode project ({projectPath}).");
         }
     }
@@ -393,7 +372,7 @@ public static class VisionOSPostBuild
             if (matches.Length > 1)
             {
                 Debug.LogWarning(
-                    $"VisionOSPostBuild: Found multiple copies of " +
+                    $"IOSPostBuild: Found multiple copies of " +
                     $"{frameworkName}. Using:\n{matches[0]}");
             }
 
@@ -402,7 +381,7 @@ public static class VisionOSPostBuild
         catch (Exception e)
         {
             Debug.LogWarning(
-                $"VisionOSPostBuild: Error searching for " +
+                $"IOSPostBuild: Error searching for " +
                 $"{frameworkName}: {e.Message}");
 
             return null;
