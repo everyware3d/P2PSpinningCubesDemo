@@ -8,7 +8,6 @@ using System.Runtime.InteropServices.WindowsRuntime;
 
 public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
 {
-
     public enum HandIndex {
         LEFT = 0,
         RIGHT = 1
@@ -18,6 +17,7 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
     public abstract void OnRelease(HandIndex idx, Vector2 mousePos, Ray ray);
     public abstract void OnMove(HandIndex idx, Vector2 mousePos, Ray ray);
 
+
     public Transform leftControllerTransform;
     public Transform rightControllerTransform;
     public GameObject outlineForColor;   // screen stabilized object that shows the current user's color for cubes
@@ -26,12 +26,15 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
     private bool _leftIsPressed = false;
     void Awake()
     {
+#if UNITY_VISIONOS || P2P_META_XR
         Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+#endif
     }
     public Vector2 WorldToScreenPoint(Vector3 worldPos)
     {
         Vector3 localPoint = outlineForColor.transform.InverseTransformPoint(worldPos);
-        return new Vector2(Camera.main.pixelWidth * (localPoint.x + 0.5f), Camera.main.pixelHeight * (localPoint.y + 0.5f));
+        return new Vector2(localPoint.x + 0.5f, localPoint.y + 0.5f);
+        // return new Vector2(Camera.main.pixelWidth * (localPoint.x + 0.5f), Camera.main.pixelHeight * (localPoint.y + 0.5f));
     }
     public bool GetMousePosition(OVRInput.Controller controller, out Vector2 mousePos, out Ray controllerRay)
     {
@@ -53,8 +56,12 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
         mousePos = WorldToScreenPoint(worldPoint);
         return true;
     }
+
+    private OVRInput.Controller lastController = OVRInput.Controller.None;
+
     private void Update()
     {
+#if UNITY_VISIONOS || P2P_META_XR
         if (OVRInput.GetDown(
                 OVRInput.Button.PrimaryIndexTrigger,
                 OVRInput.Controller.LTouch))
@@ -106,7 +113,6 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
             if (gotMousePos)
                 OnMove(HandIndex.RIGHT, mousePos, ray);
         }
+#endif
     }
-
-
 }

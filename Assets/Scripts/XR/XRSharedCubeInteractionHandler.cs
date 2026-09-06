@@ -29,7 +29,6 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
     {
         return outlineForColor;
     }
-
     /* Click and dragging SharedCube states */
     private bool[] isDragging = { false, false };   // if an owned cube has been pressed on, the user can drag
     private bool[] pressedOnObject = { false, false };  // whether the user pressed on an object
@@ -40,17 +39,16 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
     private SharedCube[] draggingSharedCube = { null, null };
     private Vector3[] offsetObjectToHitPoint = { new Vector3(), new Vector3() };
 
-    private float _movementThresholdInPixels = 3f;
-
+    private float _movementThresholdInPixels = 0.1f;
     void Start()
     {
-        _movementThresholdInPixels = Mathf.Max(Camera.main.pixelWidth, Camera.main.pixelHeight) * 0.03f;  // 1% of the larger dimension
     }
     /* OnPress - If a cube is pressed, then start dragging it around
      *         - If no cube is pressed, keep track of pressedPoint in 
      *             case its a click (detected OnRelease) to add a cube
     */
     override public void OnPress(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
+#if P2P_META_XR
         RaycastHit hit;
         int idx = (int)idxarg;
         pressedPoint[idx] = mouseTouchPos;
@@ -74,8 +72,10 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
                 draggingSharedCube[idx] = null;
             }
         }
+#endif
     }
     override public void OnRelease(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
+#if P2P_META_XR
         int idx = (int)idxarg;
         if (draggingGameObject[idx] == null && !pressedOnObject[idx] && !hasMovedSincePressed[idx]) {
             if (Utils.IsOnNormalCanvas(mouseTouchPos)) {
@@ -83,7 +83,7 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
                 GameObject newGameObject = SharedCube.spawnNewRemoteObject();
                 SharedCube sharedCube = newGameObject.GetComponent<SharedCube>();
                 if (sharedCube != null) {
-                    sharedCube.SetTranslation(Utils.ScreenToNormalized(mouseTouchPos));
+                    sharedCube.SetTranslation(mouseTouchPos);
                     sharedCube.Insert();  // inserts into p2p for distribution
                     sharedCube.AfterInsertRemote(); // called explicitly since its only called for remotely created instances
                 }
@@ -105,8 +105,10 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
             draggingGameObject[idx] = null;
         }
         pressedOnObject[idx] = false;
+#endif
     }
     override public void OnMove(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
+#if P2P_META_XR
         int idx = (int)idxarg;
         // var world = Camera.main.ScreenToWorldPoint(new Vector3(mouseTouchPos.x, mouseTouchPos.y, 0f));
         if (isDragging[idx]) {
@@ -114,7 +116,7 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
                 Vector3 pos = ray.GetPoint(enter) + offsetObjectToHitPoint[idx];
                 Vector3 diff = draggingGameObject[idx].transform.position - pos;
                 if (diff.magnitude > 0.0001) {
-                    draggingSharedCube[idx].SetTranslation(Utils.ScreenToNormalized(WorldToScreenPoint(pos)));
+                    draggingSharedCube[idx].SetTranslation(WorldToScreenPoint(pos));
                     draggingSharedCube[idx].UpdateAllFields();
                 }
             }
@@ -124,5 +126,6 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
         if (!hasMovedSincePressed[idx] && pressedPoint != null && dist > _movementThresholdInPixels) {
             hasMovedSincePressed[idx] = true;  // if moved, then it shouldn't be deleted on release
         }
+#endif
     }
 }

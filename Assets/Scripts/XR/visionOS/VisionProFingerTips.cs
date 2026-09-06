@@ -1,3 +1,4 @@
+#if UNITY_VISIONOS
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -500,3 +501,4 @@ public class VisionProFingerTips : MonoBehaviour
             RightReleased = true;
     }
 }
+#endif

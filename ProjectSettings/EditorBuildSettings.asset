@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/P2PSpinningCubesDemo.unity
     guid: ee1e86833b9e14201b770094ff2ca4de
+  - enabled: 0
+    path: Assets/Scenes/MetaP2PSpinningCubesDemo.unity
+    guid: 3da29910bea4a4c47bb0736c54c35601
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 045b7e18f90bdae4ab1e4ff6809452ce, type: 2}
     UnityEditor.XR.VisionOS.VisionOSSettings: {fileID: 11400000, guid: a88d3501db2c144fea1cccfa3766f1c0, type: 2}

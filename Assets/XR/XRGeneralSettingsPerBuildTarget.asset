@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: iPhone Settings
   m_EditorClassIdentifier: Unity.XR.Management::UnityEngine.XR.Management.XRGeneralSettings
-  m_Manager: {fileID: -3539625113142384848}
+  m_LoaderManagerInstance: {fileID: 0}
   m_InitManagerOnStart: 1
 --- !u!114 &-8309810132144278661
 MonoBehaviour:
@@ -26,7 +26,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: VisionOS Settings
   m_EditorClassIdentifier: Unity.XR.Management::UnityEngine.XR.Management.XRGeneralSettings
-  m_Manager: {fileID: 4711030411254607288}
+  m_LoaderManagerInstance: {fileID: 0}
   m_InitManagerOnStart: 1
 --- !u!114 &-7850885084892600562
 MonoBehaviour:
@@ -40,7 +40,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: WebGL Settings
   m_EditorClassIdentifier: Unity.XR.Management::UnityEngine.XR.Management.XRGeneralSettings
-  m_Manager: {fileID: -5544782442916108571}
+  m_LoaderManagerInstance: {fileID: 0}
   m_InitManagerOnStart: 1
 --- !u!114 &-5544782442916108571
 MonoBehaviour:
@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: Android Settings
   m_EditorClassIdentifier: 
-  m_Manager: {fileID: -5200202392782513146}
+  m_LoaderManagerInstance: {fileID: 0}
   m_InitManagerOnStart: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -117,21 +117,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2dc886499c26824283350fa532d087d, type: 3}
   m_Name: XRGeneralSettingsPerBuildTarget
   m_EditorClassIdentifier: 
-  Keys: 
-  Values: []
-  m_SettingsPerBuildTarget:
-  - buildTarget: 1
-    settings: {fileID: 6538130972111412822}
-  - buildTarget: 7
-    settings: {fileID: -283136733348148900}
-  - buildTarget: 14
-    settings: {fileID: 4674794582999484438}
-  - buildTarget: 36
-    settings: {fileID: -8309810132144278661}
-  - buildTarget: 4
-    settings: {fileID: -8941318177511639840}
-  - buildTarget: 13
-    settings: {fileID: -7850885084892600562}
+  Keys: 07000000
+  Values:
+  - {fileID: 5082375238862096804}
 --- !u!114 &1485616374101590577
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -148,6 +136,23 @@ MonoBehaviour:
   m_AutomaticLoading: 0
   m_AutomaticRunning: 0
   m_Loaders: []
+--- !u!114 &1628974348008846659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4c3631f5e58749a59194e0cf6baf6d5, type: 3}
+  m_Name: Android Providers
+  m_EditorClassIdentifier: Unity.XR.Management::UnityEngine.XR.Management.XRManagerSettings
+  m_RequiresSettingsUpdate: 0
+  m_AutomaticLoading: 0
+  m_AutomaticRunning: 0
+  m_Loaders:
+  - {fileID: 11400000, guid: 0b5c9a8363a9edc4fb5ed68d78398e02, type: 2}
 --- !u!114 &2750725278925988474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: Metro Settings
   m_EditorClassIdentifier: 
-  m_Manager: {fileID: 2750725278925988474}
+  m_LoaderManagerInstance: {fileID: 0}
   m_InitManagerOnStart: 1
 --- !u!114 &4711030411254607288
 MonoBehaviour:
@@ -195,7 +200,21 @@ MonoBehaviour:
   m_AutomaticLoading: 0
   m_AutomaticRunning: 0
   m_Loaders:
-  - {fileID: 11400000, guid: ba334ccc3e7814e6c82a69572f875f29, type: 2}
+  - {fileID: 0}
+--- !u!114 &5082375238862096804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
+  m_Name: Android Settings
+  m_EditorClassIdentifier: Unity.XR.Management::UnityEngine.XR.Management.XRGeneralSettings
+  m_LoaderManagerInstance: {fileID: 1628974348008846659}
+  m_InitManagerOnStart: 1
 --- !u!114 &6538130972111412822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,5 +227,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: Standalone Settings
   m_EditorClassIdentifier: 
-  m_Manager: {fileID: 1485616374101590577}
+  m_LoaderManagerInstance: {fileID: 0}
   m_InitManagerOnStart: 0

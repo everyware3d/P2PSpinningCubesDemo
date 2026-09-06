@@ -1,3 +1,4 @@
+// #if UNITY_VISIONOS
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -30,6 +31,7 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
         return outlineForColor;
     }
 
+#if UNITY_VISIONOS
     /* Click and dragging SharedCube states */
     private bool[] isDragging = { false, false };   // if an owned cube has been pressed on, the user can drag
     private bool[] pressedOnObject = { false, false };  // whether the user pressed on an object
@@ -42,7 +44,7 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
     private Vector3[] offsetObjectToHitPoint = { new Vector3(), new Vector3() };
 
     private float _movementThresholdInPixels = 0.3f;
-
+#endif
     void Start()
     {
     }
@@ -51,6 +53,7 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
      *             case its a click (detected OnRelease) to add a cube
     */
     override public void OnPress(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
+#if UNITY_VISIONOS
         RaycastHit hit;
         int idx = (int)idxarg;
         pressedPoint[idx] = mouseTouchPos;
@@ -75,8 +78,10 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
                 draggingSharedCube[idx] = null;
             }
         }
+#endif
     }
     override public void OnRelease(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
+#if UNITY_VISIONOS
         int idx = (int)idxarg;
         float timeSincePressed = Time.time - timeWhenLastPressed[idx];
         if (draggingGameObject[idx] == null && !pressedOnObject[idx] && timeSincePressed < 0.3f){ // !hasMovedSincePressed[idx]) {
@@ -108,8 +113,10 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
             draggingGameObject[idx] = null;
         }
         pressedOnObject[idx] = false;
+#endif
     }
     override public void OnMove(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
+#if UNITY_VISIONOS
         int idx = (int)idxarg;
         if (isDragging[idx]) {
             if (dragPlane[idx].Raycast(ray, out float enter)) {
@@ -126,6 +133,7 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
         if (!hasMovedSincePressed[idx] && pressedPoint != null && dist > _movementThresholdInPixels) {
             hasMovedSincePressed[idx] = true;  // if moved, then it shouldn't be deleted on release
         }
+#endif
     }
     public Vector2 WorldToScreenPoint(Vector3 worldPos)
     {
@@ -156,6 +164,7 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
 
     public void Update()
     {
+#if UNITY_VISIONOS
         var hands = VisionProFingerTips.Instance;
         if (hands == null)
             return;
@@ -203,5 +212,6 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
         {
             Debug.Log("Right hand mouse position: " + mousePos2);
         }*/
+#endif
     }
 }
