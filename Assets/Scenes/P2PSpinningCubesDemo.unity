@@ -377,9 +377,9 @@ MonoBehaviour:
   multicastPort: 2253
   doNotDestroyOnLoad: 0
   m_checkLicenseOnStart: 1
-  emailString: blaine@blainebell.org
+  emailString: 
   password:
-    _ciphertextB64: XUdjG0oTb+zu9Ipb0gC9ADU7bhn/rryzaaptbF8GYvM=
+    _ciphertextB64: 
 --- !u!114 &330585552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -399,7 +399,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f189952314a8470a8368adc9f6934bd, type: 3}
   m_Name: 
