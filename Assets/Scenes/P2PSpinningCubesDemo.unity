@@ -379,7 +379,7 @@ MonoBehaviour:
   m_checkLicenseOnStart: 1
   emailString: blaine@blainebell.org
   password:
-    _ciphertextB64: 
+    _ciphertextB64: XUdjG0oTb+zu9Ipb0gC9ADU7bhn/rryzaaptbF8GYvM=
 --- !u!114 &330585552
 MonoBehaviour:
   m_ObjectHideFlags: 0

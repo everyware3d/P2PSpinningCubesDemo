@@ -51,6 +51,15 @@ public static class OSXPostBuild
         }
 
         SetSigningTeam(project, mainTargetGuid);
+        AddAppSandboxEntitlements(
+            project,
+            pbxProjectPath,
+            mainTargetGuid);
+
+        AddPrivacyUsageDescriptions(
+            project,
+            mainTargetGuid);
+
         AddOSXBundle(project, path, mainTargetGuid);
 
         RemoveMetaReferencesFromProject(
@@ -161,6 +170,135 @@ public static class OSXPostBuild
 
         Debug.Log(
             "OSXPostBuild: Set DEVELOPMENT_TEAM from APPLE_DEVELOPER_TEAM_ID.");
+    }
+
+    private static void AddAppSandboxEntitlements(
+        PBXProject project,
+        string pbxProjectPath,
+        string targetGuid)
+    {
+        string xcodeProjectDirectory =
+            Path.GetDirectoryName(pbxProjectPath);
+
+        if (string.IsNullOrEmpty(xcodeProjectDirectory))
+        {
+            Debug.LogError(
+                "OSXPostBuild: Could not determine the Xcode project directory.");
+            return;
+        }
+
+        DirectoryInfo projectBundleDirectory =
+            new DirectoryInfo(xcodeProjectDirectory);
+
+        DirectoryInfo projectRootDirectory =
+            projectBundleDirectory.Parent;
+
+        if (projectRootDirectory == null)
+        {
+            Debug.LogError(
+                "OSXPostBuild: Could not determine the Xcode project root.");
+            return;
+        }
+
+        string entitlementsFileName =
+            PlayerSettings.productName + ".entitlements";
+
+        string entitlementsPath =
+            Path.Combine(
+                projectRootDirectory.FullName,
+                entitlementsFileName);
+
+        PlistDocument entitlements =
+            new PlistDocument();
+
+        if (File.Exists(entitlementsPath))
+        {
+            entitlements.ReadFromFile(entitlementsPath);
+        }
+        else
+        {
+            entitlements.Create();
+        }
+
+        PlistElementDict root =
+            entitlements.root;
+
+        root.SetBoolean(
+            "com.apple.security.app-sandbox",
+            true);
+
+        root.SetBoolean(
+            "com.apple.security.network.client",
+            true);
+
+        root.SetBoolean(
+            "com.apple.security.network.server",
+            true);
+
+        root.SetBoolean(
+            "com.apple.security.device.camera",
+            true);
+
+        root.SetBoolean(
+            "com.apple.security.device.bluetooth",
+            true);
+
+        entitlements.WriteToFile(entitlementsPath);
+
+        string projectRelativeEntitlementsPath =
+            entitlementsFileName.Replace("\\", "/");
+
+        string entitlementsGuid =
+            project.FindFileGuidByProjectPath(
+                projectRelativeEntitlementsPath);
+
+        if (string.IsNullOrEmpty(entitlementsGuid))
+        {
+            project.AddFile(
+                entitlementsPath,
+                projectRelativeEntitlementsPath,
+                PBXSourceTree.Source);
+        }
+
+        project.SetBuildProperty(
+            targetGuid,
+            "CODE_SIGN_ENTITLEMENTS",
+            projectRelativeEntitlementsPath);
+
+        project.SetBuildProperty(
+            targetGuid,
+            "ENABLE_APP_SANDBOX",
+            "YES");
+
+        Debug.Log(
+            "OSXPostBuild: Enabled App Sandbox with incoming/outgoing " +
+            "network, camera, and Bluetooth entitlements.");
+    }
+
+    private static void AddPrivacyUsageDescriptions(
+        PBXProject project,
+        string targetGuid)
+    {
+        // Add privacy usage-description keys to the generated app Info.plist
+        // via Xcode build settings.
+        project.SetBuildProperty(
+            targetGuid,
+            "INFOPLIST_KEY_NSLocalNetworkUsageDescription",
+            "This application uses the local network to discover and communicate with nearby devices.");
+
+        project.SetBuildProperty(
+            targetGuid,
+            "INFOPLIST_KEY_NSCameraUsageDescription",
+            "This application uses the camera when camera functionality is requested.");
+
+        project.SetBuildProperty(
+            targetGuid,
+            "INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription",
+            "This application uses Bluetooth to communicate with nearby devices.");
+
+        Debug.Log(
+            "OSXPostBuild: Added Local Network, Camera, and Bluetooth " +
+            "Info.plist usage descriptions.");
     }
 
     private static void AddOSXBundle(

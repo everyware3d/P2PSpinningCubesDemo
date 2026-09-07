@@ -36,10 +36,10 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
         return new Vector2(localPoint.x + 0.5f, localPoint.y + 0.5f);
         // return new Vector2(Camera.main.pixelWidth * (localPoint.x + 0.5f), Camera.main.pixelHeight * (localPoint.y + 0.5f));
     }
-    public bool GetMousePosition(OVRInput.Controller controller, out Vector2 mousePos, out Ray controllerRay)
+    public bool GetMousePosition(HandIndex controller, out Vector2 mousePos, out Ray controllerRay)
     {
         mousePos = Vector2.zero;
-        Transform controllerTransform = controller == OVRInput.Controller.LTouch ? leftControllerTransform : rightControllerTransform;
+        Transform controllerTransform = controller == HandIndex.LEFT ? leftControllerTransform : rightControllerTransform;
         Vector3 controllerPosition = controllerTransform.position;
         Vector3 controllerForward = controllerTransform.forward;
         controllerRay = new Ray(controllerPosition, controllerForward);
@@ -56,9 +56,6 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
         mousePos = WorldToScreenPoint(worldPoint);
         return true;
     }
-
-    private OVRInput.Controller lastController = OVRInput.Controller.None;
-
     private void Update()
     {
 #if UNITY_VISIONOS || P2P_META_XR
@@ -66,7 +63,7 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
                 OVRInput.Button.PrimaryIndexTrigger,
                 OVRInput.Controller.LTouch))
         {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
+            bool gotMousePos = GetMousePosition(HandIndex.LEFT, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
                 OnPress(HandIndex.LEFT, mousePos, ray);
             _leftIsPressed = true;
@@ -76,7 +73,7 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
                 OVRInput.Button.PrimaryIndexTrigger,
                 OVRInput.Controller.LTouch))
         {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
+            bool gotMousePos = GetMousePosition(HandIndex.LEFT, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
                 OnRelease(HandIndex.LEFT, mousePos, ray);
             _leftIsPressed = false;
@@ -86,7 +83,7 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
                 OVRInput.Button.PrimaryIndexTrigger,
                 OVRInput.Controller.RTouch))
         {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
+            bool gotMousePos = GetMousePosition(HandIndex.RIGHT, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
                 OnPress(HandIndex.RIGHT, mousePos, ray);
             _rightIsPressed = true;
@@ -96,20 +93,20 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
                 OVRInput.Button.PrimaryIndexTrigger,
                 OVRInput.Controller.RTouch))
         {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
+            bool gotMousePos = GetMousePosition(HandIndex.RIGHT, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
                 OnRelease(HandIndex.RIGHT, mousePos, ray);
             _rightIsPressed = false;
         }
         if (_leftIsPressed)
         {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.LTouch, out Vector2 mousePos, out Ray ray);
+            bool gotMousePos = GetMousePosition(HandIndex.LEFT, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
                 OnMove(HandIndex.LEFT, mousePos, ray);
         }
         if (_rightIsPressed)
         {
-            bool gotMousePos = GetMousePosition(OVRInput.Controller.RTouch, out Vector2 mousePos, out Ray ray);
+            bool gotMousePos = GetMousePosition(HandIndex.RIGHT, out Vector2 mousePos, out Ray ray);
             if (gotMousePos)
                 OnMove(HandIndex.RIGHT, mousePos, ray);
         }
