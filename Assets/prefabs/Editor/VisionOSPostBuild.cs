@@ -135,6 +135,13 @@ public static class VisionOSPostBuild
 
         foreach (string schemePath in schemeFiles)
         {
+            // Turn off Scheme > Run > Info > Debug executable.
+            // This launches the app from Xcode without attaching LLDB.
+            XcScheme scheme = new XcScheme();
+            scheme.ReadFromFile(schemePath);
+            scheme.SetDebugExecutable(false);
+            scheme.WriteToFile(schemePath);
+
             XmlDocument document = new XmlDocument();
             document.PreserveWhitespace = true;
             document.Load(schemePath);
@@ -192,7 +199,8 @@ public static class VisionOSPostBuild
             document.Save(schemePath);
 
             Debug.Log(
-                $"VisionOSPostBuild: Set IDELogRedirectionPolicy=stdioToOSLog in {Path.GetFileName(schemePath)}.");
+                $"VisionOSPostBuild: Disabled Debug executable and set " +
+                $"IDELogRedirectionPolicy=stdioToOSLog in {Path.GetFileName(schemePath)}.");
         }
     }
 

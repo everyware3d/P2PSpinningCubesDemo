@@ -58,7 +58,7 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
     }
     private void Update()
     {
-#if UNITY_VISIONOS || P2P_META_XR
+#if P2P_META_XR
         if (OVRInput.GetDown(
                 OVRInput.Button.PrimaryIndexTrigger,
                 OVRInput.Controller.LTouch))
