@@ -22,21 +22,23 @@ public abstract class XRMouseAndTouchMonoBehaviour : MonoBehaviour
     public Transform rightControllerTransform;
     public GameObject outlineForColor;   // screen stabilized object that shows the current user's color for cubes
 
+#if P2P_META_XR
     private bool _rightIsPressed = false;
     private bool _leftIsPressed = false;
+#endif
     void Awake()
     {
 #if UNITY_VISIONOS || P2P_META_XR
         Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
 #endif
     }
-    public Vector2 WorldToScreenPoint(Vector3 worldPos)
+    public virtual Vector2 WorldToScreenPoint(Vector3 worldPos)
     {
         Vector3 localPoint = outlineForColor.transform.InverseTransformPoint(worldPos);
         return new Vector2(localPoint.x + 0.5f, localPoint.y + 0.5f);
         // return new Vector2(Camera.main.pixelWidth * (localPoint.x + 0.5f), Camera.main.pixelHeight * (localPoint.y + 0.5f));
     }
-    public bool GetMousePosition(HandIndex controller, out Vector2 mousePos, out Ray controllerRay)
+    public virtual bool GetMousePosition(HandIndex controller, out Vector2 mousePos, out Ray controllerRay)
     {
         mousePos = Vector2.zero;
         Transform controllerTransform = controller == HandIndex.LEFT ? leftControllerTransform : rightControllerTransform;

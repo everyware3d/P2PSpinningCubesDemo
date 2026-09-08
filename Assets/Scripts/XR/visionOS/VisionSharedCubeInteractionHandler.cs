@@ -135,13 +135,13 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
         }
 #endif
     }
-    public Vector2 WorldToScreenPoint(Vector3 worldPos)
+    public override Vector2 WorldToScreenPoint(Vector3 worldPos)
     {
         Vector3 localPoint = outlineForColor.transform.InverseTransformPoint(worldPos);
         return new Vector2((localPoint.x + 0.5f), (localPoint.y + 0.5f));
     }
 
-    public bool GetMousePosition(HandIndex handIndex, out Vector2 mousePos, out Ray controllerRay)
+    public override bool GetMousePosition(HandIndex handIndex, out Vector2 mousePos, out Ray controllerRay)
     {
         mousePos = Vector2.zero;
         Transform controllerTransform = handIndex == HandIndex.LEFT ? leftControllerTransform : rightControllerTransform;

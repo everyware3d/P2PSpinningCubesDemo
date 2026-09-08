@@ -39,7 +39,9 @@ public class XRSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PI
     private SharedCube[] draggingSharedCube = { null, null };
     private Vector3[] offsetObjectToHitPoint = { new Vector3(), new Vector3() };
 
+#if P2P_META_XR
     private float _movementThresholdInPixels = 0.1f;
+#endif
     void Start()
     {
     }
