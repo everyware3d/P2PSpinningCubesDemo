@@ -1,5 +1,7 @@
 #if UNITY_EDITOR && UNITY_VISIONOS
 
+// #define WRITE_MUTLICAST_ENTITLEMENT
+
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.iOS.Xcode;
@@ -14,13 +16,15 @@ using System.Xml;
 public static class VisionOSPostBuild
 {
     // IMPORTANT:
-    // Set the environment variable APPLE_DEVELOPER_TEAM_ID to your 
+    // Set the environment variable APPLE_DEVELOPER_TEAM_ID to your
     // Apple Developer Team ID in your Unity Editor's environment.
     private static readonly string DeveloperTeamId =
         Environment.GetEnvironmentVariable("APPLE_DEVELOPER_TEAM_ID");
 
     private const string VisionFrameworkName = "DPCoreBundleVision.xcframework";
     private const string IOSFrameworkName    = "DPCoreBundleIOS.xcframework";
+
+    private const string EntitlementsFileName = "Unity-VisionOS.entitlements";
 
     // Run fairly late so this happens after Unity has generated the Xcode project.
     [PostProcessBuild(999)]
@@ -49,20 +53,33 @@ public static class VisionOSPostBuild
             "NSWorldSensingUsageDescription",
             "World sensing is used to place and interact with virtual objects in your environment.");
 
-        File.WriteAllText(plistPath, plist.WriteToString());
+        plist.root.SetString(
+            "NSLocalNetworkUsageDescription",
+            "Local network access is used to discover and communicate with nearby devices.");
 
-        Debug.Log("VisionOSPostBuild: Updated Info.plist.");
+        File.WriteAllText(
+            plistPath,
+            plist.WriteToString());
+
+        Debug.Log(
+            "VisionOSPostBuild: Updated Info.plist.");
     }
 
     private static void UpdateXcodeProject(string buildPath)
     {
-        string projectPath = PBXProject.GetPBXProjectPath(buildPath);
+        string projectPath =
+            PBXProject.GetPBXProjectPath(buildPath);
 
-        PBXProject project = new PBXProject();
+        PBXProject project =
+            new PBXProject();
+
         project.ReadFromFile(projectPath);
 
-        string mainTargetGuid = project.GetUnityMainTargetGuid();
-        string unityFrameworkTargetGuid = project.GetUnityFrameworkTargetGuid();
+        string mainTargetGuid =
+            project.GetUnityMainTargetGuid();
+
+        string unityFrameworkTargetGuid =
+            project.GetUnityFrameworkTargetGuid();
 
         //
         // 1. Set signing team
@@ -73,7 +90,16 @@ public static class VisionOSPostBuild
             unityFrameworkTargetGuid);
 
         //
-        // 2. Remove DPCoreBundleIOS.framework
+        // 2. Configure multicast entitlement
+        //
+#if WRITE_MUTLICAST_ENTITLEMENT
+        UpdateEntitlements(
+            project,
+            buildPath,
+            mainTargetGuid);
+#endif
+        //
+        // 3. Remove DPCoreBundleIOS.framework
         //
         RemoveFramework(
             project,
@@ -83,7 +109,7 @@ public static class VisionOSPostBuild
             IOSFrameworkName);
 
         //
-        // 3. Add + embed DPCoreBundleVision.framework
+        // 4. Add + embed DPCoreBundleVision.framework
         //
         AddVisionFramework(
             project,
@@ -93,85 +119,182 @@ public static class VisionOSPostBuild
 
         project.WriteToFile(projectPath);
 
-        Debug.Log("VisionOSPostBuild: Updated Xcode project.");
+        Debug.Log(
+            "VisionOSPostBuild: Updated Xcode project.");
     }
 
+    private static void UpdateEntitlements(
+        PBXProject project,
+        string buildPath,
+        string mainTargetGuid)
+    {
+        string entitlementsPath =
+            Path.Combine(
+                buildPath,
+                EntitlementsFileName);
+
+        PlistDocument entitlements =
+            new PlistDocument();
+
+        if (File.Exists(entitlementsPath))
+        {
+            entitlements.ReadFromFile(
+                entitlementsPath);
+        }
+
+        //
+        // Allow multicast / UDP broadcast networking.
+        //
+        entitlements.root.SetBoolean(
+            "com.apple.developer.networking.multicast",
+            true);
+
+        File.WriteAllText(
+            entitlementsPath,
+            entitlements.WriteToString());
+
+        //
+        // Make sure the entitlements file is part of the Xcode project.
+        //
+        string fileGuid =
+            project.FindFileGuidByProjectPath(
+                EntitlementsFileName);
+
+        if (string.IsNullOrEmpty(fileGuid))
+        {
+            project.AddFile(
+                entitlementsPath,
+                EntitlementsFileName,
+                PBXSourceTree.Source);
+        }
+
+        //
+        // Tell Xcode to use this entitlement file when signing
+        // the main application target.
+        //
+        project.SetBuildProperty(
+            mainTargetGuid,
+            "CODE_SIGN_ENTITLEMENTS",
+            EntitlementsFileName);
+
+        Debug.Log(
+            $"VisionOSPostBuild: Added multicast entitlement " +
+            $"and configured CODE_SIGN_ENTITLEMENTS={EntitlementsFileName}.");
+    }
 
     private static void UpdateXcodeScheme(string buildPath)
     {
-        string projectPath = PBXProject.GetPBXProjectPath(buildPath);
-        string projectDirectory = Path.GetDirectoryName(projectPath);
+        string projectPath =
+            PBXProject.GetPBXProjectPath(buildPath);
+
+        string projectDirectory =
+            Path.GetDirectoryName(projectPath);
 
         if (string.IsNullOrEmpty(projectDirectory))
         {
             Debug.LogWarning(
                 $"VisionOSPostBuild: Could not determine Xcode project directory from:\n{projectPath}");
+
             return;
         }
 
-        string schemeDirectory = Path.Combine(
-            projectDirectory,
-            "xcshareddata",
-            "xcschemes");
+        string schemeDirectory =
+            Path.Combine(
+                projectDirectory,
+                "xcshareddata",
+                "xcschemes");
 
         if (!Directory.Exists(schemeDirectory))
         {
             Debug.LogWarning(
                 $"VisionOSPostBuild: Xcode scheme directory not found:\n{schemeDirectory}");
+
             return;
         }
 
-        string[] schemeFiles = Directory.GetFiles(
-            schemeDirectory,
-            "*.xcscheme",
-            SearchOption.TopDirectoryOnly);
+        string[] schemeFiles =
+            Directory.GetFiles(
+                schemeDirectory,
+                "*.xcscheme",
+                SearchOption.TopDirectoryOnly);
 
         if (schemeFiles.Length == 0)
         {
             Debug.LogWarning(
                 $"VisionOSPostBuild: No shared Xcode schemes found in:\n{schemeDirectory}");
+
             return;
         }
 
         foreach (string schemePath in schemeFiles)
         {
-            // Turn off Scheme > Run > Info > Debug executable.
+            //
+            // Turn off:
+            //
+            // Scheme > Run > Info > Debug executable
+            //
             // This launches the app from Xcode without attaching LLDB.
-            XcScheme scheme = new XcScheme();
-            scheme.ReadFromFile(schemePath);
-            scheme.SetDebugExecutable(false);
-            scheme.WriteToFile(schemePath);
+            //
+            XcScheme scheme =
+                new XcScheme();
 
-            XmlDocument document = new XmlDocument();
-            document.PreserveWhitespace = true;
-            document.Load(schemePath);
+            scheme.ReadFromFile(
+                schemePath);
+
+            scheme.SetDebugExecutable(
+                false);
+
+            scheme.WriteToFile(
+                schemePath);
+
+            //
+            // Add:
+            //
+            // IDELogRedirectionPolicy=stdioToOSLog
+            //
+            XmlDocument document =
+                new XmlDocument();
+
+            document.PreserveWhitespace =
+                true;
+
+            document.Load(
+                schemePath);
 
             XmlNode launchAction =
-                document.SelectSingleNode("/Scheme/LaunchAction");
+                document.SelectSingleNode(
+                    "/Scheme/LaunchAction");
 
             if (launchAction == null)
                 continue;
 
             XmlNode environmentVariables =
-                launchAction.SelectSingleNode("EnvironmentVariables");
+                launchAction.SelectSingleNode(
+                    "EnvironmentVariables");
 
             if (environmentVariables == null)
             {
                 environmentVariables =
-                    document.CreateElement("EnvironmentVariables");
+                    document.CreateElement(
+                        "EnvironmentVariables");
 
-                launchAction.AppendChild(environmentVariables);
+                launchAction.AppendChild(
+                    environmentVariables);
             }
 
-            XmlElement existingVariable = null;
+            XmlElement existingVariable =
+                null;
 
             foreach (XmlNode node in environmentVariables.ChildNodes)
             {
                 if (node is XmlElement element &&
                     element.Name == "EnvironmentVariable" &&
-                    element.GetAttribute("key") == "IDELogRedirectionPolicy")
+                    element.GetAttribute("key") ==
+                    "IDELogRedirectionPolicy")
                 {
-                    existingVariable = element;
+                    existingVariable =
+                        element;
+
                     break;
                 }
             }
@@ -179,9 +302,11 @@ public static class VisionOSPostBuild
             if (existingVariable == null)
             {
                 existingVariable =
-                    document.CreateElement("EnvironmentVariable");
+                    document.CreateElement(
+                        "EnvironmentVariable");
 
-                environmentVariables.AppendChild(existingVariable);
+                environmentVariables.AppendChild(
+                    existingVariable);
             }
 
             existingVariable.SetAttribute(
@@ -196,11 +321,13 @@ public static class VisionOSPostBuild
                 "isEnabled",
                 "YES");
 
-            document.Save(schemePath);
+            document.Save(
+                schemePath);
 
             Debug.Log(
                 $"VisionOSPostBuild: Disabled Debug executable and set " +
-                $"IDELogRedirectionPolicy=stdioToOSLog in {Path.GetFileName(schemePath)}.");
+                $"IDELogRedirectionPolicy=stdioToOSLog in " +
+                $"{Path.GetFileName(schemePath)}.");
         }
     }
 
@@ -214,6 +341,7 @@ public static class VisionOSPostBuild
         {
             Debug.LogWarning(
                 "VisionOSPostBuild: DeveloperTeamId has not been configured.");
+
             return;
         }
 
@@ -221,11 +349,16 @@ public static class VisionOSPostBuild
             $"VisionOSPostBuild: mainTargetGuid={mainTargetGuid}, " +
             $"unityFrameworkTargetGuid={unityFrameworkTargetGuid}");
 
-        // Do not call PBXProject.SetTeamId() here. In some Unity/visionOS
-        // generated projects it can throw an ArgumentException while
-        // constructing its internal target/configuration dictionary.
+        //
+        // Do not call PBXProject.SetTeamId() here.
+        //
+        // In some Unity/visionOS generated projects it can throw an
+        // ArgumentException while constructing its internal
+        // target/configuration dictionary.
+        //
         // DEVELOPMENT_TEAM is just an Xcode build setting, so setting it
         // directly is sufficient and avoids that Unity Xcode API issue.
+        //
         foreach (string targetGuid in GetUniqueTargetGuids(
                      mainTargetGuid,
                      unityFrameworkTargetGuid))
@@ -252,7 +385,9 @@ public static class VisionOSPostBuild
         string unityFrameworkTargetGuid)
     {
         string frameworkPath =
-            FindFramework(buildPath, VisionFrameworkName);
+            FindFramework(
+                buildPath,
+                VisionFrameworkName);
 
         if (frameworkPath == null)
         {
@@ -264,21 +399,27 @@ public static class VisionOSPostBuild
         }
 
         string projectRelativePath =
-            GetRelativePath(buildPath, frameworkPath);
+            GetRelativePath(
+                buildPath,
+                frameworkPath);
 
         // Xcode wants forward slashes in project paths.
         projectRelativePath =
-            projectRelativePath.Replace("\\", "/");
+            projectRelativePath.Replace(
+                "\\",
+                "/");
 
         string fileGuid =
-            project.FindFileGuidByProjectPath(projectRelativePath);
+            project.FindFileGuidByProjectPath(
+                projectRelativePath);
 
         if (string.IsNullOrEmpty(fileGuid))
         {
-            fileGuid = project.AddFile(
-                frameworkPath,
-                projectRelativePath,
-                PBXSourceTree.Source);
+            fileGuid =
+                project.AddFile(
+                    frameworkPath,
+                    projectRelativePath,
+                    PBXSourceTree.Source);
 
             Debug.Log(
                 $"VisionOSPostBuild: Added {VisionFrameworkName} " +
@@ -318,7 +459,9 @@ public static class VisionOSPostBuild
         string frameworkName)
     {
         string frameworkPath =
-            FindFramework(buildPath, frameworkName);
+            FindFramework(
+                buildPath,
+                frameworkName);
 
         /*
          * We know where Unity normally copies your existing iOS plugin,
@@ -332,13 +475,19 @@ public static class VisionOSPostBuild
             $"Frameworks/{frameworkName}"
         };
 
+        //
         // If it exists physically, its actual project-relative path
         // is our best candidate.
+        //
         if (frameworkPath != null)
         {
             string relative =
-                GetRelativePath(buildPath, frameworkPath)
-                    .Replace("\\", "/");
+                GetRelativePath(
+                    buildPath,
+                    frameworkPath)
+                .Replace(
+                    "\\",
+                    "/");
 
             candidateProjectPaths =
                 new[] { relative }
@@ -350,12 +499,15 @@ public static class VisionOSPostBuild
         foreach (string projectPath in candidateProjectPaths)
         {
             string fileGuid =
-                project.FindFileGuidByProjectPath(projectPath);
+                project.FindFileGuidByProjectPath(
+                    projectPath);
 
             if (string.IsNullOrEmpty(fileGuid))
                 continue;
 
+            //
             // Remove from every unique target it might have been linked into.
+            //
             foreach (string targetGuid in GetUniqueTargetGuids(
                          mainTargetGuid,
                          unityFrameworkTargetGuid))
@@ -365,8 +517,11 @@ public static class VisionOSPostBuild
                     fileGuid);
             }
 
+            //
             // Remove the PBX file reference entirely.
-            project.RemoveFile(fileGuid);
+            //
+            project.RemoveFile(
+                fileGuid);
 
             Debug.Log(
                 $"VisionOSPostBuild: Removed {frameworkName} " +
@@ -374,11 +529,12 @@ public static class VisionOSPostBuild
         }
     }
 
-
-    private static string[] GetUniqueTargetGuids(params string[] targetGuids)
+    private static string[] GetUniqueTargetGuids(
+        params string[] targetGuids)
     {
         return targetGuids
-            .Where(guid => !string.IsNullOrEmpty(guid))
+            .Where(
+                guid => !string.IsNullOrEmpty(guid))
             .Distinct()
             .ToArray();
     }
@@ -427,16 +583,23 @@ public static class VisionOSPostBuild
                     Path.GetFullPath(basePath)));
 
         Uri fileUri =
-            new Uri(Path.GetFullPath(fullPath));
+            new Uri(
+                Path.GetFullPath(fullPath));
 
         return Uri.UnescapeDataString(
-            baseUri.MakeRelativeUri(fileUri).ToString());
+            baseUri.MakeRelativeUri(
+                fileUri).ToString());
     }
 
-    private static string AppendDirectorySeparatorChar(string path)
+    private static string AppendDirectorySeparatorChar(
+        string path)
     {
-        if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            return path + Path.DirectorySeparatorChar;
+        if (!path.EndsWith(
+                Path.DirectorySeparatorChar.ToString()))
+        {
+            return path +
+                   Path.DirectorySeparatorChar;
+        }
 
         return path;
     }
