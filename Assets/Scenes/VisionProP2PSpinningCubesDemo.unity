@@ -708,7 +708,7 @@ MonoBehaviour:
   rightControllerTransform: {fileID: 1434769147}
   outlineForColor: {fileID: 1841813300}
   parentOfSpawnedGOs: {fileID: 1841813300}
-  prefabToSpawn: {fileID: 4008258910738281193, guid: 8a92d32b81b084636a6056560c86cce6, type: 3}
+  prefabToSpawn: {fileID: 4008258910738281193, guid: 32a5f802e82a44d19ae57b8c7deb1ee9, type: 3}
 --- !u!1 &1621213495
 GameObject:
   m_ObjectHideFlags: 0
@@ -790,11 +790,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0cb9aa70a22847b5925ee5f067c10a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.XR.CoreUtils::Unity.XR.CoreUtils.XROrigin
-  m_Camera: {fileID: 1901796912}
-  m_OriginBaseGameObject: {fileID: 1647517501}
-  m_CameraFloorOffsetObject: {fileID: 332661173}
-  m_RequestedTrackingOriginMode: 0
-  m_CameraYOffset: 1.1176
 --- !u!114 &1647517504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -807,18 +802,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28566798f7849409eb14d65f02045869, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VisionProFingerTips
-  leftIndexTip: {fileID: 1934500329}
-  rightIndexTip: {fileID: 1621213496}
-  leftIndexMetacarpal: {fileID: 1825480220}
-  rightIndexMetacarpal: {fileID: 1434769147}
-  positionSmoothing: 30
-  directionBaseJoint: 8
-  rotationSmoothing: 20
-  pinchStartDistance: 0.02
-  pinchReleaseDistance: 0.03
-  pinchDistanceSmoothing: 25
-  pinchStartDelay: 0.04
-  pinchReleaseDelay: 0.06
 --- !u!1 &1825480219
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,9 +1236,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3859a92a05d4f5d418cb6ca605290e74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.XR.ARFoundation::UnityEngine.XR.ARFoundation.ARSession
-  m_AttemptUpdate: 1
-  m_MatchFrameRate: 1
-  m_TrackingMode: 2
 --- !u!1 &1934500328
 GameObject:
   m_ObjectHideFlags: 0
