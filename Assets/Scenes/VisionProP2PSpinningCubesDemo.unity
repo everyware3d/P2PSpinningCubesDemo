@@ -708,7 +708,7 @@ MonoBehaviour:
   rightControllerTransform: {fileID: 1434769147}
   outlineForColor: {fileID: 1841813300}
   parentOfSpawnedGOs: {fileID: 1841813300}
-  prefabToSpawn: {fileID: 4008258910738281193, guid: 604cf865f8e66f74baf37eb3a38a3d32, type: 3}
+  prefabToSpawn: {fileID: 4008258910738281193, guid: 8a92d32b81b084636a6056560c86cce6, type: 3}
 --- !u!1 &1621213495
 GameObject:
   m_ObjectHideFlags: 0

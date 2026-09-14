@@ -404,9 +404,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f189952314a8470a8368adc9f6934bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: P2PPlugin.Models.Dev::P2PPlugin.Models.Dev.P2PDevelopmentServer
-  serverIP: 10.125.1.122
+  serverIP: 10.198.200.28
   serverIPs:
   - 10.125.1.122
+  - 10.198.200.28
 --- !u!114 &330585554
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,6 +1,6 @@
 #if UNITY_EDITOR && UNITY_VISIONOS
 
-// #define WRITE_MUTLICAST_ENTITLEMENT
+#define WRITE_MUTLICAST_ENTITLEMENT
 
 using UnityEditor;
 using UnityEditor.Callbacks;

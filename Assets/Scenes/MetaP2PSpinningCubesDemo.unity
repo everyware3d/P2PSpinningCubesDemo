@@ -1000,7 +1000,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 838835153}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f189952314a8470a8368adc9f6934bd, type: 3}
   m_Name: 
@@ -1024,7 +1024,7 @@ MonoBehaviour:
   rightControllerTransform: {fileID: 7071716412442649663}
   outlineForColor: {fileID: 1249272063}
   parentOfSpawnedGOs: {fileID: 1249272063}
-  prefabToSpawn: {fileID: 4008258910738281193, guid: 604cf865f8e66f74baf37eb3a38a3d32, type: 3}
+  prefabToSpawn: {fileID: 4008258910738281193, guid: 8a92d32b81b084636a6056560c86cce6, type: 3}
 --- !u!114 &1717828751
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -287,67 +287,39 @@ MonoBehaviour:
   m_Name: Android
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.OpenXRSettings
   features:
-  - {fileID: -7124695086305304343}
-  - {fileID: -1106436869930363158}
-  - {fileID: 1230203266791600081}
-  - {fileID: 1241439283486001218}
-  - {fileID: -8613439217109234476}
-  - {fileID: -3695213373461498049}
-  - {fileID: -6914854965814420991}
-  - {fileID: 1194404558141101120}
-  - {fileID: -6301834872758174107}
-  - {fileID: 3086090707055144872}
-  - {fileID: 739652163291134430}
-  - {fileID: 3244622292943311291}
-  - {fileID: 8737639312237601269}
-  - {fileID: -2440237465733961098}
-  - {fileID: 8419997949042953430}
-  - {fileID: -2759938115379972796}
-  - {fileID: -847615740423427276}
-  - {fileID: -6966083741023995175}
-  - {fileID: -5519165974578150290}
-  - {fileID: -4022551665790480153}
-  - {fileID: -7633094987727242573}
   - {fileID: 3187724147445507681}
   - {fileID: 843406738362266346}
-  - {fileID: -7506655908108628997}
-  - {fileID: 8439332692705847353}
-  - {fileID: -4496470360219937523}
-  - {fileID: 4952728323000165914}
-  - {fileID: -479418322928410911}
-  - {fileID: -8617458852251057719}
-  - {fileID: 7084458251410945675}
-  - {fileID: -8338299336307850195}
-  - {fileID: 28175478701542262}
-  - {fileID: 4033716756540879211}
-  - {fileID: 7789102817988059496}
-  - {fileID: 6613622199783366606}
-  - {fileID: -3272254329934868705}
-  - {fileID: -1794083476088436171}
-  - {fileID: 9180941465291997330}
-  - {fileID: 8414435643607501671}
-  - {fileID: -3046579054591364627}
-  - {fileID: 410366746980014158}
-  - {fileID: -8330735735254983234}
-  - {fileID: -7125419495437721370}
-  - {fileID: 7325013612539569184}
-  - {fileID: 7531171826989729810}
-  - {fileID: 3225575069537610342}
-  - {fileID: -3616764183296087283}
-  - {fileID: -3123672129857457855}
-  - {fileID: -680108835715809440}
-  - {fileID: 3369076263940787149}
-  - {fileID: -8958095275162196445}
-  - {fileID: -2484069768690350180}
-  - {fileID: -4927922576784375833}
-  - {fileID: -4096238397416984790}
-  - {fileID: 5443303390963372961}
-  - {fileID: 2630235018102623645}
+  - {fileID: 8419997949042953430}
+  - {fileID: -6966083741023995175}
+  - {fileID: -8613439217109234476}
+  - {fileID: -847615740423427276}
   - {fileID: -3360849587494104117}
+  - {fileID: 2630235018102623645}
   - {fileID: 1353719945350006288}
-  - {fileID: 1621070801640034367}
-  - {fileID: -2495842050839747403}
+  - {fileID: 8737639312237601269}
+  - {fileID: -6301834872758174107}
+  - {fileID: -5519165974578150290}
+  - {fileID: -3695213373461498049}
+  - {fileID: 1194404558141101120}
+  - {fileID: -4022551665790480153}
+  - {fileID: -3272254329934868705}
+  - {fileID: 1241439283486001218}
+  - {fileID: -2440237465733961098}
+  - {fileID: 739652163291134430}
   - {fileID: -8788738874493728920}
+  - {fileID: -2495842050839747403}
+  - {fileID: -4927922576784375833}
+  - {fileID: 1621070801640034367}
+  - {fileID: 5443303390963372961}
+  - {fileID: -2759938115379972796}
+  - {fileID: 1230203266791600081}
+  - {fileID: -1106436869930363158}
+  - {fileID: 3244622292943311291}
+  - {fileID: -4096238397416984790}
+  - {fileID: -7633094987727242573}
+  - {fileID: -7124695086305304343}
+  - {fileID: -6914854965814420991}
+  - {fileID: -1794083476088436171}
   customLoaderName: 
   m_renderMode: 1
   m_latencyOptimization: 1
@@ -629,7 +601,6 @@ MonoBehaviour:
   required: 0
   customRuntimeLoaderName: 
   enableSubsampledLayout: 0
-  useEyeTracking: 1
 --- !u!114 &-5332336997479897398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1311,7 +1282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b7365b139f7aec43b23d26b7a48b5a6, type: 3}
   m_Name: MetaQuestTouchPlusControllerProfile Android
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Interactions.MetaQuestTouchPlusControllerProfile
-  m_enabled: 0
+  m_enabled: 1
   nameUi: Meta Quest Touch Plus Controller Profile
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.metaquestplus
@@ -1541,54 +1512,37 @@ MonoBehaviour:
   m_Name: Standalone
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.OpenXRSettings
   features:
-  - {fileID: -985418180437196438}
-  - {fileID: -3518068580897978186}
-  - {fileID: 3546881843564038118}
-  - {fileID: -4239384860613154435}
-  - {fileID: -8342051218354949322}
-  - {fileID: -2821253296119666608}
-  - {fileID: 6940723987129591768}
-  - {fileID: 4487229354449131251}
-  - {fileID: 3279083575371029157}
-  - {fileID: 4240808293325957358}
-  - {fileID: -5026321108385671739}
-  - {fileID: -7260929663109654966}
-  - {fileID: 8946124832666509049}
-  - {fileID: -5533993715942433619}
-  - {fileID: 8902627746595384451}
-  - {fileID: 2777394444179817214}
-  - {fileID: 5700981510658388016}
-  - {fileID: 1914804198178671013}
-  - {fileID: -4317415467845262690}
-  - {fileID: 4661100434083998247}
-  - {fileID: 4642621427026338000}
   - {fileID: -4550592448665349072}
-  - {fileID: -7481749636323814867}
-  - {fileID: -3940396669901308014}
-  - {fileID: -1669679780621541470}
-  - {fileID: -5329007075229653900}
-  - {fileID: -7416281110260164926}
-  - {fileID: -1887451533472306463}
-  - {fileID: 330073233467142631}
-  - {fileID: -1537369521122432645}
-  - {fileID: -1645388926097418258}
-  - {fileID: 6478635522618897238}
-  - {fileID: 7877657128909382685}
-  - {fileID: -4352358824179990762}
-  - {fileID: 2156864345119154372}
-  - {fileID: -1805600752873843629}
-  - {fileID: 4278308547088725573}
-  - {fileID: 1431148405245950420}
-  - {fileID: -6414662277175804143}
-  - {fileID: -3981714092152381353}
-  - {fileID: 2706443407904168875}
-  - {fileID: -4065775174433462498}
-  - {fileID: -1454992701074269091}
-  - {fileID: -5332336997479897398}
+  - {fileID: 3546881843564038118}
+  - {fileID: 5700981510658388016}
   - {fileID: 2038512692328980845}
+  - {fileID: -5332336997479897398}
   - {fileID: -7921512454755440935}
-  - {fileID: -4918629550547360255}
+  - {fileID: -7260929663109654966}
+  - {fileID: 6940723987129591768}
+  - {fileID: 1914804198178671013}
+  - {fileID: -4239384860613154435}
+  - {fileID: -2821253296119666608}
+  - {fileID: -4317415467845262690}
+  - {fileID: 8946124832666509049}
+  - {fileID: 4661100434083998247}
+  - {fileID: 2156864345119154372}
+  - {fileID: -5533993715942433619}
+  - {fileID: 4240808293325957358}
   - {fileID: 8230464622450048733}
+  - {fileID: -4918629550547360255}
+  - {fileID: 2706443407904168875}
+  - {fileID: -1454992701074269091}
+  - {fileID: 8902627746595384451}
+  - {fileID: 4487229354449131251}
+  - {fileID: -3518068580897978186}
+  - {fileID: -5026321108385671739}
+  - {fileID: -4065775174433462498}
+  - {fileID: 4642621427026338000}
+  - {fileID: -985418180437196438}
+  - {fileID: 2777394444179817214}
+  - {fileID: -8342051218354949322}
+  - {fileID: -1805600752873843629}
   customLoaderName: 
   m_renderMode: 1
   m_latencyOptimization: 0
@@ -1815,7 +1769,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4b862ee14fb479fbfe5fffe655d3ed3, type: 3}
   m_Name: MetaQuestTouchProControllerProfile Android
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Interactions.MetaQuestTouchProControllerProfile
-  m_enabled: 0
+  m_enabled: 1
   nameUi: Meta Quest Touch Pro Controller Profile
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.metaquestpro
@@ -2034,7 +1988,6 @@ MonoBehaviour:
   required: 0
   customRuntimeLoaderName: 
   enableSubsampledLayout: 0
-  useEyeTracking: 1
 --- !u!114 &2038512692328980845
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2225,7 +2178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feeef8d85de8db242bdda70cc7ff5acd, type: 3}
   m_Name: OculusTouchControllerProfile Android
   m_EditorClassIdentifier: Unity.XR.OpenXR::UnityEngine.XR.OpenXR.Features.Interactions.OculusTouchControllerProfile
-  m_enabled: 0
+  m_enabled: 1
   nameUi: Oculus Touch Controller Profile
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.oculustouch
