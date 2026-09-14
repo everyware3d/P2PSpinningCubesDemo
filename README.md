@@ -224,4 +224,85 @@ There are some scripts that support the demo but do not have demo-specific logic
 4. <a href="Assets/Scripts/ScreenOutline.cs" id="linktop2pdemo" class="viewer-link language-csharp"> **`Scripts/ScreenOutline.cs`**</a> - A script that generates the geometry and sets it to the Mesh of the GameObject.
 
 
+## Building and Exporting to Supported Platforms
+
+The **P2P Spinning Cubes Demo** can be built for desktop, mobile, and XR platforms. The P2P Plugin itself does not require any platform-specific dependencies, but some platforms require additional Unity packages or project configuration.
+
+Before building for a platform, make sure the appropriate scene is the **only scene included in the Build scene list**.
+
+### Desktop — macOS / Windows / Linux
+
+Desktop builds do not require any additional packages or platform-specific configuration.
+
+1. Select the desired desktop **Build Profile**.
+2. Make sure **P2PSpinningCubesDemo** is the only scene included in the Build scene list.
+3. Build the application normally.
+
+### Mobile: Android or IOS
+
+The standard Android or iOS build does not require additional packages.
+
+1. Switch the **Build Profile** to **Android** or **iOS**.
+2. Make sure **P2PSpinningCubesDemo** is the only scene included in the Build scene list.
+3. Build the project.
+
+Unity will export the project in the format appropriate for the
+selected platform. For iOS, Unity exports an Xcode project that can be
+built and deployed to an iPhone or iPad using Xcode. For Android,
+Unity can either export an Android project or build an APK that can be
+installed directly on an Android device. Exported Android projects can
+be opened, built, and run using Android Studio.
+
+### Meta Quest / Android XR
+
+Meta Quest uses the XR version of the demo scene and requires Unity XR support and the Meta XR SDK.
+
+1. Switch the **Build Profile** to **Android Meta Quest**.
+2. Open **Edit → Project Settings → XR Plug-in Management**.
+3. Install **XR Plug-in Management** if it is not already
+   installed. (reboot to see the configurations in the Project Settings)
+4. Check **Initialize XR on Startup** and enable **OpenXR** as the Plug-in Provider.
+5. Install the <b><a
+   href="https://assetstore.unity.com/packages/p/meta-xr-sdk-9022845" target="_blank">**Meta XR All-in-One SDK**</a></b>
+6. Change the active scene to **MetaP2PSpinningCubesDemo**.
+7. Make sure **MetaP2PSpinningCubesDemo** is the only scene included in the build Scene List.
+8. Use Android Studio to build and run the project on the headset.
+
+### Apple Vision Pro
+
+Apple Vision Pro uses the visionOS version of the project and requires Apple's Unity XR and PolySpatial packages.
+
+1. Switch the **Build Profile** to **visionOS**.
+3. Open:
+   **Edit → Project Settings → XR Plug-in Management → visionOS settings**
+4. Make sure **Initialize XR on Startup** is checked and **Apple visionOS** is enabled as a Plug-in Provider.
+2. Open: **Window → Package Manager**, install:
+   - **Apple visionOS XR Plugin**
+   - **PolySpatial visionOS**
+5. Select the **VisionProP2PSpinningCubesDemo** scene in the workspace, and make sure it
+   is the only scene included in the build Scene List, which is on the top of the **Build Profiles** dialog.
+6. Build the project.
+
+Unity will export an Xcode project that can then be built and deployed to Apple Vision Pro using Xcode.
+
+**Note**: Because the plugin uses multicast networking for peer
+  discovery, the project must be signed with Apple's Multicast
+  Networking Entitlement. This entitlement may need to be requested
+  from Apple before the application can use multicast networking on
+  the device.
+
+### Switching Between Platforms
+
+When switching between the standard desktop/mobile demo and an XR platform, remember to verify both the **Build Profile** and the **scene included in the build**.
+
+| Platform | Build Profile / Target | Demo Scene | Additional Packages |
+|---|---|---|---|
+| macOS / Windows / Linux | Desktop | `P2PSpinningCubesDemo` | None |
+| Android | Android Generic | `P2PSpinningCubesDemo` | None |
+| iOS | iOS | `P2PSpinningCubesDemo` | None |
+| Meta Quest / Android XR | Android Meta Quest | `MetaP2PSpinningCubesDemo` | XR Plug-in Management, OpenXR, Meta XR All-in-One SDK |
+| Apple Vision Pro | visionOS | `VisionProP2PSpinningCubesDemo` | Apple visionOS XR Plugin, PolySpatial visionOS |
+
+The same P2P networking code is used across these platforms; the XR-specific scenes primarily provide the platform-appropriate camera, input, and interaction setup.
+
 </div>
