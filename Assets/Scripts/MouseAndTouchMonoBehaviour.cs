@@ -45,6 +45,9 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
 
     public void OnPressImpl(InputAction.CallbackContext ctx)
     {
+        if (!Application.isFocused)
+            return;
+
         if (!_press.IsPressed())
         {
             OnReleaseImpl(ctx);
@@ -56,11 +59,16 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
     }
     public void OnReleaseImpl(InputAction.CallbackContext ctx)
     {
+        if (!Application.isFocused)
+            return;
+
         OnRelease(GetMousePositionOnRelease(ctx));
     }
     public void OnMoveImpl(InputAction.CallbackContext ctx)
     {
-        ;
+        if (!Application.isFocused)
+            return;
+
         OnMove(GetMousePositionOnMove(ctx));
     }
 
