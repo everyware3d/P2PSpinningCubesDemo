@@ -1,9 +1,9 @@
-#if UNITY_VISIONOS
 using System.Collections.Generic;
 using UnityEngine;
+#if UNITY_VISIONOS
 using UnityEngine.XR;
 using UnityEngine.XR.Hands;
-
+#endif
 public class VisionProFingerTips : MonoBehaviour
 {
     public static VisionProFingerTips Instance { get; private set; }
@@ -26,11 +26,12 @@ public class VisionProFingerTips : MonoBehaviour
     [SerializeField]
     private float positionSmoothing = 10.0f;
 
+#if UNITY_VISIONOS
     [Header("Finger Rotation")]
     [SerializeField]
     private XRHandJointID directionBaseJoint =
         XRHandJointID.IndexMetacarpal;
-
+#endif
     [SerializeField]
     private float rotationSmoothing = 20.0f;
 
@@ -50,8 +51,9 @@ public class VisionProFingerTips : MonoBehaviour
     [SerializeField]
     private float pinchReleaseDelay = 0.060f;    // 60 ms
 
+#if UNITY_VISIONOS
     private XRHandSubsystem handSubsystem;
-
+#endif
     //
     // Pinch state
     //
@@ -106,6 +108,7 @@ public class VisionProFingerTips : MonoBehaviour
 
     void Start()
     {
+#if UNITY_VISIONOS
         var subsystems = new List<XRHandSubsystem>();
         SubsystemManager.GetSubsystems(subsystems);
 
@@ -117,6 +120,7 @@ public class VisionProFingerTips : MonoBehaviour
         {
             Debug.LogError("No XRHandSubsystem found.");
         }
+#endif
     }
 
     void Update()
@@ -131,12 +135,12 @@ public class VisionProFingerTips : MonoBehaviour
         LeftReleased = false;
         RightReleased = false;
 
+#if UNITY_VISIONOS
         if (handSubsystem == null ||
             !handSubsystem.running)
         {
             return;
         }
-
         UpdateHand(
             handSubsystem.leftHand,
             leftIndexTip,
@@ -162,8 +166,10 @@ public class VisionProFingerTips : MonoBehaviour
             ref rightPinchDistanceInitialized,
             ref rightPinchStartTimer,
             ref rightPinchReleaseTimer);
+#endif
     }
 
+#if UNITY_VISIONOS
     private void UpdateHand(
         XRHand hand,
         Transform fingerTarget,
@@ -500,5 +506,5 @@ public class VisionProFingerTips : MonoBehaviour
         else
             RightReleased = true;
     }
-}
 #endif
+}
