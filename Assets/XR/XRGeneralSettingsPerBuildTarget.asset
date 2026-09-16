@@ -189,8 +189,7 @@ MonoBehaviour:
   m_RequiresSettingsUpdate: 0
   m_AutomaticLoading: 0
   m_AutomaticRunning: 0
-  m_Loaders:
-  - {fileID: 11400000, guid: ba334ccc3e7814e6c82a69572f875f29, type: 2}
+  m_Loaders: []
 --- !u!114 &1070244072608935713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,7 +249,8 @@ MonoBehaviour:
   m_RequiresSettingsUpdate: 0
   m_AutomaticLoading: 0
   m_AutomaticRunning: 0
-  m_Loaders: []
+  m_Loaders:
+  - {fileID: 11400000, guid: 0b5c9a8363a9edc4fb5ed68d78398e02, type: 2}
 --- !u!114 &1788486312328329331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -344,7 +344,7 @@ MonoBehaviour:
   m_Name: Android Settings
   m_EditorClassIdentifier: Unity.XR.Management::UnityEngine.XR.Management.XRGeneralSettings
   m_Manager: {fileID: 1628974348008846659}
-  m_InitManagerOnStart: 0
+  m_InitManagerOnStart: 1
 --- !u!114 &6538130972111412822
 MonoBehaviour:
   m_ObjectHideFlags: 0
