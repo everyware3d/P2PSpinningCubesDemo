@@ -298,7 +298,7 @@ When switching between the standard desktop/mobile demo and an XR platform, reme
 | Platform | Build Profile / Target | Demo Scene | Additional Packages |
 |---|---|---|---|
 | macOS / Windows / Linux | Desktop | `P2PSpinningCubesDemo` | None |
-| Android | Android Generic | `P2PSpinningCubesDemo` | None |
+| Android | Android™ | `P2PSpinningCubesDemo` | None |
 | iOS | iOS | `P2PSpinningCubesDemo` | None |
 | Meta Quest / Android XR | Android Meta Quest | `MetaP2PSpinningCubesDemo` | XR Plug-in Management, OpenXR, Meta XR All-in-One SDK |
 | Apple Vision Pro | visionOS | `VisionProP2PSpinningCubesDemo` | Apple visionOS XR Plugin, PolySpatial visionOS |
