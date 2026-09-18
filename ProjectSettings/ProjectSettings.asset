@@ -173,7 +173,7 @@ PlayerSettings:
     Android: org.blainebell.unity
     Standalone: org.blainebell.android
     VisionOS: com.everyware3d.P2PSpinningCubesDemo
-    iPhone: com.Unity-Technologies.com.unity.template.urp-blank
+    iPhone: com.blainebell.P2PSpinningCubesDemo
   buildNumber:
     Standalone: 0
     VisionOS: 0

@@ -45,8 +45,16 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
 
     public void OnPressImpl(InputAction.CallbackContext ctx)
     {
-        if (!Application.isFocused)
+        if (!_acceptInput || !Application.isFocused)
             return;
+
+        if (_waitingForRelease)
+        {
+            if (!_press.IsPressed())
+                _waitingForRelease = false;
+
+            return;
+        }
 
         if (!_press.IsPressed())
         {
@@ -59,14 +67,14 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
     }
     public void OnReleaseImpl(InputAction.CallbackContext ctx)
     {
-        if (!Application.isFocused)
+        if (!_acceptInput || !Application.isFocused)
             return;
 
         OnRelease(GetMousePositionOnRelease(ctx));
     }
     public void OnMoveImpl(InputAction.CallbackContext ctx)
     {
-        if (!Application.isFocused)
+        if (!_acceptInput || !Application.isFocused)
             return;
 
         OnMove(GetMousePositionOnMove(ctx));
@@ -119,5 +127,36 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         var screenPos = ctx.ReadValue<Vector2>();
         _activePointers[posPlusId.Item2] = screenPos;
         return posPlusId.Item1;
+    }
+
+    private bool _acceptInput = true;
+    private bool _waitingForRelease;
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            _acceptInput = false;
+            _waitingForRelease = true;
+            _activePointers.Clear();
+        }
+        else
+        {
+            _acceptInput = true;
+        }
+    }
+
+    void OnApplicationPause(bool paused)
+    {
+        if (paused)
+        {
+            _acceptInput = false;
+            _waitingForRelease = true;
+            _activePointers.Clear();
+        }
+        else
+        {
+            _acceptInput = true;
+        }
     }
 }

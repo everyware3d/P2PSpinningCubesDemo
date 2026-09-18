@@ -123,3 +123,6 @@ ProjectSettings/VirtualProjectsConfig.json
 /[Aa]ssets/CompositionLayers*
 /[Aa]ssets/TextMesh\ Pro*
 /Packages/packages-lock.json
+P2PSpinningCubesDemoIOS/
+P2PSpinningCubesDemoAndroid/
+P2PSpinningCubesDemoVision/

@@ -14,13 +14,15 @@ using System.Xml;
 public static class IOSPostBuild
 {
     // IMPORTANT:
-    // Set the environment variable APPLE_DEVELOPER_TEAM_ID to your 
+    // Set the environment variable APPLE_DEVELOPER_TEAM_ID to your
     // Apple Developer Team ID in your Unity Editor's environment.
     private static readonly string DeveloperTeamId =
         Environment.GetEnvironmentVariable("APPLE_DEVELOPER_TEAM_ID");
 
     private const string VisionFrameworkName = "DPCoreBundleVision.xcframework";
     private const string IOSFrameworkName    = "DPCoreBundleIOS.xcframework";
+
+    private const string EntitlementsFileName = "Unity-iPhone.entitlements";
 
     // Run fairly late so this happens after Unity has generated the Xcode project.
     [PostProcessBuild(999)]
@@ -52,7 +54,15 @@ public static class IOSPostBuild
             unityFrameworkTargetGuid);
 
         //
-        // 2. Remove DPCoreBundleVision.framework
+        // 2. Configure Local Network privacy + Multicast entitlement
+        //
+        ConfigureNetworkingCapabilities(
+            project,
+            buildPath,
+            mainTargetGuid);
+
+        //
+        // 3. Remove DPCoreBundleVision.xcframework
         //
         RemoveFramework(
             project,
@@ -62,7 +72,7 @@ public static class IOSPostBuild
             VisionFrameworkName);
 
         //
-        // 3. Add + embed DPCoreBundleIOS.framework
+        // 4. Add + embed DPCoreBundleIOS.xcframework
         //
         AddIOSFramework(
             project,
@@ -75,6 +85,91 @@ public static class IOSPostBuild
         Debug.Log("IOSPostBuild: Updated Xcode project.");
     }
 
+    private static void ConfigureNetworkingCapabilities(
+        PBXProject project,
+        string buildPath,
+        string mainTargetGuid)
+    {
+        //
+        // Local Network privacy permission
+        //
+        // Local Network is NOT an entitlement. It is declared in Info.plist.
+        //
+        string plistPath = Path.Combine(buildPath, "Info.plist");
+
+        if (File.Exists(plistPath))
+        {
+            PlistDocument plist = new PlistDocument();
+            plist.ReadFromFile(plistPath);
+
+            plist.root.SetString(
+                "NSLocalNetworkUsageDescription",
+                "This app uses the local network to discover and communicate with nearby devices.");
+
+            plist.WriteToFile(plistPath);
+
+            Debug.Log(
+                "IOSPostBuild: Added NSLocalNetworkUsageDescription.");
+        }
+        else
+        {
+            Debug.LogError(
+                $"IOSPostBuild: Info.plist not found at:\n{plistPath}");
+        }
+
+        //
+        // Multicast Networking entitlement
+        //
+        string entitlementsPath =
+            Path.Combine(buildPath, EntitlementsFileName);
+
+        PlistDocument entitlements = new PlistDocument();
+
+        if (File.Exists(entitlementsPath))
+        {
+            entitlements.ReadFromFile(entitlementsPath);
+        }
+        else
+        {
+            entitlements.Create();
+        }
+
+        entitlements.root.SetBoolean(
+            "com.apple.developer.networking.multicast",
+            true);
+
+        entitlements.WriteToFile(entitlementsPath);
+
+        //
+        // Add the entitlements file to the Xcode project if Unity
+        // hasn't already added it.
+        //
+        string entitlementsGuid =
+            project.FindFileGuidByProjectPath(EntitlementsFileName);
+
+        if (string.IsNullOrEmpty(entitlementsGuid))
+        {
+            entitlementsGuid = project.AddFile(
+                EntitlementsFileName,
+                EntitlementsFileName,
+                PBXSourceTree.Source);
+
+            Debug.Log(
+                $"IOSPostBuild: Added {EntitlementsFileName} to Xcode project.");
+        }
+
+        //
+        // The entitlement belongs on the application target, NOT
+        // UnityFramework.
+        //
+        project.SetBuildProperty(
+            mainTargetGuid,
+            "CODE_SIGN_ENTITLEMENTS",
+            EntitlementsFileName);
+
+        Debug.Log(
+            "IOSPostBuild: Enabled Multicast Networking entitlement.");
+    }
 
     private static void UpdateXcodeScheme(string buildPath)
     {
@@ -344,7 +439,6 @@ public static class IOSPostBuild
                 $"from Xcode project ({projectPath}).");
         }
     }
-
 
     private static string[] GetUniqueTargetGuids(params string[] targetGuids)
     {
