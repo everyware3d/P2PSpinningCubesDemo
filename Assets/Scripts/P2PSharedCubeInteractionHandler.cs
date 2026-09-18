@@ -51,8 +51,17 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour, P2PIn
         RaycastHit hit;
         pressedPoint = mouseTouchPos;
         hasMovedSincePressed = false;
-        if (Physics.Raycast(ray, out hit)) {  // if click hits an object/cube
+        if (Physics.Raycast(ray, out hit, Mathf.Infinity, P2PUtils.GetInteractionLayerMask())) {  // if click hits an object/cube
             draggingSharedCube = hit.transform.gameObject.GetComponent<SharedCube>();
+            if (draggingSharedCube == null)
+            {
+                // We hit something, but it isn't a SharedCube.
+                /* Debug.Log(
+                    $"Raycast hit: {hit.transform.name}, " +
+                    $"layer={LayerMask.LayerToName(hit.transform.gameObject.layer)}, " +
+                    $"path={P2PUtils.GetPath(hit.transform)}");*/
+                return;
+            }
             pressedOnObject = true;
             if (draggingSharedCube.isLocal) { // restrict cubes that aren't owned by this node (for now)
                 isDragging = true;

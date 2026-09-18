@@ -12,8 +12,10 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+#if !UNITY_EDITOR
         EnhancedTouchSupport.Enable();
-        TouchSimulation.Enable(); // now Mouse.current.leftButton mirrors the first touch
+        TouchSimulation.Enable();
+#endif
     }
     InputAction _point;   // <Pointer>/position (Vector2)
     protected InputAction _press;   // <Pointer>/press    (Button)
@@ -22,9 +24,25 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
 
     void OnEnable()
     {
-        _point = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/position");
-        _press = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/press");
+        // _point = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/position");
+        // _press = new InputAction(type: InputActionType.PassThrough, binding: "<Pointer>/press");
+#if UNITY_EDITOR
+        _point = new InputAction(
+            type: InputActionType.PassThrough,
+            binding: "<Mouse>/position");
 
+        _press = new InputAction(
+            type: InputActionType.PassThrough,
+            binding: "<Mouse>/leftButton");
+#else
+        _point = new InputAction(
+            type: InputActionType.PassThrough,
+            binding: "<Pointer>/position");
+
+        _press = new InputAction(
+            type: InputActionType.PassThrough,
+            binding: "<Pointer>/press");
+#endif
         _point.performed += OnMoveImpl;      // fires for mouse move, touch move, pen move
         _press.performed += OnPressImpl;      // down
         _press.canceled += OnReleaseImpl;    // up
@@ -33,18 +51,25 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         _press.Enable();
 
         // Optional: enable Touch → Mouse simulation in Editor
+#if !UNITY_EDITOR
         UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
         UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Enable();
+#endif
     }
     void OnDisable()
     {
         _point.Disable(); _press.Disable();
+#if !UNITY_EDITOR
         UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Disable();
         UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Disable();
+#endif
     }
 
     public void OnPressImpl(InputAction.CallbackContext ctx)
     {
+        try
+        {
+
         if (!_acceptInput || !Application.isFocused)
             return;
 
@@ -63,6 +88,15 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
         else
         {
             OnPress(GetMousePositionOnPress(ctx));
+        }
+        } catch (Exception e)
+        {
+            Debug.LogError(
+                $"OnPressImpl exception\n" +
+                $"phase={ctx.phase}\n" +
+                $"control={ctx.control}\n" +
+                $"device={ctx.control?.device}\n" +
+                $"{e}");
         }
     }
     public void OnReleaseImpl(InputAction.CallbackContext ctx)
