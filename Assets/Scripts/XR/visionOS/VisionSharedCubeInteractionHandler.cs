@@ -10,6 +10,10 @@ using P2PPlugin.Utils;
 [DisallowMultipleComponent]
 public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, P2PInteractionHandler
 {
+    [Header("Pointer Selection")]
+    [SerializeField]
+    private float sphereCastRadius = 0.025f;
+
     VisionSharedCubeInteractionHandler()
     {
         P2PInteractionHandler.Instance = this;
@@ -32,10 +36,6 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
     }
 
 #if UNITY_VISIONOS
-    [Header("Pointer Selection")]
-    [SerializeField]
-    private float sphereCastRadius = 0.025f;
-
     /* Click and dragging SharedCube states */
     private bool[] isDragging = { false, false };   // if an owned cube has been pressed on, the user can drag
     private bool[] pressedOnObject = { false, false };  // whether the user pressed on an object
