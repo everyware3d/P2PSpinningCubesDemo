@@ -573,7 +573,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1434769147}
   m_Layer: 0
-  m_Name: RightIndexMetacarpal
+  m_Name: RightPointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -777,6 +777,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0cb9aa70a22847b5925ee5f067c10a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.XR.CoreUtils::Unity.XR.CoreUtils.XROrigin
+  m_Camera: {fileID: 0}
+  m_OriginBaseGameObject: {fileID: 1647517501}
+  m_CameraFloorOffsetObject: {fileID: 0}
+  m_RequestedTrackingOriginMode: 0
+  m_CameraYOffset: 1.1176
 --- !u!114 &1647517504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -791,9 +796,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VisionProFingerTips
   leftIndexTip: {fileID: 1934500329}
   rightIndexTip: {fileID: 1621213496}
-  leftIndexMetacarpal: {fileID: 1825480220}
-  rightIndexMetacarpal: {fileID: 1434769147}
+  leftPointer: {fileID: 1825480220}
+  rightPointer: {fileID: 1434769147}
   positionSmoothing: 10
+  directionBaseJoint: 7
   rotationSmoothing: 20
   pinchStartDistance: 0.02
   pinchReleaseDistance: 0.03
@@ -810,7 +816,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1825480220}
   m_Layer: 0
-  m_Name: LeftIndexMetacarpal
+  m_Name: LeftPointer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1234,6 +1240,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3859a92a05d4f5d418cb6ca605290e74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.XR.ARFoundation::UnityEngine.XR.ARFoundation.ARSession
+  m_AttemptUpdate: 1
+  m_MatchFrameRate: 1
+  m_TrackingMode: 2
 --- !u!1 &1934500328
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,12 +15,12 @@ public class VisionProFingerTips : MonoBehaviour
     [SerializeField]
     private Transform rightIndexTip;
 
-    [Header("Index Metacarpal Targets")]
+    [Header("Pointer Targets")]
     [SerializeField]
-    private Transform leftIndexMetacarpal;
+    private Transform leftPointer;
 
     [SerializeField]
-    private Transform rightIndexMetacarpal;
+    private Transform rightPointer;
 
     [Header("Position Smoothing")]
     [SerializeField]
@@ -30,7 +30,7 @@ public class VisionProFingerTips : MonoBehaviour
     [Header("Finger Rotation")]
     [SerializeField]
     private XRHandJointID directionBaseJoint =
-        XRHandJointID.IndexMetacarpal;
+        XRHandJointID.IndexProximal;
 #endif
     [SerializeField]
     private float rotationSmoothing = 20.0f;
@@ -144,7 +144,7 @@ public class VisionProFingerTips : MonoBehaviour
         UpdateHand(
             handSubsystem.leftHand,
             leftIndexTip,
-            leftIndexMetacarpal,
+            leftPointer,
             true,
             ref leftPressing,
             ref leftSmoothedRotation,
@@ -157,7 +157,7 @@ public class VisionProFingerTips : MonoBehaviour
         UpdateHand(
             handSubsystem.rightHand,
             rightIndexTip,
-            rightIndexMetacarpal,
+            rightPointer,
             false,
             ref rightPressing,
             ref rightSmoothedRotation,
@@ -173,7 +173,7 @@ public class VisionProFingerTips : MonoBehaviour
     private void UpdateHand(
         XRHand hand,
         Transform fingerTarget,
-        Transform metacarpalTarget,
+        Transform pointerTarget,
         bool left,
         ref bool pressing,
         ref Quaternion smoothedRotation,
@@ -204,9 +204,13 @@ public class VisionProFingerTips : MonoBehaviour
             hand.GetJoint(
                 XRHandJointID.ThumbTip);
 
-        XRHandJoint indexMetacarpalJoint =
+        XRHandJoint indexDistalJoint =
             hand.GetJoint(
-                XRHandJointID.IndexMetacarpal);
+                XRHandJointID.IndexDistal);
+
+        XRHandJoint indexProximalJoint =
+            hand.GetJoint(
+                XRHandJointID.IndexProximal);
 
         XRHandJoint baseJoint =
             hand.GetJoint(
@@ -238,23 +242,26 @@ public class VisionProFingerTips : MonoBehaviour
         }
 
         //
-        // Index metacarpal joint pose
+        // Pointer position follows the index distal joint.
+        // Pointer rotation follows the index proximal joint.
         //
 
-        if (metacarpalTarget != null &&
-            indexMetacarpalJoint.TryGetPose(
-                out Pose metacarpalPose))
+        if (pointerTarget != null &&
+            indexDistalJoint.TryGetPose(
+                out Pose distalPose) &&
+            indexProximalJoint.TryGetPose(
+                out Pose proximalPose))
         {
-            metacarpalTarget.localPosition =
+            pointerTarget.localPosition =
                 Vector3.Lerp(
-                    metacarpalTarget.localPosition,
-                    metacarpalPose.position,
+                    pointerTarget.localPosition,
+                    distalPose.position,
                     positionT);
 
-            metacarpalTarget.localRotation =
+            pointerTarget.localRotation =
                 Quaternion.Slerp(
-                    metacarpalTarget.localRotation,
-                    metacarpalPose.rotation,
+                    pointerTarget.localRotation,
+                    proximalPose.rotation,
                     positionT);
         }
 

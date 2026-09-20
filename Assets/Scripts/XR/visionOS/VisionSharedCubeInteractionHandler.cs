@@ -32,6 +32,10 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
     }
 
 #if UNITY_VISIONOS
+    [Header("Pointer Selection")]
+    [SerializeField]
+    private float sphereCastRadius = 0.025f;
+
     /* Click and dragging SharedCube states */
     private bool[] isDragging = { false, false };   // if an owned cube has been pressed on, the user can drag
     private bool[] pressedOnObject = { false, false };  // whether the user pressed on an object
@@ -54,37 +58,113 @@ public class VisionSharedCubeInteractionHandler : XRMouseAndTouchMonoBehaviour, 
     */
     override public void OnPress(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
 #if UNITY_VISIONOS
-        RaycastHit hit;
         int idx = (int)idxarg;
         pressedPoint[idx] = mouseTouchPos;
         hasMovedSincePressed[idx] = false;
         timeWhenLastPressed[idx] = Time.time;
-        if (Physics.Raycast(ray, out hit)) {  // if click hits an object/cube
-            draggingSharedCube[idx] = hit.transform.gameObject.GetComponent<SharedCube>();
+
+        RaycastHit hit;
+        SharedCube hitSharedCube;
+
+        if (TrySphereCastFirstLocalSharedCube(
+                ray,
+                out hit,
+                out hitSharedCube))
+        {
+            draggingSharedCube[idx] = hitSharedCube;
+            draggingGameObject[idx] = hitSharedCube.gameObject;
             pressedOnObject[idx] = true;
-            if (draggingSharedCube[idx].isLocal) { // restrict cubes that aren't owned by this node (for now)
-                isDragging[idx] = true;
-                draggingGameObject[idx] = hit.transform.gameObject;
-                dragPlane[idx] = new Plane(
-                    outlineForColor.transform.forward,
-                    outlineForColor.transform.position
-                );
-                if (dragPlane[idx].Raycast(ray, out float enter)) {
-                    Vector3 hitPoint = ray.GetPoint(enter);
-                    offsetObjectToHitPoint[idx] = draggingGameObject[idx].transform.position - hitPoint;
-                }
+            isDragging[idx] = true;
+
+            Debug.Log(
+                "OnPress: hit local SharedCube: " +
+                draggingGameObject[idx].name +
+                ", distance: " +
+                hit.distance);
+
+            dragPlane[idx] = new Plane(
+                outlineForColor.transform.forward,
+                outlineForColor.transform.position
+            );
+
+            if (dragPlane[idx].Raycast(
+                    ray,
+                    out float enter))
+            {
+                Vector3 hitPoint =
+                    ray.GetPoint(enter);
+
+                offsetObjectToHitPoint[idx] =
+                    draggingGameObject[idx].transform.position -
+                    hitPoint;
             }
-            else {
-                draggingSharedCube[idx] = null;
-            }
+        }
+        else
+        {
+            draggingSharedCube[idx] = null;
+            draggingGameObject[idx] = null;
+            pressedOnObject[idx] = false;
+            isDragging[idx] = false;
         }
 #endif
     }
+    private bool TrySphereCastFirstLocalSharedCube(
+        Ray ray,
+        out RaycastHit selectedHit,
+        out SharedCube selectedCube)
+    {
+        selectedHit = default;
+        selectedCube = null;
+
+        RaycastHit[] hits =
+            Physics.SphereCastAll(
+                ray,
+                sphereCastRadius);
+
+        float closestDistance =
+            float.MaxValue;
+
+        foreach (RaycastHit hit in hits)
+        {
+            SharedCube cube =
+                hit.collider.GetComponentInParent<SharedCube>();
+
+            //
+            // Ignore non-cubes and remote cubes. This allows the
+            // sphere cast to continue through them and find the
+            // first locally owned SharedCube behind them.
+            //
+            if (cube == null ||
+                !cube.isLocal)
+            {
+                continue;
+            }
+
+            if (hit.distance <
+                closestDistance)
+            {
+                closestDistance =
+                    hit.distance;
+
+                selectedHit =
+                    hit;
+
+                selectedCube =
+                    cube;
+            }
+        }
+
+        return selectedCube != null;
+    }
+
+
     override public void OnRelease(HandIndex idxarg, Vector2 mouseTouchPos, Ray ray) {
 #if UNITY_VISIONOS
         int idx = (int)idxarg;
         float timeSincePressed = Time.time - timeWhenLastPressed[idx];
+        Debug.Log("OnRelease: draggingGameObject: " + draggingGameObject[idx] + ", timeSincePressed: " + timeSincePressed + ", hasMovedSincePressed: " + hasMovedSincePressed[idx] + ", pressedOnObject: " + pressedOnObject[idx]);
         if (draggingGameObject[idx] == null && !pressedOnObject[idx] && timeSincePressed < 0.3f){ // !hasMovedSincePressed[idx]) {
+            Debug.Log("OnRelease: spawning new cube at mouseTouchPos: " + mouseTouchPos);
             if (Utils.IsOnNormalCanvas(mouseTouchPos)) {
                 /* Spawn GameObject, set values on SharedCube component and Insert into P2P Plugin for distribution */
                 GameObject newGameObject = SharedCube.spawnNewRemoteObject();
