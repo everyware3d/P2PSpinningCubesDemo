@@ -94,4 +94,10 @@ public class SharedCube : P2PNetworkComponent
             return maxDim / 30.0f;
         }
     }
+    public void Refresh()
+    {
+        gameObject.transform.localPosition = Utils.NormalizedToScreen(translation);
+        gameObject.transform.localScale = Vector3.one * GetCubeSize();
+        // setAssignedColorToCube(this);
+    }
 }
