@@ -696,6 +696,7 @@ MonoBehaviour:
   outlineForColor: {fileID: 1841813300}
   parentOfSpawnedGOs: {fileID: 1841813300}
   prefabToSpawn: {fileID: 4008258910738281193, guid: 32a5f802e82a44d19ae57b8c7deb1ee9, type: 3}
+  sphereCastRadius: 0.025
 --- !u!1 &1621213495
 GameObject:
   m_ObjectHideFlags: 0
@@ -798,7 +799,7 @@ MonoBehaviour:
   rightIndexTip: {fileID: 1621213496}
   leftPointer: {fileID: 1825480220}
   rightPointer: {fileID: 1434769147}
-  positionSmoothing: 10
+  positionSmoothing: 100
   directionBaseJoint: 7
   rotationSmoothing: 20
   pinchStartDistance: 0.02
