@@ -664,9 +664,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f189952314a8470a8368adc9f6934bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: P2PPlugin.Models.Dev::P2PPlugin.Models.Dev.P2PDevelopmentServer
-  serverIP: 10.125.1.122
+  serverIP: 10.125.1.121
   serverIPs:
   - 10.125.1.122
+  - 10.125.1.121
+  reconnectAfterDisconnect: 1
 --- !u!114 &1526753307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -694,9 +696,9 @@ MonoBehaviour:
   leftControllerTransform: {fileID: 1825480220}
   rightControllerTransform: {fileID: 1434769147}
   outlineForColor: {fileID: 1841813300}
+  sphereCastRadius: 0.025
   parentOfSpawnedGOs: {fileID: 1841813300}
   prefabToSpawn: {fileID: 4008258910738281193, guid: 32a5f802e82a44d19ae57b8c7deb1ee9, type: 3}
-  sphereCastRadius: 0.025
 --- !u!1 &1621213495
 GameObject:
   m_ObjectHideFlags: 0
@@ -1354,7 +1356,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a7c3b4d2a07804161aa18ed4217df816, type: 2}
+  - {fileID: 2100000, guid: b00b435641a8940bf962985585e57338, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1395,8 +1397,8 @@ Transform:
   m_GameObject: {fileID: 1941534636}
   serializedVersion: 2
   m_LocalRotation: {x: 0.06698733, y: 0.25000006, z: 0.25000006, w: 0.9330127}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 1}
+  m_LocalScale: {x: 0.012812499, y: 0.0109375, z: 0.011250001}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
