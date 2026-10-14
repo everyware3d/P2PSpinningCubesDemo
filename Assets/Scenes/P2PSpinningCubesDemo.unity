@@ -377,6 +377,7 @@ MonoBehaviour:
   multicastAddress: 224.0.0.25
   multicastPort: 2253
   doNotDestroyOnLoad: 0
+  _showLogInConsole: 1
   m_checkLicenseOnStart: 1
   emailString: 
   password:

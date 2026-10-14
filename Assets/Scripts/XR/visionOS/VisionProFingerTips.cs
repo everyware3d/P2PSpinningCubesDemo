@@ -22,6 +22,7 @@ public class VisionProFingerTips : MonoBehaviour
     [SerializeField]
     private Transform rightPointer;
 
+#pragma warning disable 0414
     [Header("Position Smoothing")]
     [SerializeField]
     private float positionSmoothing = 10.0f;
@@ -32,9 +33,8 @@ public class VisionProFingerTips : MonoBehaviour
     private XRHandJointID directionBaseJoint =
         XRHandJointID.IndexProximal;
 #endif
-    [SerializeField]
-    private float rotationSmoothing = 20.0f;
 
+#pragma warning disable 0414
     [Header("Pinch")]
     [SerializeField]
     private float pinchStartDistance = 0.020f;   // 2.0 cm

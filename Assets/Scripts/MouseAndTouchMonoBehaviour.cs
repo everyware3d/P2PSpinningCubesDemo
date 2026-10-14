@@ -13,8 +13,8 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
     void Awake()
     {
 #if !UNITY_EDITOR
-        EnhancedTouchSupport.Enable();
-        TouchSimulation.Enable();
+        // EnhancedTouchSupport.Enable();
+        // TouchSimulation.Enable();
 #endif
     }
     InputAction _point;   // <Pointer>/position (Vector2)
@@ -52,16 +52,16 @@ public abstract class MouseAndTouchMonoBehaviour : MonoBehaviour
 
         // Optional: enable Touch → Mouse simulation in Editor
 #if !UNITY_EDITOR
-        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
-        UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Enable();
+        // UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Enable();
+        // UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Enable();
 #endif
     }
     void OnDisable()
     {
         _point.Disable(); _press.Disable();
 #if !UNITY_EDITOR
-        UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Disable();
-        UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Disable();
+        // UnityEngine.InputSystem.EnhancedTouch.TouchSimulation.Disable();
+        // UnityEngine.InputSystem.EnhancedTouch.EnhancedTouchSupport.Disable();
 #endif
     }
 

@@ -31,7 +31,7 @@ public class ScreenChangeDetector : MonoBehaviour
         int oldWidth, int oldHeight,
         int newWidth, int newHeight)
     {
-        SharedCube[] allCubes = FindObjectsOfType<SharedCube>();
+        SharedCube[] allCubes = Object.FindObjectsByType<SharedCube>();
         Debug.Log(
             $"Screen changed: {oldWidth}x{oldHeight} -> " +
             $"{newWidth}x{newHeight}   #cubes={allCubes.Length}");
