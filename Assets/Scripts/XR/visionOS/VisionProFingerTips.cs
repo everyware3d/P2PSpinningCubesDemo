@@ -33,6 +33,8 @@ public class VisionProFingerTips : MonoBehaviour
     private XRHandJointID directionBaseJoint =
         XRHandJointID.IndexProximal;
 #endif
+    [SerializeField]
+    private float rotationSmoothing = 20.0f;
 
 #pragma warning disable 0414
     [Header("Pinch")]
