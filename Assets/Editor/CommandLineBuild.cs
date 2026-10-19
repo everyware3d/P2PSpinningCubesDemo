@@ -889,5 +889,83 @@ public static class CommandLineBuild
 
         Debug.Log("Added Meta OpenXR packaging fix: " + gradlePath);
     }
+    private const string TMPSettingsPath =
+        "Assets/TextMesh Pro/Resources/TMP Settings.asset";
 
+    public static void ImportTextMeshProEssentials()
+    {
+        if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(
+            TMPSettingsPath) != null)
+        {
+            Debug.Log("TMP Essentials already imported.");
+            if (Application.isBatchMode)
+                EditorApplication.Exit(0);
+            return;
+        }
+
+        var package = UnityEditor.PackageManager.PackageInfo
+            .GetAllRegisteredPackages()
+            .FirstOrDefault(p => p.name == "com.unity.ugui");
+
+        if (package == null)
+            throw new Exception("Unity UI package is not installed.");
+
+        string path = Path.Combine(
+            package.resolvedPath,
+            "Package Resources",
+            "TMP Essential Resources.unitypackage");
+
+        if (!File.Exists(path))
+            throw new Exception("TMP Essentials not found: " + path);
+
+        AssetDatabase.importPackageCompleted += OnTMPImportCompleted;
+        AssetDatabase.importPackageFailed += OnTMPImportFailed;
+
+        EditorApplication.delayCall += () =>
+        {
+            Debug.Log("Importing TMP Essentials from: " + path);
+            AssetDatabase.ImportPackage(path, false);
+        };
+    }
+
+    private static void OnTMPImportCompleted(string packageName)
+    {
+        if (packageName != "TMP Essential Resources")
+            return;
+
+        AssetDatabase.importPackageCompleted -= OnTMPImportCompleted;
+        AssetDatabase.importPackageFailed -= OnTMPImportFailed;
+
+        EditorApplication.delayCall += () =>
+        {
+            if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(
+                TMPSettingsPath) == null)
+            {
+                Debug.LogError("TMP Settings.asset missing after import.");
+                if (Application.isBatchMode)
+                    EditorApplication.Exit(1);
+                return;
+            }
+
+            Debug.Log("TMP Essentials imported successfully.");
+
+            if (Application.isBatchMode)
+                EditorApplication.Exit(0);
+        };
+    }
+
+    private static void OnTMPImportFailed(
+        string packageName, string errorMessage)
+    {
+        if (packageName != "TMP Essential Resources")
+            return;
+
+        AssetDatabase.importPackageCompleted -= OnTMPImportCompleted;
+        AssetDatabase.importPackageFailed -= OnTMPImportFailed;
+
+        Debug.LogError("TMP Essentials import failed: " + errorMessage);
+
+        if (Application.isBatchMode)
+            EditorApplication.Exit(1);
+    }
 }

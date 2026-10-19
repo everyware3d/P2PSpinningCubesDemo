@@ -112,7 +112,7 @@ InitTestScene*.unity*
 !Documentation~/**
 VMShared*
 VMPlugin*
-P2PPlugin*
+Packages/com.everyware3d.p2pplugin*
 .vscode
 .DS_Store
 bin/
