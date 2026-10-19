@@ -710,6 +710,8 @@ public static class CommandLineBuild
         if (AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath) == null)
             throw new Exception($"Scene not found: {scenePath}");
 
+        ChangeScene(scenePath);
+
         // In Unity 6, EditorBuildSettings.scenes refers to the active
         // Build Profile's scene list (or the global list if not overridden).
         EditorBuildSettings.scenes = new[]
@@ -967,5 +969,14 @@ public static class CommandLineBuild
 
         if (Application.isBatchMode)
             EditorApplication.Exit(1);
+    }
+    public static void ChangeScene(string scenePath)
+    {
+        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath) == null)
+            throw new System.Exception("Scene not found: " + scenePath);
+
+        EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+
+        Debug.Log("Changed active scene to: " + scenePath);
     }
 }
