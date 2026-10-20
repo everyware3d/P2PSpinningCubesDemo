@@ -11,6 +11,7 @@ using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEditor.Build.Profile;
 
 public static class CommandLineBuild
 {
@@ -929,6 +930,40 @@ public static class CommandLineBuild
             AssetDatabase.ImportPackage(path, false);
         };
     }
+    public static void UseNewInputSystem()
+    {
+        PlayerSettings settings =
+            BuildProfile.GetActiveComponent<PlayerSettings>();
+
+        if (settings == null)
+            throw new Exception("PlayerSettings not found.");
+
+        var serialized = new SerializedObject(settings);
+        var property = serialized.FindProperty("activeInputHandler");
+
+        if (property == null)
+            throw new Exception("activeInputHandler not found.");
+
+        // 0 = Input Manager (Old)
+        // 1 = Input System Package (New)
+        // 2 = Both
+
+        if (property.intValue == 1)
+        {
+            Debug.Log("Input System Package (New) already enabled.");
+            return;
+        }
+
+        Debug.Log($"Changing Active Input Handling: {property.intValue} -> 1");
+
+        property.intValue = 1;
+        serialized.ApplyModifiedProperties();
+
+        EditorUtility.SetDirty(settings);
+        AssetDatabase.SaveAssets();
+
+        Debug.Log("Active Input Handling set to Input System Package (New).");
+    }
 
     private static void OnTMPImportCompleted(string packageName)
     {
@@ -978,5 +1013,9 @@ public static class CommandLineBuild
         EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
 
         Debug.Log("Changed active scene to: " + scenePath);
+    }
+    public static void ResetScene()
+    {
+    	ChangeScene(ScenePath);
     }
 }
