@@ -1005,17 +1005,55 @@ public static class CommandLineBuild
         if (Application.isBatchMode)
             EditorApplication.Exit(1);
     }
+
     public static void ChangeScene(string scenePath)
     {
-        if (AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath) == null)
-            throw new System.Exception("Scene not found: " + scenePath);
+        try
+        {
+            if (AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath) == null)
+                throw new System.Exception("Scene not found: " + scenePath);
 
-        EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+            var scene = EditorSceneManager.OpenScene(
+                scenePath, OpenSceneMode.Single);
 
-        Debug.Log("Changed active scene to: " + scenePath);
+            if (!scene.IsValid() || !scene.isLoaded ||
+                SceneManager.GetActiveScene().path != scenePath)
+            {
+                throw new System.Exception(
+                    "Failed to activate scene: " + scenePath);
+            }
+
+            Debug.Log("Changed active scene to: " + scenePath);
+
+            if (Application.isBatchMode)
+            {
+                EditorApplication.delayCall += () =>
+                    EditorApplication.Exit(0);
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogException(e);
+
+            if (Application.isBatchMode)
+            {
+                EditorApplication.delayCall += () =>
+                    EditorApplication.Exit(1);
+            }
+            else
+            {
+                throw;
+            }
+        }
     }
+
     public static void ResetScene()
     {
-    	ChangeScene(ScenePath);
+        ChangeScene(ScenePath);
     }
+    public static void ResetToMetaScene()
+    {
+        ChangeScene(MetaScenePath);
+    }
+
 }
