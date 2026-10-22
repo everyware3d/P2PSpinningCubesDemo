@@ -1046,7 +1046,50 @@ public static class CommandLineBuild
             }
         }
     }
+    public static bool ChangeBuildTarget(BuildTarget target)
+    {
+        if (EditorUserBuildSettings.activeBuildTarget == target)
+        {
+            Debug.Log($"Build target already set to {target}");
+            return true;
+        }
 
+        if (Application.isBatchMode)
+        {
+            throw new InvalidOperationException(
+                $"Cannot switch to {target} during batchmode. " +
+                "Use the Unity -buildTarget command-line argument.");
+        }
+
+        BuildTargetGroup group =
+            BuildPipeline.GetBuildTargetGroup(target);
+
+        Debug.Log($"Switching build target to {target}");
+
+        bool success =
+            EditorUserBuildSettings.SwitchActiveBuildTarget(
+                group, target);
+
+        if (!success)
+            Debug.LogError($"Failed to switch build target to {target}");
+
+        return success;
+    }
+
+    public static void ChangeToAndroid()
+    {
+        ChangeBuildTarget(BuildTarget.Android);
+    }
+
+    public static void ChangeToIOS()
+    {
+        ChangeBuildTarget(BuildTarget.iOS);
+    }
+
+    public static void ChangeToOSX()
+    {
+        ChangeBuildTarget(BuildTarget.StandaloneOSX);
+    }
     public static void ResetScene()
     {
         ChangeScene(ScenePath);
@@ -1055,5 +1098,9 @@ public static class CommandLineBuild
     {
         ChangeScene(MetaScenePath);
     }
-
+    public static void ResetSceneAndBuildTargetToOSX()
+    {
+        ChangeToOSX();
+        ResetScene();
+    }
 }
