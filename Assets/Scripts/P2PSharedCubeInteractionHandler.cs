@@ -127,5 +127,12 @@ public class P2PSharedCubeInteractionHandler : MouseAndTouchMonoBehaviour, P2PIn
         if (!hasMovedSincePressed && pressedPoint != null && dist > 3) {
             hasMovedSincePressed = true;  // if moved, then it shouldn't be deleted on release
         }
+        void Awake()
+        {
+#if UNITY_STANDALONE_OSX && !UNITY_EDITOR
+		QualitySettings.vSyncCount = 0;
+		Application.targetFrameRate = 30;
+#endif
+        }
     }
 }
