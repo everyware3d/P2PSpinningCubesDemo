@@ -538,7 +538,6 @@ mkdir -p ""$(dirname ""${DEST}"")""
 rm -rf ""${DEST}""
 /usr/bin/ditto ""${SOURCE}"" ""${DEST}""
 
-# A device app requires its embedded dynamic frameworks to be signed.
 if [ ""${CODE_SIGNING_ALLOWED:-NO}"" = ""YES"" ] && \
    [ -n ""${EXPANDED_CODE_SIGN_IDENTITY:-}"" ]; then
     /usr/bin/codesign --force --sign ""${EXPANDED_CODE_SIGN_IDENTITY}"" \
