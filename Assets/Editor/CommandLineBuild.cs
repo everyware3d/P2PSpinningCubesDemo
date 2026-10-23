@@ -17,10 +17,10 @@ public static class CommandLineBuild
 {
     private const string ScenePath =
         "Assets/Scenes/P2PSpinningCubesDemo.unity";
-
     private const string MetaScenePath =
         "Assets/Scenes/MetaP2PSpinningCubesDemo.unity";
-
+    private const string VisionScenePath =
+        "Assets/Scenes/VisionProP2PSpinningCubesDemo.unity";
     private const string PendingBuildKey =
         "CommandLineBuild.PendingExport";
 
@@ -28,11 +28,13 @@ public static class CommandLineBuild
     private const string PendingXRRemovalKey =
         "CommandLineBuild.PendingXRRemoval";
 
+    // Only remove Meta-specific packages when building another platform.
+    // Keep com.unity.xr.management: the visionOS XR plug-in needs it,
+    // even when we're exporting a regular iOS/Android/macOS player.
     private static readonly string[] MetaXRPackageNames =
     {
         "com.meta.xr.sdk.all",
-        "com.unity.xr.openxr",
-        "com.unity.xr.management"
+        "com.unity.xr.openxr"
     };
 
     private static double xrRemovalWaitStarted = -1;
@@ -41,12 +43,16 @@ public static class CommandLineBuild
     private const string OpenXRLoaderName =
         "UnityEngine.XR.OpenXR.OpenXRLoader";
 
+    private const string VisionOSLoaderName =
+        "UnityEngine.XR.VisionOS.VisionOSLoader";
+
     private enum ExportType
     {
         Android,
         Meta,
         IOS,
-        OSX
+        OSX,
+        Vision
     }
 
     // ---------------------------------------------------------
@@ -95,7 +101,7 @@ public static class CommandLineBuild
     }
 
     // [MenuItem("Tools/P2P/1) Install Meta XR Management")]
-    public static void InstallMetaXRManagement()
+    public static void InstallXRManagement()
     {
         InstallPackage(
             "com.unity.xr.management",
@@ -116,6 +122,18 @@ public static class CommandLineBuild
         InstallPackage(
             "com.meta.xr.sdk.all",
             "Meta XR All-in-One SDK package");
+    }
+    public static void InstallVisionOSXR()
+    {
+        InstallPackage(
+            "com.unity.xr.visionos",
+            "Apple visionOS XR Plugin");
+    }
+    public static void InstallPolySpatialVisionOS()
+    {
+        InstallPackage(
+            "com.unity.polyspatial.visionos@3.1.5",
+            "PolySpatial visionOS Plugin");
     }
     
     private static void CheckPackageInstallImpl(AddAndRemoveRequest pr, Action afterInstallAction = null)
@@ -316,6 +334,13 @@ public static class CommandLineBuild
             BuildTarget.StandaloneOSX,
             ExportType.OSX);
     }
+    public static void ExportVision()
+    {
+        StartExport(
+            BuildTargetGroup.VisionOS,
+            BuildTarget.VisionOS,
+            ExportType.Vision);
+    }
 
     private static BuildTarget GetBuildTarget(ExportType type)
     {
@@ -330,6 +355,9 @@ public static class CommandLineBuild
 
             case ExportType.OSX:
                 return BuildTarget.StandaloneOSX;
+
+            case ExportType.Vision:
+                return BuildTarget.VisionOS;
 
             default:
                 throw new Exception(
@@ -348,10 +376,11 @@ public static class CommandLineBuild
     {
         Debug.Log($"Starting {type} export for {target}");
 
-        // Non-Meta exports must run without Meta/XR packages.
+        // Non-Meta exports must run without Meta-specific packages.
+        // Keep XR Plug-in Management installed for Apple visionOS.
         // Removal is asynchronous, so store the export request and
         // resume it when Unity is ready. Do not use -quit for these
-        // three entry points; RunExport() exits batch mode itself.
+        // entry points; RunExport() exits batch mode itself.
         if (type != ExportType.Meta)
         {
             string[] xrPackages = GetInstalledMetaXRPackages();
@@ -462,9 +491,7 @@ public static class CommandLineBuild
             Debug.Log($"Switching to {target} after XR cleanup.");
 
             bool switched = EditorUserBuildSettings.SwitchActiveBuildTarget(
-                target == BuildTarget.Android ? BuildTargetGroup.Android :
-                target == BuildTarget.iOS ? BuildTargetGroup.iOS :
-                BuildTargetGroup.Standalone,
+                BuildPipeline.GetBuildTargetGroup(target),
                 target);
 
             if (!switched)
@@ -700,6 +727,172 @@ public static class CommandLineBuild
             $"OpenXR requested: {meta}");
     }
 
+    // Configure the visionOS XR provider and select PolySpatial RealityKit
+    // without a hard compile dependency on com.unity.xr.visionos or XR Management.
+    public static void ConfigureVisionOSXR()
+    {
+        string[] requiredPackages =
+        {
+            "com.unity.xr.management",
+            "com.unity.xr.visionos",
+            "com.unity.polyspatial",
+            "com.unity.polyspatial.xr",
+            "com.unity.polyspatial.visionos"
+        };
+
+        foreach (string package in requiredPackages)
+        {
+            if (!HasPackage(package))
+                throw new Exception(
+                    $"Vision export requires {package}. " +
+                    "Install the visionOS XR and PolySpatial packages first.");
+        }
+
+        Type perTargetType = FindType(
+            "UnityEditor.XR.Management.XRGeneralSettingsPerBuildTarget");
+        Type generalType = FindType(
+            "UnityEngine.XR.Management.XRGeneralSettings");
+        Type metadataType = FindType(
+            "UnityEditor.XR.Management.Metadata.XRPackageMetadataStore");
+        Type visionSettingsType = FindType(
+            "UnityEditor.XR.VisionOS.VisionOSSettings");
+
+        if (perTargetType == null || generalType == null ||
+            metadataType == null || visionSettingsType == null)
+            throw new Exception(
+                "visionOS/XR Editor assemblies are not loaded. " +
+                "Run package installation in a separate Unity invocation.");
+
+        const BindingFlags instanceFlags =
+            BindingFlags.Public | BindingFlags.Instance;
+        const BindingFlags staticFlags =
+            BindingFlags.Public | BindingFlags.Static;
+        const string settingsKey =
+            "com.unity.xr.management.loader_settings";
+
+        UnityEngine.Object containerObject;
+        if (!EditorBuildSettings.TryGetConfigObject(
+                settingsKey, out containerObject) || containerObject == null)
+        {
+            if (!AssetDatabase.IsValidFolder("Assets/XR"))
+                AssetDatabase.CreateFolder("Assets", "XR");
+
+            string path = "Assets/XR/XRGeneralSettingsPerBuildTarget.asset";
+            containerObject =
+                AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+
+            if (containerObject == null)
+            {
+                containerObject =
+                    ScriptableObject.CreateInstance(perTargetType);
+                AssetDatabase.CreateAsset(containerObject, path);
+            }
+
+            EditorBuildSettings.AddConfigObject(
+                settingsKey, containerObject, true);
+        }
+
+        if (!perTargetType.IsInstanceOfType(containerObject))
+            throw new Exception("Unexpected XR settings container type.");
+
+        BuildTargetGroup group = BuildTargetGroup.VisionOS;
+        MethodInfo getSettings = perTargetType.GetMethod(
+            "SettingsForBuildTarget", instanceFlags);
+        MethodInfo createSettings = perTargetType.GetMethod(
+            "CreateDefaultSettingsForBuildTarget", instanceFlags);
+        MethodInfo createManager = perTargetType.GetMethod(
+            "CreateDefaultManagerSettingsForBuildTarget", instanceFlags);
+        PropertyInfo managerProperty = generalType.GetProperty(
+            "Manager", instanceFlags);
+
+        if (getSettings == null || createSettings == null ||
+            createManager == null || managerProperty == null)
+            throw new Exception("Unexpected XR Management API version.");
+
+        object generalSettings = getSettings.Invoke(
+            containerObject, new object[] { group });
+        if (generalSettings == null)
+        {
+            createSettings.Invoke(containerObject, new object[] { group });
+            generalSettings = getSettings.Invoke(
+                containerObject, new object[] { group });
+        }
+        if (generalSettings == null)
+            throw new Exception("Could not create visionOS XR settings.");
+
+        object manager = managerProperty.GetValue(generalSettings);
+        if (manager == null)
+        {
+            createManager.Invoke(containerObject, new object[] { group });
+            generalSettings = getSettings.Invoke(
+                containerObject, new object[] { group });
+            manager = managerProperty.GetValue(generalSettings);
+        }
+        if (manager == null)
+            throw new Exception("Could not create visionOS XR manager.");
+
+        MethodInfo isLoaderAssigned = metadataType.GetMethod(
+            "IsLoaderAssigned", staticFlags);
+        MethodInfo assignLoader = metadataType.GetMethod(
+            "AssignLoader", staticFlags);
+        if (isLoaderAssigned == null || assignLoader == null)
+            throw new Exception("XR loader configuration APIs not found.");
+
+        object[] loaderQuery = { VisionOSLoaderName, group };
+        bool assigned = (bool)isLoaderAssigned.Invoke(null, loaderQuery);
+        if (!assigned)
+        {
+            bool success = (bool)assignLoader.Invoke(
+                null, new object[] { manager, VisionOSLoaderName, group });
+            if (!success)
+                throw new Exception(
+                    "Failed to enable Apple visionOS XR Plug-in Provider.");
+        }
+
+        // Match the 'Initialize XR on Startup' setting for this target.
+        var serialized = new SerializedObject(
+            (UnityEngine.Object)generalSettings);
+        SerializedProperty initOnStart =
+            serialized.FindProperty("m_InitManagerOnStart");
+        if (initOnStart == null)
+            throw new Exception("XR Initialize on Startup setting missing.");
+        initOnStart.boolValue = true;
+        serialized.ApplyModifiedProperties();
+
+        // The provider checkbox is distinct from App Mode. PolySpatial
+        // needs RealityKit, not the default Windowed or Metal mode.
+        MethodInfo getVisionSettings = visionSettingsType.GetMethod(
+            "GetOrCreateSettings", staticFlags);
+        PropertyInfo appModeProperty = visionSettingsType.GetProperty(
+            "appMode", instanceFlags);
+        if (getVisionSettings == null || appModeProperty == null ||
+            !appModeProperty.CanWrite)
+            throw new Exception("visionOS App Mode API not found.");
+
+        object visionSettings = getVisionSettings.Invoke(null, null);
+        if (!(visionSettings is UnityEngine.Object visionSettingsObject))
+            throw new Exception("Could not load visionOS settings.");
+
+        object realityKitMode = Enum.Parse(
+            appModeProperty.PropertyType, "RealityKit");
+        appModeProperty.SetValue(visionSettings, realityKitMode);
+
+        EditorUtility.SetDirty((UnityEngine.Object)generalSettings);
+        if (manager is UnityEngine.Object managerObject)
+            EditorUtility.SetDirty(managerObject);
+        EditorUtility.SetDirty(visionSettingsObject);
+        EditorUtility.SetDirty(containerObject);
+        AssetDatabase.SaveAssets();
+
+        if (!(bool)isLoaderAssigned.Invoke(null, loaderQuery))
+            throw new Exception("Apple visionOS XR provider is not enabled.");
+        if (!Equals(appModeProperty.GetValue(visionSettings), realityKitMode))
+            throw new Exception("Failed to set RealityKit App Mode.");
+
+        Debug.Log("visionOS XR configured: Apple visionOS provider, " +
+                  "Initialize on Startup, RealityKit with PolySpatial.");
+    }
+
     // ---------------------------------------------------------
     // Build/export
     // ---------------------------------------------------------
@@ -811,6 +1004,26 @@ public static class CommandLineBuild
 
             case ExportType.OSX:
                 outputDirectory = "P2PSpinningCubesDemoOSX";
+                break;
+
+            case ExportType.Vision:
+                outputDirectory = "P2PSpinningCubesDemoVision";
+                scenePath = VisionScenePath;
+                ConfigureVisionOSXR();
+
+                PlayerSettings.SetScriptingBackend(
+                    UnityEditor.Build.NamedBuildTarget.VisionOS,
+                    ScriptingImplementation.IL2CPP);
+
+                CanAppendBuild visionCanAppend =
+                    BuildPipeline.BuildCanBeAppended(
+                        target,
+                        Path.Combine(projectPath, outputDirectory));
+                if (visionCanAppend == CanAppendBuild.Yes)
+                {
+                    buildOptions |=
+                        BuildOptions.AcceptExternalModificationsToPlayer;
+                }
                 break;
 
             default:
@@ -1090,6 +1303,10 @@ public static class CommandLineBuild
     {
         ChangeBuildTarget(BuildTarget.StandaloneOSX);
     }
+    public static void ChangeToVision()
+    {
+        ChangeBuildTarget(BuildTarget.VisionOS);
+    }
     public static void ResetScene()
     {
         ChangeScene(ScenePath);
@@ -1097,6 +1314,10 @@ public static class CommandLineBuild
     public static void ResetToMetaScene()
     {
         ChangeScene(MetaScenePath);
+    }
+    public static void ResetToVisionScene()
+    {
+        ChangeScene(VisionScenePath);
     }
     public static void ResetSceneAndBuildTargetToOSX()
     {

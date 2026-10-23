@@ -109,13 +109,18 @@ public static class VisionOSPostBuild
             IOSFrameworkName);
 
         //
-        // 4. Add + embed DPCoreBundleVision.framework
+        // 4. Link the XCFramework in UnityFramework only.
         //
         AddVisionFramework(
             project,
             buildPath,
             mainTargetGuid,
             unityFrameworkTargetGuid);
+
+        // 5. Embed the already-processed dynamic .framework in the app.
+        // Do NOT add the .xcframework to the app target's Frameworks phase:
+        // Xcode may otherwise run ProcessXCFramework twice for one output.
+        AddVisionFrameworkEmbeddingPhase(project, mainTargetGuid);
 
         project.WriteToFile(projectPath);
 
@@ -378,77 +383,180 @@ public static class VisionOSPostBuild
             $"VisionOSPostBuild: Set development team to {DeveloperTeamId}.");
     }
 
+    // Unity sometimes leaves an XCFramework reference in the generated Xcode
+    // project without copying the actual directory (or an incremental export
+    // can preserve an old reference). Ensure the physical asset is present.
+    private const string VisionFrameworkXcodePath =
+        "Frameworks/P2PPlugin/Plugins/visionOS/DPCoreBundleVision.xcframework";
+
+    private static string EnsureVisionFrameworkCopied(string buildPath)
+    {
+        string destination = Path.Combine(
+            buildPath,
+            VisionFrameworkXcodePath.Replace('/', Path.DirectorySeparatorChar));
+
+        // An XCFramework is a directory bundle, not a single binary file.
+        if (File.Exists(Path.Combine(destination, "Info.plist")))
+            return destination;
+
+        string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+        string packageRoot = Path.Combine(
+            projectRoot, "Packages", "com.everyware3d.p2pplugin");
+
+        // Search the embedded plugin package first, then Assets in case the
+        // framework was imported directly into this project.
+        string source = FindFramework(packageRoot, VisionFrameworkName);
+        if (source == null)
+            source = FindFramework(Application.dataPath, VisionFrameworkName);
+
+        if (source == null || !File.Exists(Path.Combine(source, "Info.plist")))
+            throw new FileNotFoundException(
+                $"Could not find a valid {VisionFrameworkName} in " +
+                $"{packageRoot} or {Application.dataPath}. " +
+                "Check the plugin package and native XCFramework build.");
+
+        if (Directory.Exists(destination))
+            Directory.Delete(destination, true);  // Replace incomplete export.
+
+        CopyFrameworkDirectory(source, destination);
+
+        if (!File.Exists(Path.Combine(destination, "Info.plist")))
+            throw new IOException(
+                $"XCFramework copy failed: {destination}");
+
+        Debug.Log($"VisionOSPostBuild: Copied XCFramework from {source} " +
+                  $"to {destination}");
+        return destination;
+    }
+
+    private static void CopyFrameworkDirectory(string source, string destination)
+    {
+        Directory.CreateDirectory(destination);
+
+        foreach (string file in Directory.GetFiles(source))
+            File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), true);
+
+        foreach (string subdirectory in Directory.GetDirectories(source))
+            CopyFrameworkDirectory(
+                subdirectory,
+                Path.Combine(destination, Path.GetFileName(subdirectory)));
+    }
+
     private static void AddVisionFramework(
         PBXProject project,
         string buildPath,
         string mainTargetGuid,
         string unityFrameworkTargetGuid)
     {
-        string frameworkPath =
-            FindFramework(
-                buildPath,
-                VisionFrameworkName);
+        // Ensure the complete XCFramework exists in the exported Xcode project.
+        string frameworkPath = EnsureVisionFrameworkCopied(buildPath);
 
-        if (frameworkPath == null)
+        // Unity may use either the assembly/package name or the UPM package
+        // name when it creates a project reference.
+        string[] candidatePaths =
         {
-            Debug.LogError(
-                $"VisionOSPostBuild: Could not find {VisionFrameworkName} " +
-                $"anywhere underneath:\n{buildPath}");
+            VisionFrameworkXcodePath,
+            "Frameworks/com.everyware3d.p2pplugin/Plugins/visionOS/" + VisionFrameworkName,
+            "Frameworks/Plugins/visionOS/" + VisionFrameworkName,
+            "Frameworks/" + VisionFrameworkName
+        };
 
+        foreach (string candidate in candidatePaths)
+        {
+            string existingGuid = project.FindFileGuidByProjectPath(candidate);
+            if (!string.IsNullOrEmpty(existingGuid))
+            {
+                Debug.Log("VisionOSPostBuild: Existing Xcode reference at " +
+                          candidate + "; not adding another build phase.");
+                return;
+            }
+        }
+
+        // If Xcode already mentions the framework under an unfamiliar path,
+        // avoid creating a second ProcessXCFramework task. That would recreate
+        // the previous 'Multiple commands produce' build failure.
+        string pbxprojPath = PBXProject.GetPBXProjectPath(buildPath);
+        if (File.ReadAllText(pbxprojPath).Contains(VisionFrameworkName))
+        {
+            Debug.LogWarning(
+                "VisionOSPostBuild: The Xcode project already mentions " +
+                VisionFrameworkName + " under another path. Skipping a duplicate " +
+                "registration. Check its PBXFileReference and file path if " +
+                "Xcode still reports a missing framework.");
             return;
         }
 
-        string projectRelativePath =
-            GetRelativePath(
-                buildPath,
-                frameworkPath);
+        if (string.IsNullOrEmpty(unityFrameworkTargetGuid))
+            throw new Exception(
+                "Cannot register " + VisionFrameworkName +
+                ": UnityFramework target was not found.");
 
-        // Xcode wants forward slashes in project paths.
-        projectRelativePath =
-            projectRelativePath.Replace(
-                "\\",
-                "/");
+        // Unity omitted the XCFramework entirely. Add a *single* link/build
+        // reference to UnityFramework, where the native P/Invoke symbols are
+        // needed. Do not also use AddFileToEmbedFrameworks(mainTargetGuid):
+        // that would add another ProcessXCFramework task and can collide.
+        string fileGuid = project.AddFile(
+            frameworkPath,
+            VisionFrameworkXcodePath,
+            PBXSourceTree.Source);
 
-        string fileGuid =
-            project.FindFileGuidByProjectPath(
-                projectRelativePath);
-
-        if (string.IsNullOrEmpty(fileGuid))
-        {
-            fileGuid =
-                project.AddFile(
-                    frameworkPath,
-                    projectRelativePath,
-                    PBXSourceTree.Source);
-
-            Debug.Log(
-                $"VisionOSPostBuild: Added {VisionFrameworkName} " +
-                $"at {projectRelativePath}.");
-        }
-
-        /*
-         * Native plugin symbols are generally needed by UnityFramework,
-         * so link the framework there.
-         */
-        if (!string.IsNullOrEmpty(unityFrameworkTargetGuid))
-        {
-            project.AddFileToBuild(
-                unityFrameworkTargetGuid,
-                fileGuid);
-        }
-
-        /*
-         * Embed it in the application target.
-         *
-         * AddFileToEmbedFrameworks also adds the framework to that
-         * target's linked frameworks.
-         */
-        project.AddFileToEmbedFrameworks(
-            mainTargetGuid,
-            fileGuid);
+        project.AddFileToBuild(unityFrameworkTargetGuid, fileGuid);
 
         Debug.Log(
-            $"VisionOSPostBuild: Linked and embedded {VisionFrameworkName}.");
+            "VisionOSPostBuild: Added missing XCFramework reference to " +
+            "UnityFramework only: " + VisionFrameworkXcodePath);
+
+    }
+
+    // UnityFramework links DPCoreBundleVision.xcframework. That causes Xcode to
+    // select its xros-arm64 (or simulator) slice and place the resulting dynamic
+    // framework in BUILT_PRODUCTS_DIR. Copy that *processed framework*, rather
+    // than making the main app target process the XCFramework a second time.
+    //
+    // This is intentionally a shell build phase, NOT AddFileToEmbedFrameworks:
+    // the latter also adds a link step to the main target and previously caused
+    // the Xcode "Multiple commands produce" failure.
+    private static void AddVisionFrameworkEmbeddingPhase(
+        PBXProject project,
+        string mainTargetGuid)
+    {
+        if (string.IsNullOrEmpty(mainTargetGuid))
+            throw new Exception("visionOS main app target not found.");
+
+        const string script = @"set -eu
+
+SOURCE=""${BUILT_PRODUCTS_DIR}/DPCoreBundleVision.framework""
+DEST=""${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DPCoreBundleVision.framework""
+
+if [ ! -f ""${SOURCE}/DPCoreBundleVision"" ]; then
+    echo ""error: Built DPCoreBundleVision.framework is missing: ${SOURCE}"" >&2
+    echo ""error: Verify the XCFramework is linked to UnityFramework."" >&2
+    exit 1
+fi
+
+mkdir -p ""$(dirname ""${DEST}"")""
+rm -rf ""${DEST}""
+/usr/bin/ditto ""${SOURCE}"" ""${DEST}""
+
+# A device app requires its embedded dynamic frameworks to be signed.
+if [ ""${CODE_SIGNING_ALLOWED:-NO}"" = ""YES"" ] && \
+   [ -n ""${EXPANDED_CODE_SIGN_IDENTITY:-}"" ]; then
+    /usr/bin/codesign --force --sign ""${EXPANDED_CODE_SIGN_IDENTITY}"" \
+        --timestamp=none ""${DEST}""
+fi
+
+echo ""Embedded DPCoreBundleVision.framework at ${DEST}""
+";
+
+        // AddShellScriptBuildPhase is idempotent for an identical script/name
+        // and adds the phase at the end of the app target's build phases.
+        project.AddShellScriptBuildPhase(
+            mainTargetGuid,
+            "Embed and Sign DPCoreBundleVision",
+            "/bin/sh",
+            script);
+
+        Debug.Log("VisionOSPostBuild: Added dynamic framework embed/sign phase.");
     }
 
     private static void RemoveFramework(
@@ -470,6 +578,7 @@ public static class VisionOSPostBuild
          */
         string[] candidateProjectPaths =
         {
+            $"Frameworks/com.everyware3d.p2pplugin/Plugins/iOS/{frameworkName}",
             $"Frameworks/P2PPlugin/Plugins/iOS/{frameworkName}",
             $"Frameworks/Plugins/iOS/{frameworkName}",
             $"Frameworks/{frameworkName}"
