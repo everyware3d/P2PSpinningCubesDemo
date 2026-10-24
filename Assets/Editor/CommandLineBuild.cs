@@ -52,6 +52,7 @@ public static class CommandLineBuild
         Meta,
         IOS,
         OSX,
+        Windows,
         Vision
     }
 
@@ -334,6 +335,14 @@ public static class CommandLineBuild
             BuildTarget.StandaloneOSX,
             ExportType.OSX);
     }
+    public static void ExportWindows()
+    {
+        StartExport(
+            BuildTargetGroup.Standalone,
+            BuildTarget.StandaloneWindows64,
+            ExportType.Windows);
+    }
+
     public static void ExportVision()
     {
         StartExport(
@@ -355,6 +364,9 @@ public static class CommandLineBuild
 
             case ExportType.OSX:
                 return BuildTarget.StandaloneOSX;
+
+            case ExportType.Windows:
+                return BuildTarget.StandaloneWindows64;
 
             case ExportType.Vision:
                 return BuildTarget.VisionOS;
@@ -1006,6 +1018,10 @@ public static class CommandLineBuild
                 outputDirectory = "P2PSpinningCubesDemoOSX";
                 break;
 
+            case ExportType.Windows:
+                outputDirectory = "../P2PSpinningCubesDemoWindows";
+                break;
+
             case ExportType.Vision:
                 outputDirectory = "P2PSpinningCubesDemoVision";
                 scenePath = VisionScenePath;
@@ -1034,6 +1050,14 @@ public static class CommandLineBuild
         string outputPath =
             Path.GetFullPath(
                 Path.Combine(projectPath, outputDirectory));
+
+        // Standalone Windows builds require a .exe file path, unlike
+        // the directory-based iOS/Android exports.
+        if (type == ExportType.Windows)
+        {
+            Directory.CreateDirectory(outputPath);
+            outputPath = Path.Combine(outputPath, "P2PSpinningCubesDemo.exe");
+        }
 
         Debug.Log($"Exporting {type} to: {outputPath}");
         Debug.Log($"Scene: {scenePath}");
@@ -1303,6 +1327,11 @@ public static class CommandLineBuild
     {
         ChangeBuildTarget(BuildTarget.StandaloneOSX);
     }
+    public static void ChangeToWindows()
+    {
+        ChangeBuildTarget(BuildTarget.StandaloneWindows64);
+    }
+
     public static void ChangeToVision()
     {
         ChangeBuildTarget(BuildTarget.VisionOS);
@@ -1322,6 +1351,11 @@ public static class CommandLineBuild
     public static void ResetSceneAndBuildTargetToOSX()
     {
         ChangeToOSX();
+        ResetScene();
+    }
+    public static void ResetSceneAndBuildTargetToWindows()
+    {
+        ChangeToWindows();
         ResetScene();
     }
 }
