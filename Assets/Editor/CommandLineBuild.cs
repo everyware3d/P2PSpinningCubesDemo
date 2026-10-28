@@ -979,6 +979,7 @@ public static class CommandLineBuild
             case ExportType.Android:
                 outputDirectory = "../P2PSpinningCubesDemoAndroid";
                 EditorUserBuildSettings.exportAsGoogleAndroidProject = true;
+                PlayerSettings.Android.applicationEntry = AndroidApplicationEntry.GameActivity;
                 ConfigureAndroidXR(false);
                 break;
 
