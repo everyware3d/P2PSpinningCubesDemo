@@ -410,6 +410,7 @@ MonoBehaviour:
   serverIPs:
   - 10.125.1.122
   - 10.125.1.121
+  - 10.125.1.125
   reconnectAfterDisconnect: 1
 --- !u!114 &330585554
 MonoBehaviour:
