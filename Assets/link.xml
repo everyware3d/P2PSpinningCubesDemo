@@ -1,0 +1,7 @@
+<linker>
+    <assembly fullname="UnityEngine.PhysicsModule" preserve="all" />
+    <assembly fullname="UnityEngine.Physics2DModule" preserve="all" />
+    <assembly fullname="UnityEngine.UIModule">
+        <type fullname="UnityEngine.Canvas" preserve="all"/>
+    </assembly>
+</linker>
